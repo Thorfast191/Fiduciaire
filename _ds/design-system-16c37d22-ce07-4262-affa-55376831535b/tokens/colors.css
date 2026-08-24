@@ -1,0 +1,86 @@
+/* Fluxio — Color tokens
+   Palette "fluidité": deep petrol + teal current + warm cream/sand.
+   Trust of a private bank, warmth of a neighbourhood advisor. */
+
+:root {
+  /* ---- Brand: Petrol (deep, anchoring) ---- */
+  --petrol-950: #081823;
+  --petrol-900: #0B2030;
+  --petrol-800: #0F2A3F; /* primary dark surface / ink */
+  --petrol-700: #143A52;
+  --petrol-600: #1B4D67;
+
+  /* ---- Brand: Teal (the current — primary action) ---- */
+  --teal-700: #145863;
+  --teal-600: #1B6E7E; /* primary */
+  --teal-500: #2A8A93;
+  --teal-400: #3FA7A0; /* bright accent */
+  --teal-300: #79C5BD;
+  --teal-200: #AEDDD7;
+  --teal-100: #D9EFEC;
+  --teal-50:  #EEF8F6;
+
+  /* ---- Brand: Sand / Cream (warmth, paper) ---- */
+  --sand-400: #D8CFBD;
+  --sand-300: #E8E2D5; /* signature cream */
+  --sand-200: #F2ECE0;
+  --sand-100: #FAF7F0;
+
+  /* ---- Neutrals (warm grey, slightly toward sand) ---- */
+  --neutral-0:   #FFFFFF;
+  --neutral-50:  #F7F6F2;
+  --neutral-100: #EFEDE7;
+  --neutral-200: #E3E0D8;
+  --neutral-300: #CCC8BD;
+  --neutral-400: #A8A498;
+  --neutral-500: #807C72;
+  --neutral-600: #5E5B52;
+  --neutral-700: #423F39;
+  --neutral-800: #2A2824;
+  --neutral-900: #1A1916;
+
+  /* ---- Semantic feedback ---- */
+  --green-600: #2E7D5B;
+  --green-100: #DCEFE5;
+  --amber-600: #B9842B;
+  --amber-100: #F6EBD3;
+  --red-600:   #B5462F;
+  --red-100:   #F6E0DA;
+
+  /* =========================================================
+     Semantic aliases — use these in components
+     ========================================================= */
+
+  /* Text */
+  --text-strong:  var(--petrol-800);
+  --text-body:    #2C3A42;
+  --text-muted:   var(--neutral-500);
+  --text-subtle:  var(--neutral-400);
+  --text-on-dark: #EAF1F0;
+  --text-on-teal: #FFFFFF;
+  --text-link:    var(--teal-600);
+
+  /* Surfaces */
+  --surface-page:    var(--sand-100);
+  --surface-card:    var(--neutral-0);
+  --surface-sunken:  var(--sand-200);
+  --surface-inverse: var(--petrol-800);
+  --surface-teal:    var(--teal-600);
+  --surface-cream:   var(--sand-300);
+
+  /* Lines & borders */
+  --border-subtle:  var(--neutral-200);
+  --border-default: var(--neutral-300);
+  --border-strong:  var(--neutral-400);
+  --border-ondark:  rgba(255,255,255,0.14);
+
+  /* Brand action */
+  --brand:         var(--teal-600);
+  --brand-hover:   var(--teal-700);
+  --brand-active:  #0F4751;
+  --brand-soft:    var(--teal-100);
+  --accent:        var(--teal-400);
+
+  /* Focus ring */
+  --focus-ring: rgba(63,167,160,0.45);
+}
