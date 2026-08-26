@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: fiduvia
+          POSTGRES_PASSWORD: fiduvia
+          POSTGRES_DB: fiduvia
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U fiduvia"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      mailhog:
+        image: mailhog/mailhog:latest
+        ports: ["1025:1025", "8025:8025"]
+
+    env:
+      DATABASE_URL: postgres://fiduvia:fiduvia@localhost:5432/fiduvia
+      SESSION_SECRET: ci-only-secret-please-do-not-reuse-in-prod
+      SMTP_HOST: localhost
+      SMTP_PORT: 1025
+      SMTP_FROM: "Fiduvia <no-reply@fiduvia.ch>"
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm run db:migrate
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run seed:admin -- admin@fiduvia.test a-long-enough-password
+      - run: npm run build
+      - run: npm run test:e2e
