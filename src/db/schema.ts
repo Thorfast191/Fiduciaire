@@ -1,0 +1,80 @@
+import {
+  pgTable,
+  uuid,
+  text,
+  timestamp,
+  integer,
+  jsonb,
+} from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role", { enum: ["client", "admin", "super_admin"] })
+    .notNull()
+    .default("client"),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  phone: text("phone"),
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+  disabledAt: timestamp("disabled_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const sessions = pgTable("sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  tokenHash: text("token_hash").notNull(),
+  userAgent: text("user_agent"),
+  ip: text("ip"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const otpCodes = pgTable("otp_codes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  purpose: text("purpose", {
+    enum: ["login", "signup", "password_reset"],
+  }).notNull(),
+  codeHash: text("code_hash").notNull(),
+  attemptCount: integer("attempt_count").notNull().default(0),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const auditLog = pgTable("audit_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  actorUserId: uuid("actor_user_id").references(() => users.id),
+  action: text("action").notNull(),
+  targetType: text("target_type"),
+  targetId: uuid("target_id"),
+  metadata: jsonb("metadata"),
+  ip: text("ip"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
+export type Role = "client" | "admin" | "super_admin";
+export type OtpPurpose = "login" | "signup" | "password_reset";
+export type User = typeof users.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
+export type OtpCode = typeof otpCodes.$inferSelect;
+export type AuditLogEntry = typeof auditLog.$inferSelect;
