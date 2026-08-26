@@ -3,7 +3,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { users } from "@/db/schema";
-import { verifyPassword } from "@/lib/auth/password";
+import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { createOtp } from "@/lib/auth/otp";
 import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
@@ -16,6 +16,16 @@ const bodySchema = z.object({
 });
 
 const GENERIC_ERROR = "Adresse e-mail ou mot de passe incorrect.";
+
+// Cache for dummy hash to protect against timing-based user enumeration (CWE-208)
+let cachedDummyHash: Promise<string> | null = null;
+
+async function getDummyHash(): Promise<string> {
+  if (!cachedDummyHash) {
+    cachedDummyHash = hashPassword("timing-safety-dummy-password-do-not-use");
+  }
+  return cachedDummyHash;
+}
 
 export async function POST(request: NextRequest) {
   const parsed = bodySchema.safeParse(await request.json());
@@ -33,9 +43,12 @@ export async function POST(request: NextRequest) {
   }
 
   const [user] = await db.select().from(users).where(eq(users.email, email));
-  const valid = user ? await verifyPassword(user.passwordHash, password) : false;
+  // Always run verifyPassword to equalize timing regardless of whether user exists (CWE-208)
+  const hashToCheck = user?.passwordHash ?? (await getDummyHash());
+  const passwordValid = await verifyPassword(hashToCheck, password);
+  const valid = passwordValid && !!user;
 
-  if (!user || !valid) {
+  if (!valid) {
     await recordLoginFailure(email, ip);
     return NextResponse.json({ ok: false, error: GENERIC_ERROR }, { status: 401 });
   }
