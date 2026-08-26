@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "seed:admin": "tsx scripts/seed-admin.ts"
   },
   "dependencies": {
     "argon2": "^0.31.2",
