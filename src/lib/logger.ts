@@ -2,5 +2,14 @@ import pino from "pino";
 
 export const logger = pino({
   level: process.env.NODE_ENV === "production" ? "info" : "debug",
-  redact: ["*.password", "*.newPassword", "*.code", "*.passwordHash"],
+  redact: [
+    "password",
+    "newPassword",
+    "code",
+    "passwordHash",
+    "*.password",
+    "*.newPassword",
+    "*.code",
+    "*.passwordHash",
+  ],
 });
