@@ -48,12 +48,15 @@ export async function POST(request: NextRequest) {
     userAgent: request.headers.get("user-agent") ?? undefined,
   });
 
-  await recordLoginSuccess(user.id, user.email, ip);
-  await writeAuditLog({
-    actorUserId: user.id,
-    action: purpose === "signup" ? "signup_verified" : "login_succeeded",
-    ip,
-  });
+  if (purpose === "login") {
+    await recordLoginSuccess(user.id, user.email, ip);
+  } else {
+    await writeAuditLog({
+      actorUserId: user.id,
+      action: "signup_verified",
+      ip,
+    });
+  }
 
   const response = NextResponse.json({ ok: true, role: user.role });
   response.cookies.set(SESSION_COOKIE_NAME, token, {
