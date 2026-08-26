@@ -1,6 +1,8 @@
-async function main() {
-  require("dotenv").config();
+import dotenv from "dotenv";
 
+dotenv.config();
+
+async function main() {
   const { db } = await import("../src/db/client");
   const { users } = await import("../src/db/schema");
   const { hashPassword } = await import("../src/lib/auth/password");

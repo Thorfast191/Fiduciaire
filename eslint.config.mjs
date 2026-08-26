@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Legacy mockup artifacts, predate this rebuild:
+    "support.js",
+    "image-slot.js",
+    "_ds/**",
   ]),
 ]);
 
