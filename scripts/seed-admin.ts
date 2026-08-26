@@ -1,8 +1,10 @@
-import { db } from "../src/db/client";
-import { users } from "../src/db/schema";
-import { hashPassword } from "../src/lib/auth/password";
-
 async function main() {
+  require("dotenv").config();
+
+  const { db } = await import("../src/db/client");
+  const { users } = await import("../src/db/schema");
+  const { hashPassword } = await import("../src/lib/auth/password");
+
   const email = process.argv[2];
   const password = process.argv[3];
   if (!email || !password) {

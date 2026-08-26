@@ -2,8 +2,10 @@ import crypto from "node:crypto";
 import { and, eq, gte } from "drizzle-orm";
 import { db } from "@/db/client";
 import { sessions, users, type Role } from "@/db/schema";
+import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
 
-export const SESSION_COOKIE_NAME = "fiduvia_session";
+export { SESSION_COOKIE_NAME };
+
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export interface SessionUser {
