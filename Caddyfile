@@ -1,0 +1,3 @@
+fiduvia.ch, www.fiduvia.ch {
+	reverse_proxy localhost:3000
+}
