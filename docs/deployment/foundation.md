@@ -26,13 +26,17 @@ service user, permissions `600`, never committed):
 
 ## Deploy
 
-1. Build and push the image (or build directly on the instance):
+1. Build the production app image (or build directly on the instance):
    `docker build -t fiduvia-app .`
-2. Run migrations: `docker run --rm --env-file .env fiduvia-app npm run db:migrate`
-3. Run the app: `docker run -d --name fiduvia-app --env-file .env -p 3000:3000 --restart unless-stopped fiduvia-app`
-4. Place the `Caddyfile` at `/etc/caddy/Caddyfile` and reload Caddy — this
+   and the build-stage image for migrations and admin setup (contains devDependencies):
+   `docker build --target build -t fiduvia-app:build .`
+2. Run migrations: `docker run --rm --env-file .env fiduvia-app:build npm run db:migrate`
+3. Create the real admin account: `docker run --rm --env-file .env fiduvia-app:build npm run seed:admin -- admin@fiduvia.ch a-real-strong-password`
+   (Replace the email and password with real production credentials.)
+4. Run the app: `docker run -d --name fiduvia-app --env-file .env -p 3000:3000 --restart unless-stopped fiduvia-app`
+5. Place the `Caddyfile` at `/etc/caddy/Caddyfile` and reload Caddy — this
    is what obtains the real TLS certificate.
-5. Schedule the backup script via cron, nightly: add a crontab entry
+6. Schedule the backup script via cron, nightly: add a crontab entry
    `0 3 * * * DATABASE_URL=... BACKUP_S3_BUCKET=... BACKUP_S3_ENDPOINT=... /path/to/scripts/backup-db.sh`.
 
 ## Go-live checklist
@@ -45,5 +49,5 @@ service user, permissions `600`, never committed):
       `Strict-Transport-Security: max-age=31536000` back into
       `next.config.ts`'s headers (Task 19 deliberately left it out). This
       ordering is the direct fix for the audit's cert/HSTS finding.
-- [ ] Replace the throwaway `admin@fiduvia.test` seed account's credentials
-      or remove it entirely before real client traffic arrives.
+- [ ] Confirm the production admin account created in Deploy step 3 can log
+      in and access the admin panel before real client traffic arrives.
