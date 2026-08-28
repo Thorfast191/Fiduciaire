@@ -25,6 +25,17 @@ export async function createOtp(
   userId: string,
   purpose: OtpPurpose,
 ): Promise<string> {
+  await db
+    .update(otpCodes)
+    .set({ consumedAt: new Date() })
+    .where(
+      and(
+        eq(otpCodes.userId, userId),
+        eq(otpCodes.purpose, purpose),
+        isNull(otpCodes.consumedAt),
+      ),
+    );
+
   const code = generateCode();
   await db.insert(otpCodes).values({
     userId,

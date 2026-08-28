@@ -5,7 +5,7 @@ import { db } from "@/db/client";
 import { users } from "@/db/schema";
 import { consumeOtp } from "@/lib/auth/otp";
 import { createSession, SESSION_COOKIE_NAME } from "@/lib/auth/session";
-import { recordLoginSuccess } from "@/lib/auth/rateLimit";
+import { recordLoginSuccess, recordOtpFailure } from "@/lib/auth/rateLimit";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp } from "@/lib/http";
 
@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
 
   const result = await consumeOtp(user.id, purpose, code);
   if (!result.ok) {
+    await recordOtpFailure(user.id, purpose);
     const message =
       result.reason === "too_many_attempts"
         ? "Trop de tentatives. Demandez un nouveau code."

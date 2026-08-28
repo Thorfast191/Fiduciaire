@@ -6,6 +6,7 @@ import { eq, and } from "drizzle-orm";
 import { hashPassword, verifyPassword } from "../../../src/lib/auth/password";
 import { POST as forgotPassword } from "../../../src/app/api/auth/forgot-password/route";
 import { POST as resetPassword } from "../../../src/app/api/auth/reset-password/route";
+import { createSession, getSessionUserByToken } from "../../../src/lib/auth/session";
 
 function req(path: string, body: unknown) {
   return new NextRequest(`http://localhost${path}`, {
@@ -17,8 +18,16 @@ function req(path: string, body: unknown) {
 
 describe("password reset flow", () => {
   it("returns ok for both known and unknown emails", async () => {
+    const knownEmail = `reset-${Date.now()}@example.test`;
+    await db.insert(users).values({
+      email: knownEmail,
+      passwordHash: await hashPassword("some-password-123"),
+      firstName: "A",
+      lastName: "B",
+    });
+
     const known = await forgotPassword(req("/api/auth/forgot-password", {
-      email: `reset-${Date.now()}@example.test`,
+      email: knownEmail,
     }));
     const unknown = await forgotPassword(req("/api/auth/forgot-password", {
       email: "definitely-not-registered@example.test",
@@ -33,6 +42,7 @@ describe("password reset flow", () => {
       .insert(users)
       .values({ email, passwordHash: await hashPassword("old-password-123"), firstName: "A", lastName: "B" })
       .returning();
+    const { token: existingSessionToken } = await createSession(user.id, {});
 
     await forgotPassword(req("/api/auth/forgot-password", { email }));
 
@@ -52,6 +62,7 @@ describe("password reset flow", () => {
 
     const [updated] = await db.select().from(users).where(eq(users.id, user.id));
     await expect(verifyPassword(updated.passwordHash, "brand-new-password-1")).resolves.toBe(true);
+    expect(await getSessionUserByToken(existingSessionToken)).toBeNull();
   });
 
   it("rejects an invalid code with a generic error", async () => {

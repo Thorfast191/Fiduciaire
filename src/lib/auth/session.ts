@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { and, eq, gte } from "drizzle-orm";
+import { and, eq, gte, isNull } from "drizzle-orm";
 import { db } from "@/db/client";
 import { sessions, users, type Role } from "@/db/schema";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
@@ -55,6 +55,7 @@ export async function getSessionUserByToken(
       and(
         eq(sessions.tokenHash, hashToken(token)),
         gte(sessions.expiresAt, new Date()),
+        isNull(users.disabledAt),
       ),
     )
     .limit(1);

@@ -23,13 +23,15 @@ describe("POST /api/auth/logout", () => {
     request.cookies.set(SESSION_COOKIE_NAME, token);
 
     const res = await logout(request);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(303);
+    expect(res.headers.get("location")).toContain("/login");
     expect(await getSessionUserByToken(token)).toBeNull();
   });
 
-  it("returns ok even with no session cookie present", async () => {
+  it("redirects to login even with no session cookie present", async () => {
     const request = new NextRequest("http://localhost/api/auth/logout", { method: "POST" });
     const res = await logout(request);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(303);
+    expect(res.headers.get("location")).toContain("/login");
   });
 });

@@ -50,3 +50,49 @@ export async function recordLoginSuccess(
     ip,
   });
 }
+
+const OTP_WINDOW_MINUTES = 15;
+const MAX_OTP_ISSUANCES = 5;
+
+export async function isOtpIssuanceRateLimited(
+  userId: string,
+  purpose: string,
+): Promise<boolean> {
+  const since = new Date(Date.now() - OTP_WINDOW_MINUTES * 60 * 1000);
+
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(auditLog)
+    .where(
+      and(
+        eq(auditLog.action, "otp_issued"),
+        eq(auditLog.actorUserId, userId),
+        sql`${auditLog.metadata} ->> 'purpose' = ${purpose}`,
+        gte(auditLog.createdAt, since),
+      ),
+    );
+
+  return Number(count) >= MAX_OTP_ISSUANCES;
+}
+
+export async function recordOtpIssuance(
+  userId: string,
+  purpose: string,
+): Promise<void> {
+  await writeAuditLog({
+    actorUserId: userId,
+    action: "otp_issued",
+    metadata: { purpose },
+  });
+}
+
+export async function recordOtpFailure(
+  userId: string,
+  purpose: string,
+): Promise<void> {
+  await writeAuditLog({
+    actorUserId: userId,
+    action: "otp_failed",
+    metadata: { purpose },
+  });
+}

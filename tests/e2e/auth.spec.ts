@@ -109,3 +109,12 @@ test("admin login reaches the admin dashboard, not the client portal", async ({ 
   await page.goto("/portal");
   await expect(page).not.toHaveURL("/portal");
 });
+
+test("security headers are present on page routes, and HSTS is absent", async ({ page }) => {
+  const response = await page.goto("/login");
+  const headers = response!.headers();
+  expect(headers["x-content-type-options"]).toBe("nosniff");
+  expect(headers["x-frame-options"]).toBe("DENY");
+  expect(headers["content-security-policy"]).toContain("script-src 'self' 'nonce-");
+  expect(headers["strict-transport-security"]).toBeUndefined();
+});

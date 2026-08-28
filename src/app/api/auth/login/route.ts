@@ -7,7 +7,7 @@ import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { createOtp } from "@/lib/auth/otp";
 import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
-import { isLoginRateLimited, recordLoginFailure } from "@/lib/auth/rateLimit";
+import { isLoginRateLimited, recordLoginFailure, isOtpIssuanceRateLimited, recordOtpIssuance } from "@/lib/auth/rateLimit";
 import { getClientIp } from "@/lib/http";
 
 const bodySchema = z.object({
@@ -46,14 +46,22 @@ export async function POST(request: NextRequest) {
   // Always run verifyPassword to equalize timing regardless of whether user exists (CWE-208)
   const hashToCheck = user?.passwordHash ?? (await getDummyHash());
   const passwordValid = await verifyPassword(hashToCheck, password);
-  const valid = passwordValid && !!user;
+  const valid = passwordValid && !!user && !user?.disabledAt;
 
   if (!valid) {
     await recordLoginFailure(email, ip);
     return NextResponse.json({ ok: false, error: GENERIC_ERROR }, { status: 401 });
   }
 
+  if (await isOtpIssuanceRateLimited(user.id, "login")) {
+    return NextResponse.json(
+      { ok: false, error: "Trop de tentatives. Réessayez dans quelques minutes." },
+      { status: 429 },
+    );
+  }
+
   const code = await createOtp(user.id, "login");
+  await recordOtpIssuance(user.id, "login");
   const emailBody = otpEmailTemplate({ code, purpose: "login" });
   await sendEmail({ to: user.email, ...emailBody });
 
