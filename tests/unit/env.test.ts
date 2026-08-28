@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 const REQUIRED = {
   DATABASE_URL: "postgres://fiduvia:fiduvia@localhost:5432/fiduvia",
-  SESSION_SECRET: "a".repeat(32),
   SMTP_HOST: "localhost",
   SMTP_PORT: "1025",
   SMTP_FROM: "Fiduvia <no-reply@fiduvia.ch>",
@@ -29,7 +28,7 @@ describe("env", () => {
 
   it("throws when a required variable is missing", async () => {
     vi.resetModules();
-    delete process.env.SESSION_SECRET;
+    delete process.env.DATABASE_URL;
     await expect(import("../../src/lib/env")).rejects.toThrow();
   });
 });

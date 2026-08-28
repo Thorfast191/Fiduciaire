@@ -27,7 +27,6 @@ jobs:
 
     env:
       DATABASE_URL: postgres://fiduvia:fiduvia@localhost:5432/fiduvia
-      SESSION_SECRET: ci-only-secret-please-do-not-reuse-in-prod
       SMTP_HOST: localhost
       SMTP_PORT: 1025
       SMTP_FROM: "Fiduvia <no-reply@fiduvia.ch>"
