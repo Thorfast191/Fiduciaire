@@ -5,7 +5,10 @@
 1. Create an Infomaniak Public Cloud project and a small compute instance
    (Debian or Ubuntu image). Note its public IP.
 2. Point fiduvia.ch and www.fiduvia.ch DNS A records at that IP.
-3. On the instance: install Docker and Caddy.
+3. On the instance: install Docker and Caddy. Configure the instance's
+   firewall (Infomaniak security group / iptables) to only expose ports
+   80 and 443 publicly — port 3000 must not be internet-facing; the app
+   binds to `127.0.0.1:3000` and is reached only via Caddy's reverse proxy.
 4. Create an Infomaniak Object Storage bucket dedicated to database backups
    (separate from the sub-project-2 documents bucket). Generate an
    access/secret key pair for it and run `aws configure` on the instance.
@@ -19,8 +22,7 @@
 Set on the instance (e.g. in a `.env` file readable only by the app's
 service user, permissions `600`, never committed):
 
-- `DATABASE_URL`, `SESSION_SECRET` (a fresh long random value, not the
-  `.env.example` placeholder), `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
+- `DATABASE_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
   `SMTP_PASS`, `SMTP_FROM` — from Infomaniak's real mail service, not
   Mailhog.
 
@@ -33,7 +35,7 @@ service user, permissions `600`, never committed):
 2. Run migrations: `docker run --rm --env-file .env fiduvia-app:build npm run db:migrate`
 3. Create the real admin account: `docker run --rm --env-file .env fiduvia-app:build npm run seed:admin -- admin@fiduvia.ch a-real-strong-password`
    (Replace the email and password with real production credentials.)
-4. Run the app: `docker run -d --name fiduvia-app --env-file .env -p 3000:3000 --restart unless-stopped fiduvia-app`
+4. Run the app: `docker run -d --name fiduvia-app --env-file .env -p 127.0.0.1:3000:3000 --restart unless-stopped fiduvia-app`
 5. Place the `Caddyfile` at `/etc/caddy/Caddyfile` and reload Caddy — this
    is what obtains the real TLS certificate.
 6. Schedule the backup script via cron, nightly: add a crontab entry

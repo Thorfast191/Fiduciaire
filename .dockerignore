@@ -4,3 +4,4 @@ docs
 screenshots
 uploads
 .git
+.env*
