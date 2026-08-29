@@ -38,6 +38,11 @@ describe("createPendingUpload", () => {
       sizeBytes: 100,
     });
     expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("unreachable");
+    expect(result.error).toBe("invalid_type");
+
+    const rows = await db.select().from(documents).where(eq(documents.ownerId, owner.id));
+    expect(rows).toHaveLength(0);
   });
 
   it("rejects a file over the 20MB cap", async () => {
@@ -50,6 +55,11 @@ describe("createPendingUpload", () => {
       sizeBytes: 21 * 1024 * 1024,
     });
     expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("unreachable");
+    expect(result.error).toBe("too_large");
+
+    const rows = await db.select().from(documents).where(eq(documents.ownerId, owner.id));
+    expect(rows).toHaveLength(0);
   });
 
   it("creates a pending row with a signed upload URL for a valid request", async () => {
