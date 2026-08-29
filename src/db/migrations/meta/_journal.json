@@ -8,6 +8,13 @@
       "when": 1787728804615,
       "tag": "0001_fast_salo",
       "contents": "CREATE TABLE \"audit_log\" (\n\t\"id\" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,\n\t\"actor_user_id\" uuid,\n\t\"action\" text NOT NULL,\n\t\"target_type\" text,\n\t\"target_id\" uuid,\n\t\"metadata\" jsonb,\n\t\"ip\" text,\n\t\"created_at\" timestamp with time zone DEFAULT now() NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE \"otp_codes\" (\n\t\"id\" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,\n\t\"user_id\" uuid NOT NULL,\n\t\"purpose\" text NOT NULL,\n\t\"code_hash\" text NOT NULL,\n\t\"attempt_count\" integer DEFAULT 0 NOT NULL,\n\t\"expires_at\" timestamp with time zone NOT NULL,\n\t\"consumed_at\" timestamp with time zone,\n\t\"created_at\" timestamp with time zone DEFAULT now() NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE \"sessions\" (\n\t\"id\" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,\n\t\"user_id\" uuid NOT NULL,\n\t\"token_hash\" text NOT NULL,\n\t\"user_agent\" text,\n\t\"ip\" text,\n\t\"expires_at\" timestamp with time zone NOT NULL,\n\t\"created_at\" timestamp with time zone DEFAULT now() NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE \"users\" (\n\t\"id\" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,\n\t\"email\" text NOT NULL,\n\t\"password_hash\" text NOT NULL,\n\t\"role\" text DEFAULT 'client' NOT NULL,\n\t\"first_name\" text NOT NULL,\n\t\"last_name\" text NOT NULL,\n\t\"phone\" text,\n\t\"email_verified_at\" timestamp with time zone,\n\t\"disabled_at\" timestamp with time zone,\n\t\"created_at\" timestamp with time zone DEFAULT now() NOT NULL,\n\t\"updated_at\" timestamp with time zone DEFAULT now() NOT NULL,\n\t CONSTRAINT \"users_email_unique\" UNIQUE(\"email\")\n);\n--> statement-breakpoint\nALTER TABLE \"audit_log\" ADD CONSTRAINT \"audit_log_actor_user_id_users_id_fk\" FOREIGN KEY (\"actor_user_id\") REFERENCES \"public\".\"users\"(\"id\") ON DELETE no action ON UPDATE no action;--> statement-breakpoint\nALTER TABLE \"otp_codes\" ADD CONSTRAINT \"otp_codes_user_id_users_id_fk\" FOREIGN KEY (\"user_id\") REFERENCES \"public\".\"users\"(\"id\") ON DELETE no action ON UPDATE no action;--> statement-breakpoint\nALTER TABLE \"sessions\" ADD CONSTRAINT \"sessions_user_id_users_id_fk\" FOREIGN KEY (\"user_id\") REFERENCES \"public\".\"users\"(\"id\") ON DELETE no action ON UPDATE no action;"
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788028869796,
+      "tag": "0001_slippery_ultimatum",
+      "breakpoints": true
     }
   ]
 }

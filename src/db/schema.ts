@@ -72,9 +72,29 @@ export const auditLog = pgTable("audit_log", {
     .default(sql`now()`),
 });
 
+export const documents = pgTable("documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ownerId: uuid("owner_id")
+    .notNull()
+    .references(() => users.id),
+  uploadedBy: uuid("uploaded_by")
+    .notNull()
+    .references(() => users.id),
+  filename: text("filename").notNull(),
+  storageKey: text("storage_key").notNull().unique(),
+  mimeType: text("mime_type").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  uploadedAt: timestamp("uploaded_at", { withTimezone: true }),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
 export type Role = "client" | "admin" | "super_admin";
 export type OtpPurpose = "login" | "signup" | "password_reset";
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
 export type OtpCode = typeof otpCodes.$inferSelect;
 export type AuditLogEntry = typeof auditLog.$inferSelect;
+export type Document = typeof documents.$inferSelect;
