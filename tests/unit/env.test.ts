@@ -5,6 +5,11 @@ const REQUIRED = {
   SMTP_HOST: "localhost",
   SMTP_PORT: "1025",
   SMTP_FROM: "Fiduvia <no-reply@fiduvia.ch>",
+  STORAGE_ENDPOINT: "http://localhost:9000",
+  STORAGE_BUCKET: "fiduvia-documents",
+  STORAGE_ACCESS_KEY_ID: "fiduvia",
+  STORAGE_SECRET_ACCESS_KEY: "fiduvia123",
+  STORAGE_REGION: "us-east-1",
 };
 
 describe("env", () => {
@@ -24,11 +29,18 @@ describe("env", () => {
     const { env } = await import("../../src/lib/env");
     expect(env.DATABASE_URL).toBe(REQUIRED.DATABASE_URL);
     expect(env.SMTP_PORT).toBe(1025);
+    expect(env.STORAGE_BUCKET).toBe(REQUIRED.STORAGE_BUCKET);
   });
 
   it("throws when a required variable is missing", async () => {
     vi.resetModules();
     delete process.env.DATABASE_URL;
+    await expect(import("../../src/lib/env")).rejects.toThrow();
+  });
+
+  it("throws when a storage variable is missing", async () => {
+    vi.resetModules();
+    delete process.env.STORAGE_BUCKET;
     await expect(import("../../src/lib/env")).rejects.toThrow();
   });
 });

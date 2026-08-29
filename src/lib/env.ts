@@ -7,6 +7,11 @@ const schema = z.object({
   SMTP_USER: z.string().optional().default(""),
   SMTP_PASS: z.string().optional().default(""),
   SMTP_FROM: z.string().min(1),
+  STORAGE_ENDPOINT: z.string().url(),
+  STORAGE_BUCKET: z.string().min(1),
+  STORAGE_ACCESS_KEY_ID: z.string().min(1),
+  STORAGE_SECRET_ACCESS_KEY: z.string().min(1),
+  STORAGE_REGION: z.string().min(1),
 });
 
 export const env = schema.parse(process.env);
