@@ -22,6 +22,16 @@ services:
     volumes:
       - minio-data:/data
 
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 fiduvia fiduvia123; do sleep 1; done;
+      mc mb --ignore-existing local/fiduvia-documents;
+      "
+
   mailhog:
     image: mailhog/mailhog:latest
     ports:
