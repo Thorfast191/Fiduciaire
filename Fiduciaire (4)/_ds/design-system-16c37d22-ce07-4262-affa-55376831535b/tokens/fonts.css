@@ -1,0 +1,10 @@
+/* Fluxio — Webfonts
+   Display / Headings : Schibsted Grotesk (confident, editorial grotesque)
+   Text / UI          : Hanken Grotesk  (warm humanist sans, highly legible)
+   Figures / Mono     : Geist Mono      (tabular, for amounts, dates, refs)
+
+   NOTE: loaded from Google Fonts CDN. These are substitutes chosen for the
+   brand direction (no custom typeface was provided). To self-host, drop the
+   .woff2 files in /assets/fonts and replace this @import with @font-face rules. */
+
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Geist+Mono:wght@400;500;600&display=swap');

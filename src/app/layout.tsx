@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Geist_Mono,
+  Hanken_Grotesk,
+  Schibsted_Grotesk,
+} from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const displayFont = Schibsted_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const textFont = Hanken_Grotesk({
+  variable: "--font-text",
+  subsets: ["latin"],
+});
+
+const monoFont = Geist_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -25,8 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-[#F7F8F6] text-[#17231D] antialiased">
+    <html lang="fr">
+      <body
+        className={`${displayFont.variable} ${textFont.variable} ${monoFont.variable}`}
+      >
         {children}
       </body>
     </html>
