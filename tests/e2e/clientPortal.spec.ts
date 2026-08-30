@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { test, expect, type Page, type APIRequestContext } from "@playwright/test";
 import { eq } from "drizzle-orm";
@@ -114,4 +115,59 @@ test("a client cannot see another client's dossier", async ({ page, request, bro
   const res = await otherContext.request.get(`/api/dossiers/${dossier.id}`);
   expect(res.status()).toBe(404);
   await otherContext.close();
+});
+
+test("downloading a document from a dossier returns the exact bytes that were uploaded", async ({
+  page,
+  request,
+  browser,
+}) => {
+  const clientEmail = await loginAsNewClient(page, request, "e2e-portal-download");
+  const clientId = await getUserIdByEmail(clientEmail);
+
+  const adminContext = await browser.newContext();
+  await loginAsAdmin(adminContext);
+  const createRes = await adminContext.request.post("/api/dossiers", {
+    data: { clientId, taxYear: 2025 },
+  });
+  const { dossier } = await createRes.json();
+  await adminContext.close();
+
+  await page.goto(`/portal/dossiers/${dossier.id}`);
+  await page.locator('input[type="file"]').setInputFiles(SAMPLE_PDF);
+  await expect(page.getByText("sample.pdf")).toBeVisible({ timeout: 10_000 });
+
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    page.getByRole("button", { name: "Télécharger" }).click(),
+  ]);
+  const downloadedPath = await download.path();
+  expect(downloadedPath).not.toBeNull();
+  const downloadedBytes = fs.readFileSync(downloadedPath!);
+  const originalBytes = fs.readFileSync(SAMPLE_PDF);
+  expect(downloadedBytes.equals(originalBytes)).toBe(true);
+});
+
+test("deleting a document removes it from the dossier's list", async ({
+  page,
+  request,
+  browser,
+}) => {
+  const clientEmail = await loginAsNewClient(page, request, "e2e-portal-delete");
+  const clientId = await getUserIdByEmail(clientEmail);
+
+  const adminContext = await browser.newContext();
+  await loginAsAdmin(adminContext);
+  const createRes = await adminContext.request.post("/api/dossiers", {
+    data: { clientId, taxYear: 2025 },
+  });
+  const { dossier } = await createRes.json();
+  await adminContext.close();
+
+  await page.goto(`/portal/dossiers/${dossier.id}`);
+  await page.locator('input[type="file"]').setInputFiles(SAMPLE_PDF);
+  await expect(page.getByText("sample.pdf")).toBeVisible({ timeout: 10_000 });
+
+  await page.getByRole("button", { name: "Supprimer" }).click();
+  await expect(page.getByText("sample.pdf")).not.toBeVisible();
 });
