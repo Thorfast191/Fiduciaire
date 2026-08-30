@@ -4,6 +4,7 @@ import { users, documents } from "../../src/db/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword } from "../../src/lib/auth/password";
 import { getUploadUrl } from "../../src/lib/storage/client";
+import { createDossier } from "../../src/lib/dossiers";
 import {
   createPendingUpload,
   confirmUpload,
@@ -30,10 +31,13 @@ async function makeUser(role: "client" | "admin" = "client") {
 describe("createPendingUpload", () => {
   it("rejects a disallowed mime type without creating a row", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const result = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.exe",
+      category: "salaire",
       mimeType: "application/x-msdownload",
       sizeBytes: 100,
     });
@@ -47,10 +51,13 @@ describe("createPendingUpload", () => {
 
   it("rejects a file over the 20MB cap", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const result = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 21 * 1024 * 1024,
     });
@@ -62,12 +69,35 @@ describe("createPendingUpload", () => {
     expect(rows).toHaveLength(0);
   });
 
-  it("creates a pending row with a signed upload URL for a valid request", async () => {
+  it("rejects an invalid category without creating a row", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const result = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
+      filename: "a.pdf",
+      category: "not-a-real-category",
+      mimeType: "application/pdf",
+      sizeBytes: 100,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("unreachable");
+    expect(result.error).toBe("invalid_category");
+
+    const rows = await db.select().from(documents).where(eq(documents.ownerId, owner.id));
+    expect(rows).toHaveLength(0);
+  });
+
+  it("creates a pending row with a signed upload URL for a valid request", async () => {
+    const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
+    const result = await createPendingUpload({
+      ownerId: owner.id,
+      uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "salaire.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 1024,
     });
@@ -78,6 +108,8 @@ describe("createPendingUpload", () => {
     const [row] = await db.select().from(documents).where(eq(documents.id, result.documentId));
     expect(row.uploadedAt).toBeNull();
     expect(row.ownerId).toBe(owner.id);
+    expect(row.dossierId).toBe(dossier.id);
+    expect(row.category).toBe("salaire");
   });
 });
 
@@ -85,10 +117,13 @@ describe("confirmUpload", () => {
   it("returns not_found for a document owned by someone else", async () => {
     const owner = await makeUser();
     const other = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const created = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -100,10 +135,13 @@ describe("confirmUpload", () => {
 
   it("returns not_uploaded when the object was never actually stored", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const created = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -115,10 +153,13 @@ describe("confirmUpload", () => {
 
   it("confirms and makes the document visible once the bytes actually exist", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const created = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -141,11 +182,14 @@ describe("confirmUpload", () => {
 describe("listDocumentsForOwner", () => {
   it("excludes unconfirmed and deleted documents", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
 
     const pending = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "pending.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -154,7 +198,9 @@ describe("listDocumentsForOwner", () => {
     const confirmed = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "confirmed.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -169,7 +215,9 @@ describe("listDocumentsForOwner", () => {
     const deleted = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "deleted.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -195,11 +243,14 @@ describe("getAccessibleDocument", () => {
     const owner = await makeUser();
     const other = await makeUser();
     const admin = await makeUser("admin");
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
 
     const created = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });

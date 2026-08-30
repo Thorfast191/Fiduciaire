@@ -6,6 +6,14 @@ import { getUploadUrl, objectExists } from "@/lib/storage/client";
 
 export const ALLOWED_MIME_TYPES = ["application/pdf", "image/jpeg", "image/png"] as const;
 export const MAX_SIZE_BYTES = 20 * 1024 * 1024;
+export const DOCUMENT_CATEGORIES = [
+  "salaire",
+  "releves_bancaires",
+  "assurance",
+  "pilier3",
+  "justificatifs",
+  "autre",
+] as const;
 
 function sanitizeFilename(filename: string): string {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -17,12 +25,14 @@ export function buildStorageKey(ownerId: string, documentId: string, filename: s
 
 export type CreateUploadResult =
   | { ok: true; documentId: string; uploadUrl: string }
-  | { ok: false; error: "invalid_type" | "too_large" };
+  | { ok: false; error: "invalid_type" | "too_large" | "invalid_category" };
 
 export async function createPendingUpload(params: {
   ownerId: string;
   uploadedBy: string;
+  dossierId: string;
   filename: string;
+  category: string;
   mimeType: string;
   sizeBytes: number;
 }): Promise<CreateUploadResult> {
@@ -32,6 +42,9 @@ export async function createPendingUpload(params: {
   if (params.sizeBytes <= 0 || params.sizeBytes > MAX_SIZE_BYTES) {
     return { ok: false, error: "too_large" };
   }
+  if (!(DOCUMENT_CATEGORIES as readonly string[]).includes(params.category)) {
+    return { ok: false, error: "invalid_category" };
+  }
 
   const documentId = crypto.randomUUID();
   const storageKey = buildStorageKey(params.ownerId, documentId, params.filename);
@@ -40,7 +53,9 @@ export async function createPendingUpload(params: {
     id: documentId,
     ownerId: params.ownerId,
     uploadedBy: params.uploadedBy,
+    dossierId: params.dossierId,
     filename: params.filename,
+    category: params.category as (typeof DOCUMENT_CATEGORIES)[number],
     storageKey,
     mimeType: params.mimeType,
     sizeBytes: params.sizeBytes,
