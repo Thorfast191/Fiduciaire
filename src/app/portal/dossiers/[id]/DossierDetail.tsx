@@ -5,32 +5,59 @@ import { useEffect, useState } from "react";
 interface DocumentItem {
   id: string;
   filename: string;
+  category: string;
   mimeType: string;
   sizeBytes: number;
   uploadedAt: string | null;
 }
 
+interface DossierData {
+  id: string;
+  taxYear: number;
+  status: "not_started" | "submitted" | "in_review" | "completed";
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  salaire: "Certificat de salaire",
+  releves_bancaires: "Relevés bancaires",
+  assurance: "Attestations d'assurance",
+  pilier3: "3e pilier",
+  justificatifs: "Justificatifs divers",
+  autre: "Autre",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  not_started: "Non commencé",
+  submitted: "Soumis",
+  in_review: "En cours de traitement",
+  completed: "Terminé",
+};
+
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 const MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
-export default function DocumentsPanel() {
+export default function DossierDetail({ dossierId }: { dossierId: string }) {
+  const [dossier, setDossier] = useState<DossierData | null>(null);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [category, setCategory] = useState<string>("salaire");
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  async function loadDocuments() {
-    const res = await fetch("/api/documents");
+  async function loadDossier() {
+    const res = await fetch(`/api/dossiers/${dossierId}`);
     if (!res.ok) return;
     const body = await res.json();
+    setDossier(body.dossier);
     setDocuments(body.documents ?? []);
   }
 
   useEffect(() => {
-    // Initial data fetch on mount, per Task 11 brief. eslint-plugin-react-hooks@7's
-    // set-state-in-effect rule flags this idiomatic pattern; suppressed rather than
-    // restructured so behavior matches the brief exactly.
+    // Initial data fetch on mount. eslint-plugin-react-hooks@7's
+    // set-state-in-effect rule flags this idiomatic pattern; suppressed
+    // rather than restructured, matching the precedent already established
+    // in Document Storage's DocumentsPanel component.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadDocuments();
+    loadDossier();
   }, []);
 
   async function handleUpload(file: File) {
@@ -50,7 +77,9 @@ export default function DocumentsPanel() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          dossierId,
           filename: file.name,
+          category,
           mimeType: file.type,
           sizeBytes: file.size,
         }),
@@ -77,7 +106,7 @@ export default function DocumentsPanel() {
         return;
       }
 
-      await loadDocuments();
+      await loadDossier();
     } finally {
       setUploading(false);
     }
@@ -91,15 +120,8 @@ export default function DocumentsPanel() {
       return;
     }
     const { downloadUrl } = await res.json();
-    // Navigating the current tab (rather than window.open, which needs a
-    // fresh user gesture that two awaits above have already consumed and
-    // gets blocked by popup blockers in Safari/Firefox) starts the download
-    // without leaving the page, since the response carries
-    // Content-Disposition: attachment. eslint-plugin-react-hooks@7's
-    // immutability rule flags assigning window.location.href as mutating
-    // state defined outside the component; suppressed because this is a
-    // plain browser-navigation side effect inside a click handler, not a
-    // React state mutation during render.
+    // Same-tab navigation (not window.open) so it works regardless of
+    // popup-blocker state, matching Document Storage's DocumentsPanel.
     // eslint-disable-next-line react-hooks/immutability
     window.location.href = downloadUrl;
   }
@@ -111,12 +133,46 @@ export default function DocumentsPanel() {
       setError("Échec de la suppression.");
       return;
     }
-    await loadDocuments();
+    await loadDossier();
+  }
+
+  async function handleSubmit() {
+    setError(null);
+    const res = await fetch(`/api/dossiers/${dossierId}/status`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: "submitted" }),
+    });
+    if (!res.ok) {
+      setError("Échec de la soumission du dossier.");
+      return;
+    }
+    await loadDossier();
+  }
+
+  if (!dossier) {
+    return <p>Chargement…</p>;
   }
 
   return (
-    <section style={{ marginTop: 40 }}>
-      <h2>Mes documents</h2>
+    <section>
+      <h1>Dossier fiscal {dossier.taxYear}</h1>
+      <p>Statut : {STATUS_LABELS[dossier.status]}</p>
+
+      {dossier.status === "not_started" && (
+        <button type="button" onClick={handleSubmit}>
+          Marquer comme soumis
+        </button>
+      )}
+
+      <h2>Ajouter un document</h2>
+      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+          <option key={key} value={key}>
+            {label}
+          </option>
+        ))}
+      </select>
       <input
         type="file"
         accept="application/pdf,image/jpeg,image/png"
@@ -133,10 +189,13 @@ export default function DocumentsPanel() {
           {error}
         </p>
       )}
+
+      <h2>Documents</h2>
+      {documents.length === 0 && <p>Aucun document pour le moment.</p>}
       <ul>
         {documents.map((doc) => (
           <li key={doc.id}>
-            {doc.filename}{" "}
+            [{CATEGORY_LABELS[doc.category] ?? doc.category}] {doc.filename}{" "}
             <button type="button" onClick={() => handleDownload(doc.id)}>
               Télécharger
             </button>{" "}

@@ -8,6 +8,9 @@ export default async function AdminHomePage() {
       <p>
         Connecté en tant que {user?.firstName} {user?.lastName} ({user?.role}).
       </p>
+      <p>
+        <a href="/admin/dossiers">Gérer les dossiers fiscaux</a>
+      </p>
       <form action="/api/auth/logout" method="post">
         <button type="submit">Se déconnecter</button>
       </form>
