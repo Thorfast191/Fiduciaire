@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/auth/guards";
+import DocumentsPanel from "./DocumentsPanel";
 
 export default async function PortalHomePage() {
   const user = await getCurrentUser();
@@ -9,6 +10,7 @@ export default async function PortalHomePage() {
       <form action="/api/auth/logout" method="post">
         <button type="submit">Se déconnecter</button>
       </form>
+      <DocumentsPanel />
     </main>
   );
 }
