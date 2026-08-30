@@ -5,6 +5,7 @@ import { users } from "../../../src/db/schema";
 import { hashPassword } from "../../../src/lib/auth/password";
 import { createSession, SESSION_COOKIE_NAME } from "../../../src/lib/auth/session";
 import { createPendingUpload, confirmUpload } from "../../../src/lib/documents";
+import { createDossier } from "../../../src/lib/dossiers";
 import { GET as downloadUrl } from "../../../src/app/api/documents/[id]/download-url/route";
 
 async function makeUser(role: "client" | "admin" = "client") {
@@ -23,10 +24,13 @@ async function makeUser(role: "client" | "admin" = "client") {
 }
 
 async function uploadConfirmedDoc(ownerId: string) {
+  const dossier = await createDossier({ clientId: ownerId, taxYear: 2025 });
   const created = await createPendingUpload({
     ownerId,
     uploadedBy: ownerId,
+    dossierId: dossier.id,
     filename: "a.pdf",
+    category: "salaire",
     mimeType: "application/pdf",
     sizeBytes: 100,
   });

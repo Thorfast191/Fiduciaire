@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { hashPassword } from "../../../src/lib/auth/password";
 import { createSession, SESSION_COOKIE_NAME } from "../../../src/lib/auth/session";
 import { createPendingUpload } from "../../../src/lib/documents";
+import { createDossier } from "../../../src/lib/dossiers";
 import { POST as confirm } from "../../../src/app/api/documents/[id]/confirm/route";
 
 async function makeUser() {
@@ -40,10 +41,13 @@ describe("POST /api/documents/:id/confirm", () => {
   it("returns 404 for a document owned by someone else", async () => {
     const owner = await makeUser();
     const other = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const created = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -58,10 +62,13 @@ describe("POST /api/documents/:id/confirm", () => {
 
   it("returns 400 when the object was never actually stored", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const created = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
@@ -76,10 +83,13 @@ describe("POST /api/documents/:id/confirm", () => {
 
   it("confirms a real upload and writes an audit log entry", async () => {
     const owner = await makeUser();
+    const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
     const created = await createPendingUpload({
       ownerId: owner.id,
       uploadedBy: owner.id,
+      dossierId: dossier.id,
       filename: "a.pdf",
+      category: "salaire",
       mimeType: "application/pdf",
       sizeBytes: 100,
     });
