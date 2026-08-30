@@ -17,12 +17,28 @@ function isProtectedPath(pathname: string): boolean {
 // it automatically to its own framework/page scripts, so no per-page
 // changes are needed beyond the header itself.
 // See node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md
+// The client uploads/downloads files directly to/from object storage using
+// presigned URLs (see DocumentsPanel's `fetch(uploadUrl, ...)`), so the
+// storage endpoint's origin must be allowed under connect-src — otherwise
+// `default-src 'self'` blocks that fetch and uploads fail silently in the
+// browser (network calls to other origins are unaffected by CSP, which is
+// why this only surfaces once something actually calls fetch()/XHR to it).
+function storageOrigin(): string | null {
+  try {
+    return new URL(process.env.STORAGE_ENDPOINT ?? "").origin;
+  } catch {
+    return null;
+  }
+}
+
 function buildCspHeader(nonce: string, isDev: boolean): string {
+  const connectSrc = ["'self'", storageOrigin()].filter(Boolean).join(" ");
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
+    `connect-src ${connectSrc}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
