@@ -18,7 +18,7 @@ function isProtectedPath(pathname: string): boolean {
 // changes are needed beyond the header itself.
 // See node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md
 // The client uploads/downloads files directly to/from object storage using
-// presigned URLs (see DocumentsPanel's `fetch(uploadUrl, ...)`), so the
+// presigned URLs (see DossierDetail's `fetch(uploadUrl, ...)`), so the
 // storage endpoint's origin must be allowed under connect-src — otherwise
 // `default-src 'self'` blocks that fetch and uploads fail silently in the
 // browser (network calls to other origins are unaffected by CSP, which is

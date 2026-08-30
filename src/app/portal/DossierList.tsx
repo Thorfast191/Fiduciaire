@@ -26,9 +26,6 @@ export default function DossierList() {
       const body = await res.json();
       setDossiers(body.dossiers ?? []);
     }
-    // Initial data fetch on mount; suppressed for the same reason as
-    // DossierDetail's identical pattern below (see that file's comment).
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDossiers();
   }, []);
 

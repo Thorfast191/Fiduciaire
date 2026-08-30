@@ -52,12 +52,17 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
   }
 
   useEffect(() => {
-    // Initial data fetch on mount. eslint-plugin-react-hooks@7's
-    // set-state-in-effect rule flags this idiomatic pattern; suppressed
-    // rather than restructured, matching the precedent already established
-    // in Document Storage's DocumentsPanel component.
+    // Initial data fetch on mount, once. `loadDossier` is defined at
+    // component scope (reused by handleUpload/handleDelete/handleSubmit
+    // below), so it can't be nested inside this effect the way a
+    // single-use fetch helper could be. That's what triggers
+    // set-state-in-effect below (it transitively calls
+    // setDossier/setDocuments) and exhaustive-deps on the dependency
+    // array (it's used here but intentionally omitted — including it
+    // would need wrapping it in useCallback for no real benefit here).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadDossier();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleUpload(file: File) {
@@ -121,7 +126,8 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
     }
     const { downloadUrl } = await res.json();
     // Same-tab navigation (not window.open) so it works regardless of
-    // popup-blocker state, matching Document Storage's DocumentsPanel.
+    // popup-blocker state — window.open needs a fresh user gesture that
+    // the two awaits above have already consumed.
     // eslint-disable-next-line react-hooks/immutability
     window.location.href = downloadUrl;
   }
