@@ -72,6 +72,25 @@ export const auditLog = pgTable("audit_log", {
     .default(sql`now()`),
 });
 
+export const dossiers = pgTable("dossiers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id")
+    .notNull()
+    .references(() => users.id),
+  taxYear: integer("tax_year").notNull(),
+  status: text("status", {
+    enum: ["not_started", "submitted", "in_review", "completed"],
+  })
+    .notNull()
+    .default("not_started"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const documents = pgTable("documents", {
   id: uuid("id").primaryKey().defaultRandom(),
   ownerId: uuid("owner_id")
@@ -80,7 +99,13 @@ export const documents = pgTable("documents", {
   uploadedBy: uuid("uploaded_by")
     .notNull()
     .references(() => users.id),
+  dossierId: uuid("dossier_id")
+    .notNull()
+    .references(() => dossiers.id),
   filename: text("filename").notNull(),
+  category: text("category", {
+    enum: ["salaire", "releves_bancaires", "assurance", "pilier3", "justificatifs", "autre"],
+  }).notNull(),
   storageKey: text("storage_key").notNull().unique(),
   mimeType: text("mime_type").notNull(),
   sizeBytes: integer("size_bytes").notNull(),
@@ -98,3 +123,12 @@ export type Session = typeof sessions.$inferSelect;
 export type OtpCode = typeof otpCodes.$inferSelect;
 export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type Document = typeof documents.$inferSelect;
+export type DossierStatus = "not_started" | "submitted" | "in_review" | "completed";
+export type DocumentCategory =
+  | "salaire"
+  | "releves_bancaires"
+  | "assurance"
+  | "pilier3"
+  | "justificatifs"
+  | "autre";
+export type Dossier = typeof dossiers.$inferSelect;

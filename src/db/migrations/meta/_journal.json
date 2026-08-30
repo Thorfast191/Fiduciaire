@@ -15,6 +15,13 @@
       "when": 1788028869796,
       "tag": "0001_slippery_ultimatum",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788078185006,
+      "tag": "0002_plain_mariko_yashida",
+      "breakpoints": true
     }
   ]
 }
