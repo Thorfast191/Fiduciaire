@@ -104,6 +104,20 @@ export async function listDocumentsForOwner(ownerId: string): Promise<Document[]
     .orderBy(desc(documents.createdAt));
 }
 
+export async function listDocumentsForDossier(dossierId: string): Promise<Document[]> {
+  return db
+    .select()
+    .from(documents)
+    .where(
+      and(
+        eq(documents.dossierId, dossierId),
+        isNotNull(documents.uploadedAt),
+        isNull(documents.deletedAt),
+      ),
+    )
+    .orderBy(desc(documents.createdAt));
+}
+
 export type AccessCheckResult =
   | { ok: true; document: Document }
   | { ok: false; error: "not_found" };
