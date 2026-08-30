@@ -17,17 +17,18 @@ export const metadata: Metadata = {
   description: "Fiduvia — fiduciaire et comptabilité 100% en ligne en Suisse.",
 };
 
-// Nonce-based CSP (see src/proxy.ts) requires every page to be dynamically
-// rendered: the nonce is generated fresh per request, so a statically
-// prerendered page's inline scripts would carry a stale/missing nonce that
-// never matches the CSP header of a later request, breaking hydration.
-// Forcing it here in the root layout covers every route in the app.
 export const dynamic = "force-dynamic";
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="fr" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+      <body className="min-h-screen bg-[#F7F8F6] text-[#17231D] antialiased">
+        {children}
+      </body>
     </html>
   );
 }
