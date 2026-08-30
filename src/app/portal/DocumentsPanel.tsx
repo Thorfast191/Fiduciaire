@@ -22,7 +22,7 @@ export default function DocumentsPanel() {
     const res = await fetch("/api/documents");
     if (!res.ok) return;
     const body = await res.json();
-    setDocuments(body.documents);
+    setDocuments(body.documents ?? []);
   }
 
   useEffect(() => {
@@ -84,15 +84,33 @@ export default function DocumentsPanel() {
   }
 
   async function handleDownload(id: string) {
+    setError(null);
     const res = await fetch(`/api/documents/${id}/download-url`);
-    if (!res.ok) return;
+    if (!res.ok) {
+      setError("Impossible de récupérer le lien de téléchargement.");
+      return;
+    }
     const { downloadUrl } = await res.json();
-    window.open(downloadUrl, "_blank");
+    // Navigating the current tab (rather than window.open, which needs a
+    // fresh user gesture that two awaits above have already consumed and
+    // gets blocked by popup blockers in Safari/Firefox) starts the download
+    // without leaving the page, since the response carries
+    // Content-Disposition: attachment. eslint-plugin-react-hooks@7's
+    // immutability rule flags assigning window.location.href as mutating
+    // state defined outside the component; suppressed because this is a
+    // plain browser-navigation side effect inside a click handler, not a
+    // React state mutation during render.
+    // eslint-disable-next-line react-hooks/immutability
+    window.location.href = downloadUrl;
   }
 
   async function handleDelete(id: string) {
+    setError(null);
     const res = await fetch(`/api/documents/${id}`, { method: "DELETE" });
-    if (!res.ok) return;
+    if (!res.ok) {
+      setError("Échec de la suppression.");
+      return;
+    }
     await loadDocuments();
   }
 

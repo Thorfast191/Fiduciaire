@@ -32,10 +32,17 @@ export async function getUploadUrl(key: string, mimeType: string): Promise<strin
 }
 
 export async function getDownloadUrl(key: string, filename: string): Promise<string> {
+  // RFC 6266: filename="..." is an ASCII-only fallback for older clients;
+  // filename*=UTF-8''... is what modern browsers actually use, so accented
+  // characters (common in French filenames — "Déclaration", "Relevé")
+  // download correctly instead of as mojibake, and embedded quotes can't
+  // spoof a second filename parameter.
+  const asciiFallback = filename.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_");
+  const encoded = encodeURIComponent(filename);
   const command = new GetObjectCommand({
     Bucket: env.STORAGE_BUCKET,
     Key: key,
-    ResponseContentDisposition: `attachment; filename="${filename}"`,
+    ResponseContentDisposition: `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encoded}`,
   });
   return getSignedUrl(client, command, { expiresIn: SIGNED_URL_TTL_SECONDS });
 }

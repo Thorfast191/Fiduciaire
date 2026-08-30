@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { listDocumentsForOwner } from "@/lib/documents";
 
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     ownerId = user.id;
   } else {
     const clientId = request.nextUrl.searchParams.get("clientId");
-    if (!clientId) {
+    if (!clientId || !z.string().uuid().safeParse(clientId).success) {
       return NextResponse.json({ ok: false, error: "clientId requis" }, { status: 400 });
     }
     ownerId = clientId;

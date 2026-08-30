@@ -89,4 +89,13 @@ describe("DELETE /api/documents/:id", () => {
     const res = await deleteDoc(request, withParams(docId));
     expect(res.status).toBe(200);
   });
+
+  it("returns 404 for a malformed document id instead of a database error", async () => {
+    const owner = await makeUser();
+    const { token } = await createSession(owner.id, {});
+    const request = req();
+    request.cookies.set(SESSION_COOKIE_NAME, token);
+    const res = await deleteDoc(request, withParams("not-a-uuid"));
+    expect(res.status).toBe(404);
+  });
 });

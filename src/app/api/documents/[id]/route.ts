@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { getAccessibleDocument, softDeleteDocument } from "@/lib/documents";
 import { writeAuditLog } from "@/lib/audit";
@@ -17,6 +18,9 @@ export async function DELETE(
   }
 
   const { id } = await params;
+  if (!z.string().uuid().safeParse(id).success) {
+    return NextResponse.json({ ok: false, error: GENERIC_NOT_FOUND }, { status: 404 });
+  }
   const result = await getAccessibleDocument(id, { id: user.id, role: user.role });
   if (!result.ok) {
     return NextResponse.json({ ok: false, error: GENERIC_NOT_FOUND }, { status: 404 });

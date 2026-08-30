@@ -85,4 +85,13 @@ describe("GET /api/documents", () => {
     const body = await res.json();
     expect(body.documents.map((d: { filename: string }) => d.filename)).toEqual(["for-admin.pdf"]);
   });
+
+  it("returns 400 for a malformed clientId instead of a database error", async () => {
+    const admin = await makeUser("admin");
+    const { token } = await createSession(admin.id, {});
+    const request = req("http://localhost/api/documents?clientId=not-a-uuid");
+    request.cookies.set(SESSION_COOKIE_NAME, token);
+    const res = await list(request);
+    expect(res.status).toBe(400);
+  });
 });

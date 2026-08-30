@@ -103,4 +103,13 @@ describe("POST /api/documents/:id/confirm", () => {
       .orderBy(auditLog.createdAt);
     expect(entry).toBeDefined();
   });
+
+  it("returns 404 for a malformed document id instead of a database error", async () => {
+    const owner = await makeUser();
+    const { token } = await createSession(owner.id, {});
+    const request = req();
+    request.cookies.set(SESSION_COOKIE_NAME, token);
+    const res = await confirm(request, withParams("not-a-uuid"));
+    expect(res.status).toBe(404);
+  });
 });

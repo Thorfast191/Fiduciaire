@@ -30,9 +30,15 @@ jobs:
       SMTP_HOST: localhost
       SMTP_PORT: 1025
       SMTP_FROM: "Fiduvia <no-reply@fiduvia.ch>"
+      STORAGE_ENDPOINT: http://localhost:9000
+      STORAGE_BUCKET: fiduvia-documents
+      STORAGE_ACCESS_KEY_ID: fiduvia
+      STORAGE_SECRET_ACCESS_KEY: fiduvia123
+      STORAGE_REGION: us-east-1
 
     steps:
       - uses: actions/checkout@v4
+      - run: docker compose up -d minio minio-init
       - uses: actions/setup-node@v4
         with:
           node-version: 22

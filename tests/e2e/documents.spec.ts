@@ -41,20 +41,15 @@ test("downloading a document returns the exact bytes that were uploaded", async 
   await page.locator('input[type="file"]').setInputFiles(SAMPLE_PDF);
   await expect(page.getByText("sample.pdf")).toBeVisible({ timeout: 10_000 });
 
-  // The app opens the presigned download URL in a new tab via window.open,
-  // and MinIO's response carries Content-Disposition: attachment from the
-  // first byte. Chromium recognizes that navigation as a download before
-  // the popup ever commits any content, so the transient popup tab closes
-  // itself immediately and Playwright surfaces the "download" event on the
-  // opener `page`, not on the popup object (verified by direct observation
-  // in this environment). We still assert the popup fires, to confirm the
-  // app really does open a new tab, but await the download on `page`.
-  const [popup, download] = await Promise.all([
-    page.waitForEvent("popup"),
+  // The app navigates the current tab via window.location.href to the
+  // presigned download URL (no popup — see DocumentsPanel's handleDownload).
+  // MinIO's response carries Content-Disposition: attachment from the first
+  // byte, so Chromium converts that navigation directly into a download
+  // rather than rendering a page.
+  const [download] = await Promise.all([
     page.waitForEvent("download"),
     page.getByRole("button", { name: "Télécharger" }).click(),
   ]);
-  expect(popup).toBeTruthy();
   const downloadedPath = await download.path();
   expect(downloadedPath).not.toBeNull();
   const downloadedBytes = fs.readFileSync(downloadedPath!);
