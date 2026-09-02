@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Field, FormAlert } from "@/components/ui/Field";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,31 +51,31 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F5F7F5] px-4 py-12 sm:px-6 lg:py-16">
+    <main className="min-h-screen bg-surface px-4 py-12 sm:px-6 lg:py-16">
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-[480px] flex-col justify-center">
         {/* Brand */}
         <div className="mb-8 text-center">
           <Link
             href="/"
-            className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-[#17231D]"
+            className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
           >
             fiduvia
           </Link>
 
-          <p className="mt-1.5 text-[13px] text-[#7A847E]">
+          <p className="mt-1.5 text-[13px] text-muted">
             Fiduciaire & comptabilité en ligne
           </p>
         </div>
 
         {/* Login card */}
-        <section className="rounded-[20px] border border-[#E1E6E2] bg-white px-6 py-8 shadow-[0_20px_60px_rgba(23,35,29,0.07)] sm:px-10 sm:py-10">
+        <section className="rounded-[20px] border border-line bg-card px-6 py-8 shadow-md sm:px-10 sm:py-10">
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-center text-[26px] font-semibold leading-[1.2] tracking-[-0.035em] text-[#17231D] sm:text-[29px]">
+            <h1 className="text-center text-[26px] font-semibold leading-[1.2] tracking-[-0.035em] text-strong sm:text-[29px]">
               Bienvenue sur votre espace client
             </h1>
 
-            <p className="mx-auto mt-3 max-w-[360px] text-center text-[14px] leading-6 text-[#68736D]">
+            <p className="mx-auto mt-3 max-w-[360px] text-center text-[14px] leading-6 text-muted">
               Connectez-vous pour accéder à vos documents, paiements et
               démarches.
             </p>
@@ -82,73 +83,40 @@ export default function LoginPage() {
 
           {/* Error */}
           {error && (
-            <div
-              role="alert"
-              className="mb-6 rounded-xl border border-[#F1C7C7] bg-[#FFF7F7] px-4 py-3.5 text-sm leading-5 text-[#A33A3A]"
-            >
-              {error}
+            <div className="mb-6">
+              <FormAlert variant="error">{error}</FormAlert>
             </div>
           )}
 
           {/* Form */}
           <form onSubmit={onSubmit} className="space-y-5">
-            {/* Email */}
+            <Field
+              id="email"
+              label="Adresse e-mail"
+              type="email"
+              placeholder="vous@exemple.ch"
+              autoComplete="email"
+              required
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+
             <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-[13px] font-medium text-[#29342E]"
-              >
-                Adresse e-mail
-              </label>
-
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="vous@exemple.ch"
-                autoComplete="email"
-                required
-                value={form.email}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    email: e.target.value,
-                  })
-                }
-                className="h-[50px] w-full rounded-xl border border-[#D9DFDA] bg-white px-4 text-[15px] text-[#17231D] outline-none transition-all placeholder:text-[#A5ADA8] hover:border-[#C6CEC8] focus:border-[#65796C] focus:ring-4 focus:ring-[#65796C]/10"
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-2 block text-[13px] font-medium text-[#29342E]"
-              >
-                Mot de passe
-              </label>
-
-              <input
+              <Field
                 id="password"
-                name="password"
+                label="Mot de passe"
                 type="password"
                 placeholder="Votre mot de passe"
                 autoComplete="current-password"
                 required
                 value={form.password}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    password: e.target.value,
-                  })
-                }
-                className="h-[50px] w-full rounded-xl border border-[#D9DFDA] bg-white px-4 text-[15px] text-[#17231D] outline-none transition-all placeholder:text-[#A5ADA8] hover:border-[#C6CEC8] focus:border-[#65796C] focus:ring-4 focus:ring-[#65796C]/10"
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
 
               <div className="mt-2.5 text-right">
                 <Link
                   href="/forgot-password"
-                  className="text-[13px] font-medium text-[#536B5C] transition-colors hover:text-[#17231D] hover:underline"
+                  className="text-[13px] font-medium text-brand transition-colors hover:text-strong hover:underline"
                 >
                   Mot de passe oublié ?
                 </Link>
@@ -159,7 +127,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex h-[50px] w-full items-center justify-center rounded-xl bg-[#17231D] px-4 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-[#26372D] hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#17231D]/15 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 flex h-[50px] w-full items-center justify-center rounded-xl bg-brand px-4 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-brand-hover hover:shadow-md focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
                 <span className="flex items-center gap-2.5">
@@ -174,22 +142,22 @@ export default function LoginPage() {
 
           {/* Create account */}
           <div className="mt-6 text-center">
-            <p className="text-[12px] text-[#7A847E]">
+            <p className="text-[12px] text-muted">
               Vous n&apos;avez pas encore de compte ?
             </p>
 
             <Link
               href="/signup"
-              className="mt-1 inline-block text-[13px] font-medium text-[#536B5C] hover:text-[#17231D] hover:underline"
+              className="mt-1 inline-block text-[13px] font-medium text-brand hover:text-strong hover:underline"
             >
               Créer mon compte
             </Link>
           </div>
 
           {/* Security */}
-          <div className="mt-8 border-t border-[#ECEFEC] pt-6">
+          <div className="mt-8 border-t border-line pt-6">
             <div className="flex gap-3.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#F0F4F1]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50">
                 <svg
                   width="17"
                   height="17"
@@ -197,7 +165,7 @@ export default function LoginPage() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.7"
-                  className="text-[#536B5C]"
+                  className="text-brand"
                   aria-hidden="true"
                 >
                   <rect x="4" y="10" width="16" height="11" rx="2" />
@@ -206,11 +174,11 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <p className="text-[13px] font-medium text-[#29342E]">
+                <p className="text-[13px] font-medium text-strong">
                   Connexion sécurisée
                 </p>
 
-                <p className="mt-1 text-[12px] leading-5 text-[#7A847E]">
+                <p className="mt-1 text-[12px] leading-5 text-muted">
                   Une vérification supplémentaire sera demandée après votre
                   connexion.
                 </p>
@@ -221,7 +189,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <footer className="mt-7 text-center">
-          <p className="text-[11px] leading-5 text-[#8A938D]">
+          <p className="text-[11px] leading-5 text-subtle">
             © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
             en ligne.
           </p>

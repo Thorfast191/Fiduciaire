@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Field } from "@/components/ui/Field";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -30,26 +31,26 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <main className="min-h-screen bg-[#F5F7F5] px-4 py-12 sm:px-6">
+      <main className="min-h-screen bg-surface px-4 py-12 sm:px-6">
         <div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-[480px] flex-col justify-center">
           {/* Brand */}
           <div className="mb-8 text-center">
             <Link
               href="/"
-              className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-[#17231D]"
+              className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
             >
               fiduvia
             </Link>
 
-            <p className="mt-1.5 text-[13px] text-[#7A847E]">
+            <p className="mt-1.5 text-[13px] text-muted">
               Fiduciaire & comptabilité en ligne
             </p>
           </div>
 
           {/* Success Card */}
-          <section className="rounded-[20px] border border-[#E1E6E2] bg-white px-6 py-10 text-center shadow-[0_20px_60px_rgba(23,35,29,0.07)] sm:px-10">
+          <section className="rounded-[20px] border border-line bg-card px-6 py-10 text-center shadow-md sm:px-10">
             {/* Success icon */}
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EAF1EB] text-[#536B5C]">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-teal-50 text-brand">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -66,11 +67,11 @@ export default function ForgotPasswordPage() {
               </svg>
             </div>
 
-            <h1 className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.035em] text-[#17231D]">
+            <h1 className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.035em] text-strong">
               Vérifiez votre e-mail
             </h1>
 
-            <p className="mx-auto mt-3 max-w-[360px] text-[14px] leading-6 text-[#68736D]">
+            <p className="mx-auto mt-3 max-w-[360px] text-[14px] leading-6 text-muted">
               Si un compte existe avec cette adresse, un code de
               réinitialisation a été envoyé.
             </p>
@@ -78,7 +79,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-8">
               <Link
                 href="/login"
-                className="inline-flex h-[48px] items-center justify-center rounded-xl bg-[#17231D] px-7 text-[14px] font-medium text-white transition hover:bg-[#293B31] focus:outline-none focus:ring-4 focus:ring-[#17231D]/15"
+                className="inline-flex h-[48px] items-center justify-center rounded-xl bg-brand px-7 text-[14px] font-medium text-white transition hover:bg-brand-hover focus:outline-none focus:ring-4 focus:ring-brand/15"
               >
                 Retour à la connexion
               </Link>
@@ -86,7 +87,7 @@ export default function ForgotPasswordPage() {
           </section>
 
           {/* Footer */}
-          <p className="mt-7 text-center text-[11px] leading-5 text-[#8A938D]">
+          <p className="mt-7 text-center text-[11px] leading-5 text-subtle">
             © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
             en ligne.
           </p>
@@ -96,28 +97,28 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F5F7F5] px-4 py-12 sm:px-6">
+    <main className="min-h-screen bg-surface px-4 py-12 sm:px-6">
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-[480px] flex-col justify-center">
         {/* Brand */}
         <div className="mb-8 text-center">
           <Link
             href="/"
-            className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-[#17231D]"
+            className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
           >
             fiduvia
           </Link>
 
-          <p className="mt-1.5 text-[13px] text-[#7A847E]">
+          <p className="mt-1.5 text-[13px] text-muted">
             Fiduciaire & comptabilité en ligne
           </p>
         </div>
 
         {/* Card */}
-        <section className="rounded-[20px] border border-[#E1E6E2] bg-white px-6 py-8 shadow-[0_20px_60px_rgba(23,35,29,0.07)] sm:px-10 sm:py-10">
+        <section className="rounded-[20px] border border-line bg-card px-6 py-8 shadow-md sm:px-10 sm:py-10">
           {/* Back */}
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 text-[13px] font-medium text-[#68736D] transition hover:text-[#17231D]"
+            className="inline-flex items-center gap-2 text-[13px] font-medium text-muted transition hover:text-strong"
           >
             <svg
               viewBox="0 0 20 20"
@@ -138,7 +139,7 @@ export default function ForgotPasswordPage() {
 
           {/* Header */}
           <div className="mt-7">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EEF3EF] text-[#536B5C]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-brand">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -152,11 +153,11 @@ export default function ForgotPasswordPage() {
               </svg>
             </div>
 
-            <h1 className="mt-5 text-[28px] font-semibold leading-[1.15] tracking-[-0.04em] text-[#17231D]">
+            <h1 className="mt-5 text-[28px] font-semibold leading-[1.15] tracking-[-0.04em] text-strong">
               Mot de passe oublié ?
             </h1>
 
-            <p className="mt-3 text-[14px] leading-6 text-[#68736D]">
+            <p className="mt-3 text-[14px] leading-6 text-muted">
               Entrez l&apos;adresse e-mail associée à votre compte. Si elle
               correspond à un compte Fiduvia, nous vous enverrons un code
               permettant de réinitialiser votre mot de passe.
@@ -165,29 +166,21 @@ export default function ForgotPasswordPage() {
 
           {/* Form */}
           <form onSubmit={onSubmit} className="mt-8">
-            <label
-              htmlFor="email"
-              className="mb-2 block text-[13px] font-medium text-[#29342E]"
-            >
-              Adresse e-mail
-            </label>
-
-            <input
+            <Field
               id="email"
-              name="email"
+              label="Adresse e-mail"
               type="email"
               placeholder="vous@exemple.ch"
               autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-[50px] w-full rounded-xl border border-[#D9DFDA] bg-white px-4 text-[15px] text-[#17231D] outline-none transition-all placeholder:text-[#A5ADA8] hover:border-[#C6CEC8] focus:border-[#65796C] focus:ring-4 focus:ring-[#65796C]/10"
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="mt-5 flex h-[50px] w-full items-center justify-center rounded-xl bg-[#17231D] px-4 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-[#293B31] hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#17231D]/15 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-5 flex h-[50px] w-full items-center justify-center rounded-xl bg-brand px-4 text-[14px] font-medium text-white shadow-sm transition-all hover:bg-brand-hover hover:shadow-md focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
                 <span className="flex items-center gap-2.5">
@@ -201,15 +194,15 @@ export default function ForgotPasswordPage() {
           </form>
 
           {/* Security note */}
-          <div className="mt-8 border-t border-[#ECEFEC] pt-6">
+          <div className="mt-8 border-t border-line pt-6">
             <div className="flex gap-3.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#F0F4F1]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.7"
-                  className="h-[17px] w-[17px] text-[#536B5C]"
+                  className="h-[17px] w-[17px] text-brand"
                   aria-hidden="true"
                 >
                   <path d="M12 3 5 6v5c0 4.5 2.8 8.1 7 10 4.2-1.9 7-5.5 7-10V6l-7-3Z" />
@@ -222,11 +215,11 @@ export default function ForgotPasswordPage() {
               </div>
 
               <div>
-                <p className="text-[13px] font-medium text-[#29342E]">
+                <p className="text-[13px] font-medium text-strong">
                   Vos informations restent protégées
                 </p>
 
-                <p className="mt-1 text-[12px] leading-5 text-[#7A847E]">
+                <p className="mt-1 text-[12px] leading-5 text-muted">
                   Pour votre sécurité, nous ne vous indiquons pas si une adresse
                   e-mail possède un compte Fiduvia.
                 </p>
@@ -236,7 +229,7 @@ export default function ForgotPasswordPage() {
         </section>
 
         {/* Footer */}
-        <p className="mt-7 text-center text-[11px] leading-5 text-[#8A938D]">
+        <p className="mt-7 text-center text-[11px] leading-5 text-subtle">
           © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
           en ligne.
         </p>

@@ -16,6 +16,7 @@ interface FieldProps {
   inputMode?: "text" | "numeric" | "email";
   pattern?: string;
   maxLength?: number;
+  minLength?: number;
   min?: string;
   max?: string;
   autoFocus?: boolean;
