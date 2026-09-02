@@ -182,6 +182,10 @@
 ========================================================= */
 
 @theme inline {
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --font-mark: var(--font-mark);
+
   --color-surface: var(--surface-page);
   --color-card: var(--surface-card);
   --color-sunken: var(--surface-sunken);
