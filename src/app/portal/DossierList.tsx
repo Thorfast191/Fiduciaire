@@ -2,19 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { DossierStatus } from "@/db/schema";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 interface DossierItem {
   id: string;
   taxYear: number;
-  status: "not_started" | "submitted" | "in_review" | "completed";
+  status: DossierStatus;
 }
-
-const STATUS_LABELS: Record<DossierItem["status"], string> = {
-  not_started: "Non commencé",
-  submitted: "Soumis",
-  in_review: "En cours de traitement",
-  completed: "Terminé",
-};
 
 export default function DossierList() {
   const [dossiers, setDossiers] = useState<DossierItem[]>([]);
@@ -30,14 +25,28 @@ export default function DossierList() {
   }, []);
 
   return (
-    <section style={{ marginTop: 40 }}>
-      <h2>Mes dossiers fiscaux</h2>
-      {dossiers.length === 0 && <p>Aucun dossier pour le moment.</p>}
-      <ul>
+    <section>
+      <h2 className="text-[15px] font-semibold text-strong">
+        Mes dossiers fiscaux
+      </h2>
+
+      {dossiers.length === 0 && (
+        <p className="mt-3 text-[13px] text-muted">
+          Aucun dossier pour le moment.
+        </p>
+      )}
+
+      <ul className="mt-4 flex flex-col gap-2">
         {dossiers.map((dossier) => (
           <li key={dossier.id}>
-            <Link href={`/portal/dossiers/${dossier.id}`}>
-              Dossier {dossier.taxYear} — {STATUS_LABELS[dossier.status]}
+            <Link
+              href={`/portal/dossiers/${dossier.id}`}
+              className="flex items-center justify-between gap-3 rounded-xl border border-line bg-card px-4 py-3 transition hover:border-line-strong hover:bg-sunken"
+            >
+              <span className="text-[14px] font-medium text-strong">
+                Dossier {dossier.taxYear}
+              </span>
+              <StatusBadge status={dossier.status} />
             </Link>
           </li>
         ))}

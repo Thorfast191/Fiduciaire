@@ -15,14 +15,14 @@ export default async function PortalLayout({
   const lastName = user?.lastName || "";
 
   return (
-    <div className="min-h-screen bg-[#F5F7F5] text-[#17231D]">
+    <div className="min-h-screen bg-surface text-strong">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-[#E1E6E2] bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-line bg-card/95 backdrop-blur">
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-7 lg:px-10">
           {/* Brand */}
           <Link
             href="/portal"
-            className="text-[23px] font-semibold tracking-[-0.05em] text-[#17231D]"
+            className="text-[23px] font-semibold tracking-[-0.05em] text-strong"
           >
             fiduvia
           </Link>
@@ -39,15 +39,15 @@ export default async function PortalLayout({
           {/* Account */}
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <p className="text-[12px] font-medium text-[#29342E]">
+              <p className="text-[12px] font-medium text-strong">
                 {firstName} {lastName}
               </p>
 
-              <p className="mt-0.5 text-[10px] text-[#8A938D]">Espace client</p>
+              <p className="mt-0.5 text-[10px] text-subtle">Espace client</p>
             </div>
 
             <div
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#17231D] text-[10px] font-medium text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-petrol-900 text-[10px] font-medium text-white"
               aria-label={`Compte de ${firstName} ${lastName}`}
             >
               {firstName.charAt(0)}
@@ -58,7 +58,7 @@ export default async function PortalLayout({
       </header>
 
       {/* Mobile navigation */}
-      <div className="border-b border-[#E1E6E2] bg-white md:hidden">
+      <div className="border-b border-line bg-card md:hidden">
         <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-2.5 sm:px-6">
           <PortalNavItem href="/portal" label="Tableau de bord" mobile />
 
@@ -87,8 +87,8 @@ function PortalNavItem({
     <Link
       href={href}
       className={[
-        "whitespace-nowrap rounded-lg font-medium text-[#68736D]",
-        "transition hover:bg-[#F2F5F2] hover:text-[#17231D]",
+        "whitespace-nowrap rounded-lg font-medium text-muted",
+        "transition hover:bg-sunken hover:text-strong",
         mobile ? "px-3 py-2 text-[11px]" : "px-3 py-2 text-[12px]",
       ].join(" ")}
     >

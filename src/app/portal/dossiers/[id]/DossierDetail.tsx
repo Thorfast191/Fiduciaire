@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { DossierStatus } from "@/db/schema";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { FormAlert } from "@/components/ui/Field";
 
 interface DocumentItem {
   id: string;
@@ -14,7 +17,7 @@ interface DocumentItem {
 interface DossierData {
   id: string;
   taxYear: number;
-  status: "not_started" | "submitted" | "in_review" | "completed";
+  status: DossierStatus;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -24,13 +27,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   pilier3: "3e pilier",
   justificatifs: "Justificatifs divers",
   autre: "Autre",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  not_started: "Non commencé",
-  submitted: "Soumis",
-  in_review: "En cours de traitement",
-  completed: "Terminé",
 };
 
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
@@ -157,55 +153,99 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
   }
 
   if (!dossier) {
-    return <p>Chargement…</p>;
+    return <p className="text-[13px] text-muted">Chargement…</p>;
   }
 
+  const inputCls =
+    "rounded-xl border border-line-default bg-card px-3 py-2 text-[13px] text-strong outline-none transition-colors hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:cursor-not-allowed disabled:opacity-60";
+  const btnGhost =
+    "rounded-lg border border-line-default px-3 py-1.5 text-[12px] font-medium text-brand transition hover:border-line-strong hover:bg-sunken";
+
   return (
-    <section>
-      <h1>Dossier fiscal {dossier.taxYear}</h1>
-      <p>Statut : {STATUS_LABELS[dossier.status]}</p>
+    <section className="rounded-2xl border border-line bg-card p-5 shadow-sm sm:p-7">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-[20px] font-semibold tracking-[-0.03em] text-strong">
+          Dossier fiscal {dossier.taxYear}
+        </h1>
+        <div className="flex items-center gap-2">
+          <span className="text-[13px] text-muted">Statut</span>
+          <StatusBadge status={dossier.status} />
+        </div>
+      </div>
 
       {dossier.status === "not_started" && (
-        <button type="button" onClick={handleSubmit}>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="mt-4 inline-flex h-[42px] items-center justify-center rounded-xl bg-brand px-5 text-[13px] font-medium text-white transition hover:bg-brand-hover focus:outline-none focus:ring-4 focus:ring-brand/15"
+        >
           Marquer comme soumis
         </button>
       )}
 
-      <h2>Ajouter un document</h2>
-      <select value={category} onChange={(e) => setCategory(e.target.value)}>
-        {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-          <option key={key} value={key}>
-            {label}
-          </option>
-        ))}
-      </select>
-      <input
-        type="file"
-        accept="application/pdf,image/jpeg,image/png"
-        disabled={uploading}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleUpload(file);
-          e.target.value = "";
-        }}
-      />
-      {uploading && <p>Envoi en cours…</p>}
+      <h2 className="mt-8 text-[15px] font-semibold text-strong">
+        Ajouter un document
+      </h2>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className={inputCls}
+        >
+          {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <input
+          type="file"
+          accept="application/pdf,image/jpeg,image/png"
+          disabled={uploading}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleUpload(file);
+            e.target.value = "";
+          }}
+          className="text-[13px] text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-sunken file:px-3 file:py-1.5 file:text-[12px] file:font-medium file:text-brand"
+        />
+      </div>
+      {uploading && (
+        <p className="mt-3 text-[13px] text-muted">Envoi en cours…</p>
+      )}
       {error && (
-        <p role="alert" style={{ color: "red" }}>
-          {error}
-        </p>
+        <div className="mt-3">
+          <FormAlert variant="error">{error}</FormAlert>
+        </div>
       )}
 
-      <h2>Documents</h2>
-      {documents.length === 0 && <p>Aucun document pour le moment.</p>}
-      <ul>
+      <h2 className="mt-8 text-[15px] font-semibold text-strong">Documents</h2>
+      {documents.length === 0 && (
+        <p className="mt-3 text-[13px] text-muted">
+          Aucun document pour le moment.
+        </p>
+      )}
+      <ul className="mt-4 flex flex-col gap-2">
         {documents.map((doc) => (
-          <li key={doc.id}>
-            [{CATEGORY_LABELS[doc.category] ?? doc.category}] {doc.filename}{" "}
-            <button type="button" onClick={() => handleDownload(doc.id)}>
+          <li
+            key={doc.id}
+            className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-card px-4 py-3"
+          >
+            <span className="text-[13px] text-strong">
+              [{CATEGORY_LABELS[doc.category] ?? doc.category}] {doc.filename}
+            </span>{" "}
+            <button
+              type="button"
+              onClick={() => handleDownload(doc.id)}
+              className={btnGhost}
+            >
               Télécharger
             </button>{" "}
-            <button type="button" onClick={() => handleDelete(doc.id)}>
+            <button
+              type="button"
+              onClick={() => handleDelete(doc.id)}
+              className={btnGhost}
+            >
               Supprimer
             </button>
           </li>
