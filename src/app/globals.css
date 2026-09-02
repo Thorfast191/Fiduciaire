@@ -209,6 +209,11 @@
   --color-accent: var(--accent);
   --color-gold: var(--gold);
 
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+
   --color-petrol-950: var(--petrol-950);
   --color-petrol-900: var(--petrol-900);
   --color-petrol-800: var(--petrol-800);

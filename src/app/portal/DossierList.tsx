@@ -26,17 +26,11 @@ export default function DossierList() {
 
   return (
     <section>
-      <h2 className="text-[15px] font-semibold text-strong">
-        Mes dossiers fiscaux
-      </h2>
-
       {dossiers.length === 0 && (
-        <p className="mt-3 text-[13px] text-muted">
-          Aucun dossier pour le moment.
-        </p>
+        <p className="text-[13px] text-muted">Aucun dossier pour le moment.</p>
       )}
 
-      <ul className="mt-4 flex flex-col gap-2">
+      <ul className="flex flex-col gap-2">
         {dossiers.map((dossier) => (
           <li key={dossier.id}>
             <Link

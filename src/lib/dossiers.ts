@@ -1,6 +1,12 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { db } from "@/db/client";
-import { dossiers, type Dossier, type DossierStatus, type Role } from "@/db/schema";
+import {
+  dossiers,
+  users,
+  type Dossier,
+  type DossierStatus,
+  type Role,
+} from "@/db/schema";
 
 export async function createDossier(params: {
   clientId: string;
@@ -22,6 +28,50 @@ export async function listDossiersForClient(clientId: string): Promise<Dossier[]
     .from(dossiers)
     .where(eq(dossiers.clientId, clientId))
     .orderBy(desc(dossiers.taxYear));
+}
+
+export interface AdminDossierRow {
+  id: string;
+  taxYear: number;
+  status: DossierStatus;
+  createdAt: Date;
+  clientId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+/**
+ * The most recent dossiers with their owning client, for the admin dossiers
+ * table. Inner join on `users`, so a row is only returned once its client
+ * resolves. Bounded by `limit` — the table renders every row it is given, and
+ * an unbounded list grows without limit as periods accumulate.
+ */
+export async function listAllDossiersWithClient(
+  limit = 50,
+): Promise<AdminDossierRow[]> {
+  return db
+    .select({
+      id: dossiers.id,
+      taxYear: dossiers.taxYear,
+      status: dossiers.status,
+      createdAt: dossiers.createdAt,
+      clientId: dossiers.clientId,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
+    })
+    .from(dossiers)
+    .innerJoin(users, eq(users.id, dossiers.clientId))
+    .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))
+    .limit(limit);
+}
+
+export async function countAllDossiers(): Promise<number> {
+  const [row] = await db
+    .select({ value: sql<number>`count(*)` })
+    .from(dossiers);
+  return Number(row?.value ?? 0);
 }
 
 export type AccessCheckResult =
