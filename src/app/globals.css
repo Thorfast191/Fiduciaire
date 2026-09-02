@@ -1,95 +1,240 @@
 @import "tailwindcss";
 
 /* =========================================================
-   FIDUVIA DESIGN SYSTEM
+   FLUXIO DESIGN SYSTEM — tokens (first-party copy of
+   Fiduciaire (4)/_ds/.../tokens/*). The four families are
+   loaded via next/font in src/app/layout.tsx.
 ========================================================= */
 
 :root {
-  /* -------------------------------------------------------
-     COLORS
-  ------------------------------------------------------- */
-
+  /* ---- Petrol (deep, anchoring) ---- */
+  --petrol-950: #081823;
   --petrol-900: #0b2030;
   --petrol-800: #0f2a3f;
-  --petrol-700: #405767;
+  --petrol-700: #143a52;
+  --petrol-600: #1b4d67;
 
+  /* ---- Teal (the current — primary action) ---- */
+  --teal-700: #145863;
   --teal-600: #1b6e7e;
-  --teal-500: #145863;
+  --teal-500: #2a8a93;
   --teal-400: #3fa7a0;
   --teal-300: #79c5bd;
+  --teal-200: #aeddd7;
   --teal-100: #d9efec;
+  --teal-50: #eef8f6;
 
-  --gold: #c4a265;
+  /* ---- Sand / Cream (warmth, paper) ---- */
+  --sand-400: #d8cfbd;
+  --sand-300: #e8e2d5;
+  --sand-200: #f2ece0;
+  --sand-100: #faf7f0;
 
+  /* ---- Neutrals (warm grey) ---- */
+  --neutral-0: #ffffff;
+  --neutral-50: #f7f6f2;
+  --neutral-100: #efede7;
+  --neutral-200: #e3e0d8;
+  --neutral-300: #ccc8bd;
   --neutral-400: #a8a498;
   --neutral-500: #807c72;
+  --neutral-600: #5e5b52;
+  --neutral-700: #423f39;
+  --neutral-800: #2a2824;
+  --neutral-900: #1a1916;
 
-  --text-strong: #0f2a3f;
+  /* ---- Semantic feedback ---- */
+  --green-600: #2e7d5b;
+  --green-100: #dcefe5;
+  --amber-600: #b9842b;
+  --amber-100: #f6ebd3;
+  --red-600: #b5462f;
+  --red-100: #f6e0da;
+
+  /* ---- Gold (marketing only; not in Fluxio) ---- */
+  --gold: #c4a265;
+
+  /* ---- Semantic aliases — use these in components ---- */
+  --text-strong: var(--petrol-800);
   --text-body: #2c3a42;
-  --text-muted: #807c72;
-  --text-subtle: #a8a498;
+  --text-muted: var(--neutral-500);
+  --text-subtle: var(--neutral-400);
   --text-on-dark: #eaf1f0;
+  --text-on-teal: #ffffff;
+  --text-link: var(--teal-600);
 
-  --surface-page: #faf7f0;
-  --surface-card: #ffffff;
-  --surface-cream: #e8e2d5;
+  --surface-page: var(--sand-100);
+  --surface-card: var(--neutral-0);
+  --surface-sunken: var(--sand-200);
+  --surface-inverse: var(--petrol-800);
+  --surface-teal: var(--teal-600);
+  --surface-cream: var(--sand-300);
 
-  --border-subtle: #e3e0d8;
-  --border-default: #ccc8bd;
+  --border-subtle: var(--neutral-200);
+  --border-default: var(--neutral-300);
+  --border-strong: var(--neutral-400);
   --border-ondark: rgba(255, 255, 255, 0.14);
 
-  --brand: #1b6e7e;
-  --brand-hover: #145863;
+  --brand: var(--teal-600);
+  --brand-hover: var(--teal-700);
+  --brand-active: #0f4751;
+  --brand-soft: var(--teal-100);
+  --accent: var(--teal-400);
+  --focus-ring: rgba(63, 167, 160, 0.45);
 
-  /* -------------------------------------------------------
-     BACKWARD COMPATIBILITY
-     Used by some existing components
-  ------------------------------------------------------- */
+  /* ---- Dossier status (derived from Fiduvia.dc.html statusMeta) ---- */
+  --status-not-started: #8a93a1;
+  --status-not-started-soft: #f0f2f6;
+  --status-submitted: #6b4fc0;
+  --status-submitted-soft: #efeafb;
+  --status-in-review: #0e7c86;
+  --status-in-review-soft: #ddf3f4;
+  --status-completed: #145863;
+  --status-completed-soft: #d9efec;
 
-  --background: #faf7f0;
+  /* ---- Backward compat: names used by src/app/page.tsx ---- */
+  --background: var(--sand-100);
   --foreground: #2c3a42;
+  --sand-500: var(--neutral-400);
+  --muted: var(--neutral-500);
 
-  --sand-100: #faf7f0;
-  --sand-200: #f3eee4;
-  --sand-300: #e3e0d8;
-  --sand-500: #a8a498;
-
-  --muted: #807c72;
-
-  /* -------------------------------------------------------
-     TYPOGRAPHY
-
-     These variables are populated by next/font in
-     src/app/layout.tsx
-  ------------------------------------------------------- */
-
+  /* ---- Typography (Fluxio typography.css variables only;
+     families populated by next/font in src/app/layout.tsx) ---- */
   --font-display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-
   --font-text:
     "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
     Arial, sans-serif;
-
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
-
   --font-mark: "EB Garamond", Georgia, "Times New Roman", serif;
 
-  /* -------------------------------------------------------
-     RADIUS
-  ------------------------------------------------------- */
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semi: 600;
+  --fw-bold: 700;
+  --fw-black: 800;
 
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3rem;
+  --text-4xl: 3.75rem;
+  --text-5xl: 4.75rem;
+
+  --leading-tight: 1.06;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.018em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+  --tracking-caps: 0.14em;
+
+  /* ---- Spacing / layout / radii / shadows / motion (Fluxio spacing.css) ---- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  --container-max: 1200px;
+  --container-narrow: 760px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
   --radius-xl: 28px;
+  --radius-pill: 999px;
 
-  /* -------------------------------------------------------
-     SHADOWS
-  ------------------------------------------------------- */
+  --border-width: 1px;
 
   --shadow-xs: 0 1px 2px rgba(15, 42, 63, 0.06);
-
   --shadow-sm: 0 2px 8px rgba(15, 42, 63, 0.07);
-
   --shadow-md: 0 8px 24px rgba(15, 42, 63, 0.08);
+  --shadow-lg: 0 20px 48px rgba(15, 42, 63, 0.12);
+  --shadow-teal: 0 12px 28px rgba(27, 110, 126, 0.22);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-base: 240ms;
+  --dur-slow: 420ms;
+}
+
+/* =========================================================
+   TAILWIND v4 THEME — expose tokens as semantic utilities.
+   `inline` keeps :root as the single source of truth, so a
+   later :root override still wins.
+========================================================= */
+
+@theme inline {
+  --color-surface: var(--surface-page);
+  --color-card: var(--surface-card);
+  --color-sunken: var(--surface-sunken);
+  --color-inverse: var(--surface-inverse);
+  --color-cream: var(--surface-cream);
+
+  --color-strong: var(--text-strong);
+  --color-body: var(--text-body);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+  --color-on-dark: var(--text-on-dark);
+
+  --color-line: var(--border-subtle);
+  --color-line-default: var(--border-default);
+  --color-line-strong: var(--border-strong);
+  --color-line-ondark: var(--border-ondark);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-gold: var(--gold);
+
+  --color-petrol-950: var(--petrol-950);
+  --color-petrol-900: var(--petrol-900);
+  --color-petrol-800: var(--petrol-800);
+  --color-petrol-700: var(--petrol-700);
+  --color-petrol-600: var(--petrol-600);
+
+  --color-teal-50: var(--teal-50);
+  --color-teal-100: var(--teal-100);
+  --color-teal-200: var(--teal-200);
+  --color-teal-300: var(--teal-300);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-teal-600: var(--teal-600);
+  --color-teal-700: var(--teal-700);
+
+  --color-green-600: var(--green-600);
+  --color-green-100: var(--green-100);
+  --color-amber-600: var(--amber-600);
+  --color-amber-100: var(--amber-100);
+  --color-red-600: var(--red-600);
+  --color-red-100: var(--red-100);
+
+  --color-status-not-started: var(--status-not-started);
+  --color-status-not-started-soft: var(--status-not-started-soft);
+  --color-status-submitted: var(--status-submitted);
+  --color-status-submitted-soft: var(--status-submitted-soft);
+  --color-status-in-review: var(--status-in-review);
+  --color-status-in-review-soft: var(--status-in-review-soft);
+  --color-status-completed: var(--status-completed);
+  --color-status-completed-soft: var(--status-completed-soft);
 }
 
 /* =========================================================
