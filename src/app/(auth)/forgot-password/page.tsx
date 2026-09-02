@@ -157,7 +157,7 @@ export default function ForgotPasswordPage() {
             </h1>
 
             <p className="mt-3 text-[14px] leading-6 text-[#68736D]">
-              Entrez l'adresse e-mail associée à votre compte. Si elle
+              Entrez l&apos;adresse e-mail associée à votre compte. Si elle
               correspond à un compte Fiduvia, nous vous enverrons un code
               permettant de réinitialiser votre mot de passe.
             </p>

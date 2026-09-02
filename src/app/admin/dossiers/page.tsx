@@ -365,7 +365,7 @@ export default function AdminDossiersPage() {
                 </h2>
 
                 <p className="mt-1.5 text-[13px] leading-5 text-[#7A847E]">
-                  Mettez à jour l'état d'avancement d'un dossier.
+                  Mettez à jour l&apos;état d&apos;avancement d&apos;un dossier.
                 </p>
               </div>
 
@@ -488,7 +488,7 @@ export default function AdminDossiersPage() {
                 Cycle de traitement
               </p>
               <p className="mt-1 text-[12px] text-[#7A847E]">
-                Les statuts permettent de suivre la progression d'un dossier.
+                Les statuts permettent de suivre la progression d&apos;un dossier.
               </p>
             </div>
 

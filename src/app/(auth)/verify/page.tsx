@@ -93,7 +93,7 @@ function VerifyContent() {
 
             <p className="mt-3 text-[14px] leading-6 text-[#68736D]">
               Pour protéger votre compte, nous avons envoyé un code de
-              vérification à l'adresse suivante :
+              vérification à l&apos;adresse suivante :
             </p>
 
             {/* Email */}
@@ -165,7 +165,7 @@ function VerifyContent() {
           {/* Help */}
           <div className="mt-7 border-t border-[#ECEFEC] pt-6">
             <p className="text-center text-[12px] leading-5 text-[#7A847E]">
-              Vous n'avez pas reçu le code ?
+              Vous n&apos;avez pas reçu le code ?
             </p>
 
             <p className="mt-1 text-center text-[12px] leading-5 text-[#8A938D]">

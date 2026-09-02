@@ -300,7 +300,7 @@ export default function SignupPage() {
                 </p>
 
                 <p className="mt-1 text-[12px] leading-5 text-[#7A847E]">
-                  Votre adresse e-mail sera vérifiée avant l'accès à votre
+                  Votre adresse e-mail sera vérifiée avant l&apos;accès à votre
                   espace client.
                 </p>
               </div>

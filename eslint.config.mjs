@@ -16,6 +16,9 @@ const eslintConfig = defineConfig([
     "support.js",
     "image-slot.js",
     "_ds/**",
+    // Claude Design canvas export (client-provided design reference, not app
+    // source): the mockup, its generated design-system bundle, and screenshots.
+    "Fiduciaire (4)/**",
   ]),
 ]);
 
