@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Field, FormAlert } from "@/components/ui/Field";
 
 const statusOptions = [
   {
@@ -124,52 +125,14 @@ export default function AdminDossiersPage() {
     "Non commencé";
 
   return (
-    <main className="min-h-screen bg-[#F5F7F5] text-[#17231D]">
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-[#E1E6E2] bg-white/95 backdrop-blur">
-        <div className="flex h-[72px] items-center justify-between px-5 sm:px-7 lg:px-10">
-          <div className="flex items-center gap-8">
-            <Link
-              href="/admin"
-              className="text-[23px] font-semibold tracking-[-0.05em]"
-            >
-              fiduvia
-            </Link>
-
-            <div className="hidden h-6 w-px bg-[#E3E7E4] sm:block" />
-
-            <div className="hidden sm:block">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8A938D]">
-                Administration
-              </p>
-              <p className="mt-0.5 text-[12px] text-[#68736D]">
-                Gestion des dossiers
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="rounded-lg px-3 py-2 text-[13px] font-medium text-[#68736D] transition hover:bg-[#F5F7F5] hover:text-[#17231D]"
-            >
-              Tableau de bord
-            </Link>
-
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#17231D] text-[11px] font-medium text-white">
-              AD
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <main className="min-h-screen bg-surface text-strong">
       {/* Main */}
-      <div className="mx-auto max-w-6xl px-5 py-8 sm:px-7 lg:px-10 lg:py-10">
+      <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
         {/* Breadcrumb */}
         <div className="mb-6">
           <Link
             href="/admin"
-            className="inline-flex items-center gap-2 text-[12px] font-medium text-[#7A847E] transition hover:text-[#17231D]"
+            className="inline-flex items-center gap-2 text-[12px] font-medium text-muted transition hover:text-strong"
           >
             <svg
               viewBox="0 0 20 20"
@@ -192,22 +155,20 @@ export default function AdminDossiersPage() {
         {/* Page heading */}
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#65796C]">
-              Gestion administrative
-            </p>
+            <p className="fx-eyebrow">Gestion administrative</p>
 
             <h1 className="mt-2 text-[32px] font-semibold tracking-[-0.04em] sm:text-[38px]">
               Dossiers fiscaux
             </h1>
 
-            <p className="mt-2 max-w-[600px] text-[14px] leading-6 text-[#737E77]">
+            <p className="mt-2 max-w-[600px] text-[14px] leading-6 text-muted">
               Créez et gérez les dossiers fiscaux de vos clients et suivez leur
               progression.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 rounded-xl border border-[#DCE3DD] bg-white px-4 py-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#EEF3EF] text-[#536B5C]">
+          <div className="flex items-center gap-2 rounded-xl border border-line bg-card px-4 py-3">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-50 text-brand">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -222,10 +183,10 @@ export default function AdminDossiersPage() {
             </span>
 
             <div>
-              <p className="text-[10px] uppercase tracking-[0.08em] text-[#8A938D]">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-subtle">
                 Section
               </p>
-              <p className="text-[12px] font-medium text-[#29342E]">Dossiers</p>
+              <p className="text-[12px] font-medium text-strong">Dossiers</p>
             </div>
           </div>
         </div>
@@ -233,10 +194,10 @@ export default function AdminDossiersPage() {
         {/* Cards */}
         <div className="mt-9 grid gap-5 lg:grid-cols-2">
           {/* Create dossier */}
-          <section className="rounded-2xl border border-[#E0E5E1] bg-white p-6 shadow-[0_8px_30px_rgba(23,35,29,0.04)] sm:p-7">
+          <section className="rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-7">
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF3EF] text-[#536B5C]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-brand">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -254,79 +215,48 @@ export default function AdminDossiersPage() {
                   Créer un dossier
                 </h2>
 
-                <p className="mt-1.5 text-[13px] leading-5 text-[#7A847E]">
+                <p className="mt-1.5 text-[13px] leading-5 text-muted">
                   Créez un nouveau dossier fiscal pour un client.
                 </p>
               </div>
 
-              <span className="text-[11px] font-medium text-[#A0A9A3]">01</span>
+              <span className="text-[11px] font-medium text-subtle">01</span>
             </div>
 
             <div className="mt-7 space-y-5">
-              {/* Client ID */}
-              <div>
-                <label
-                  htmlFor="clientId"
-                  className="mb-2 block text-[12px] font-medium text-[#29342E]"
-                >
-                  Identifiant du client
-                </label>
+              <Field
+                id="clientId"
+                label="Identifiant du client"
+                type="text"
+                placeholder="Ex. cli_8f92..."
+                value={clientId}
+                onChange={(e) => setClientId(e.target.value)}
+              />
 
-                <input
-                  id="clientId"
-                  type="text"
-                  placeholder="Ex. cli_8f92..."
-                  value={clientId}
-                  onChange={(e) => setClientId(e.target.value)}
-                  className="h-[48px] w-full rounded-xl border border-[#D9DFDA] bg-white px-4 text-[14px] text-[#17231D] outline-none transition placeholder:text-[#A5ADA8] hover:border-[#C6CEC8] focus:border-[#65796C] focus:ring-4 focus:ring-[#65796C]/10"
-                />
-              </div>
+              <Field
+                id="taxYear"
+                label="Année fiscale"
+                type="number"
+                min="2000"
+                max="2100"
+                placeholder="2026"
+                value={taxYear}
+                onChange={(e) => setTaxYear(e.target.value)}
+              />
 
-              {/* Tax year */}
-              <div>
-                <label
-                  htmlFor="taxYear"
-                  className="mb-2 block text-[12px] font-medium text-[#29342E]"
-                >
-                  Année fiscale
-                </label>
-
-                <input
-                  id="taxYear"
-                  type="number"
-                  min="2000"
-                  max="2100"
-                  placeholder="2026"
-                  value={taxYear}
-                  onChange={(e) => setTaxYear(e.target.value)}
-                  className="h-[48px] w-full rounded-xl border border-[#D9DFDA] bg-white px-4 text-[14px] text-[#17231D] outline-none transition placeholder:text-[#A5ADA8] hover:border-[#C6CEC8] focus:border-[#65796C] focus:ring-4 focus:ring-[#65796C]/10"
-                />
-              </div>
-
-              {/* Create feedback */}
               {createError && (
-                <div
-                  role="alert"
-                  className="rounded-xl border border-[#F1C7C7] bg-[#FFF7F7] px-4 py-3 text-[12px] leading-5 text-[#A33A3A]"
-                >
-                  {createError}
-                </div>
+                <FormAlert variant="error">{createError}</FormAlert>
               )}
 
               {createMessage && (
-                <div
-                  role="status"
-                  className="rounded-xl border border-[#D5E4D8] bg-[#F2F7F3] px-4 py-3 text-[12px] leading-5 text-[#536B5C]"
-                >
-                  {createMessage}
-                </div>
+                <FormAlert variant="success">{createMessage}</FormAlert>
               )}
 
               <button
                 type="button"
                 onClick={handleCreate}
                 disabled={creating}
-                className="flex h-[48px] w-full items-center justify-center rounded-xl bg-[#17231D] px-5 text-[13px] font-medium text-white transition hover:bg-[#293B31] focus:outline-none focus:ring-4 focus:ring-[#17231D]/15 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-[48px] w-full items-center justify-center rounded-xl bg-brand px-5 text-[13px] font-medium text-white transition hover:bg-brand-hover focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {creating ? (
                   <span className="flex items-center gap-2">
@@ -344,10 +274,10 @@ export default function AdminDossiersPage() {
           </section>
 
           {/* Update status */}
-          <section className="rounded-2xl border border-[#E0E5E1] bg-white p-6 shadow-[0_8px_30px_rgba(23,35,29,0.04)] sm:p-7">
+          <section className="rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-7">
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF3EF] text-[#536B5C]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-brand">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -364,39 +294,29 @@ export default function AdminDossiersPage() {
                   Modifier le statut
                 </h2>
 
-                <p className="mt-1.5 text-[13px] leading-5 text-[#7A847E]">
+                <p className="mt-1.5 text-[13px] leading-5 text-muted">
                   Mettez à jour l&apos;état d&apos;avancement d&apos;un dossier.
                 </p>
               </div>
 
-              <span className="text-[11px] font-medium text-[#A0A9A3]">02</span>
+              <span className="text-[11px] font-medium text-subtle">02</span>
             </div>
 
             <div className="mt-7 space-y-5">
-              {/* Dossier ID */}
-              <div>
-                <label
-                  htmlFor="statusDossierId"
-                  className="mb-2 block text-[12px] font-medium text-[#29342E]"
-                >
-                  Identifiant du dossier
-                </label>
-
-                <input
-                  id="statusDossierId"
-                  type="text"
-                  placeholder="Ex. dos_8f92..."
-                  value={statusDossierId}
-                  onChange={(e) => setStatusDossierId(e.target.value)}
-                  className="h-[48px] w-full rounded-xl border border-[#D9DFDA] bg-white px-4 text-[14px] text-[#17231D] outline-none transition placeholder:text-[#A5ADA8] hover:border-[#C6CEC8] focus:border-[#65796C] focus:ring-4 focus:ring-[#65796C]/10"
-                />
-              </div>
+              <Field
+                id="statusDossierId"
+                label="Identifiant du dossier"
+                type="text"
+                placeholder="Ex. dos_8f92..."
+                value={statusDossierId}
+                onChange={(e) => setStatusDossierId(e.target.value)}
+              />
 
               {/* Status */}
               <div>
                 <label
                   htmlFor="status"
-                  className="mb-2 block text-[12px] font-medium text-[#29342E]"
+                  className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-muted"
                 >
                   Nouveau statut
                 </label>
@@ -406,7 +326,7 @@ export default function AdminDossiersPage() {
                     id="status"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="h-[48px] w-full appearance-none rounded-xl border border-[#D9DFDA] bg-white px-4 pr-10 text-[14px] text-[#17231D] outline-none transition hover:border-[#C6CEC8] focus:border-[#65796C] focus:ring-4 focus:ring-[#65796C]/10"
+                    className="h-[48px] w-full appearance-none rounded-xl border border-line-default bg-card px-4 pr-10 text-[14px] text-strong outline-none transition hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10"
                   >
                     {statusOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -418,7 +338,7 @@ export default function AdminDossiersPage() {
                   <svg
                     viewBox="0 0 20 20"
                     fill="none"
-                    className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7A847E]"
+                    className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
                   >
                     <path
                       d="m6 8 4 4 4-4"
@@ -432,44 +352,33 @@ export default function AdminDossiersPage() {
               </div>
 
               {/* Current selection */}
-              <div className="flex items-center justify-between rounded-xl bg-[#F7F9F7] px-4 py-3">
-                <span className="text-[11px] text-[#7A847E]">
+              <div className="flex items-center justify-between rounded-xl bg-sunken px-4 py-3">
+                <span className="text-[11px] text-muted">
                   Statut sélectionné
                 </span>
 
-                <span className="rounded-full bg-[#EAF1EB] px-2.5 py-1 text-[10px] font-medium text-[#536B5C]">
+                <span className="rounded-full bg-teal-100 px-2.5 py-1 text-[10px] font-medium text-brand">
                   {selectedStatus}
                 </span>
               </div>
 
-              {/* Feedback */}
               {statusError && (
-                <div
-                  role="alert"
-                  className="rounded-xl border border-[#F1C7C7] bg-[#FFF7F7] px-4 py-3 text-[12px] leading-5 text-[#A33A3A]"
-                >
-                  {statusError}
-                </div>
+                <FormAlert variant="error">{statusError}</FormAlert>
               )}
 
               {statusMessage && (
-                <div
-                  role="status"
-                  className="rounded-xl border border-[#D5E4D8] bg-[#F2F7F3] px-4 py-3 text-[12px] leading-5 text-[#536B5C]"
-                >
-                  {statusMessage}
-                </div>
+                <FormAlert variant="success">{statusMessage}</FormAlert>
               )}
 
               <button
                 type="button"
                 onClick={handleSetStatus}
                 disabled={updating}
-                className="flex h-[48px] w-full items-center justify-center rounded-xl border border-[#D5DDD7] bg-white px-5 text-[13px] font-medium text-[#334139] transition hover:border-[#BFCAC2] hover:bg-[#F8FAF8] focus:outline-none focus:ring-4 focus:ring-[#65796C]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-[48px] w-full items-center justify-center rounded-xl border border-line-default bg-card px-5 text-[13px] font-medium text-strong transition hover:border-line-strong hover:bg-sunken focus:outline-none focus:ring-4 focus:ring-brand/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {updating ? (
                   <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#D9DFDA] border-t-[#536B5C]" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-line-default border-t-brand" />
                     Mise à jour...
                   </span>
                 ) : (
@@ -481,13 +390,13 @@ export default function AdminDossiersPage() {
         </div>
 
         {/* Status guide */}
-        <section className="mt-5 rounded-2xl border border-[#E0E5E1] bg-white p-6 sm:p-7">
+        <section className="mt-5 rounded-2xl border border-line bg-card p-6 sm:p-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-[12px] font-semibold text-[#29342E]">
+              <p className="text-[12px] font-semibold text-strong">
                 Cycle de traitement
               </p>
-              <p className="mt-1 text-[12px] text-[#7A847E]">
+              <p className="mt-1 text-[12px] text-muted">
                 Les statuts permettent de suivre la progression d&apos;un dossier.
               </p>
             </div>
@@ -496,7 +405,7 @@ export default function AdminDossiersPage() {
               {statusOptions.map((option) => (
                 <span
                   key={option.value}
-                  className="rounded-full border border-[#E0E5E1] bg-[#F7F9F7] px-3 py-1.5 text-[10px] font-medium text-[#68736D]"
+                  className="rounded-full border border-line bg-sunken px-3 py-1.5 text-[10px] font-medium text-muted"
                 >
                   {option.label}
                 </span>
@@ -506,7 +415,7 @@ export default function AdminDossiersPage() {
         </section>
 
         {/* Footer */}
-        <p className="mt-8 text-center text-[11px] text-[#929A95]">
+        <p className="mt-8 text-center text-[11px] text-subtle">
           Fiduvia Administration · Gestion sécurisée des dossiers
         </p>
       </div>
