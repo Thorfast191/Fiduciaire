@@ -18,13 +18,13 @@ async function loginAsNewClient(page: Page, request: APIRequestContext, prefix: 
   await getLatestOtpForEmail(email); // drain the signup OTP email first
 
   await page.goto("/login");
-  await page.getByPlaceholder("E-mail").fill(email);
-  await page.getByPlaceholder("Mot de passe").fill("a-long-enough-password");
+  await page.getByLabel("Adresse e-mail").fill(email);
+  await page.getByLabel("Mot de passe").fill("a-long-enough-password");
   await page.getByRole("button", { name: "Se connecter" }).click();
   await page.waitForURL(/\/verify/);
   const code = await getLatestOtpForEmail(email);
   await page.getByPlaceholder("000000").fill(code);
-  await page.getByRole("button", { name: "Valider" }).click();
+  await page.getByRole("button", { name: "Vérifier le code" }).click();
   await page.waitForURL("/portal");
   return email;
 }
