@@ -4,6 +4,7 @@ import {
   DEFAULT_LOCALE,
   LOCALE_COOKIE,
   LOCALE_COOKIE_MAX_AGE,
+  PUBLIC_PATHS,
   type Locale,
 } from "@/lib/i18n/config";
 
@@ -48,20 +49,42 @@ function buildCspHeader(nonce: string, isDev: boolean): string {
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-  ].join("; ").concat(";");
+  ]
+    .join("; ")
+    .concat(";");
 }
 
 // The marketing page lives at /[lang], but French — the SEO target — is served
 // at "/" with no prefix so there is exactly one canonical URL for it. English
 // keeps its own indexable URL at /en. Locale is never inferred from
 // Accept-Language: a crawler must always be shown the French page at "/".
+function isPublicPath(pathname: string): boolean {
+  return (PUBLIC_PATHS as readonly string[]).includes(pathname);
+}
+
 function localeRoute(
   pathname: string,
 ): { locale: Locale; rewriteTo?: string; redirectTo?: string } | null {
+  // French is served without a prefix, so "/" and "/confidentialite" are
+  // rewritten onto the /fr routes rather than redirected — one canonical URL
+  // each, and the prerendered page is what gets served.
   if (pathname === "/") return { locale: DEFAULT_LOCALE, rewriteTo: "/fr" };
-  // /fr is the internal route; surface it as "/" so it is not a duplicate.
+  if (isPublicPath(pathname)) {
+    return { locale: DEFAULT_LOCALE, rewriteTo: `/fr${pathname}` };
+  }
+
+  // /fr/... is the internal form; surface it prefix-free so it is not a
+  // duplicate of the canonical URL.
   if (pathname === "/fr") return { locale: "fr", redirectTo: "/" };
+  if (pathname.startsWith("/fr/") && isPublicPath(pathname.slice(3))) {
+    return { locale: "fr", redirectTo: pathname.slice(3) };
+  }
+
   if (pathname === "/en") return { locale: "en" };
+  if (pathname.startsWith("/en/") && isPublicPath(pathname.slice(3))) {
+    return { locale: "en" };
+  }
+
   return null;
 }
 
@@ -83,7 +106,9 @@ export function proxy(request: NextRequest) {
   const route = localeRoute(pathname);
 
   if (route?.redirectTo) {
-    const response = NextResponse.redirect(new URL(route.redirectTo, request.url));
+    const response = NextResponse.redirect(
+      new URL(route.redirectTo, request.url),
+    );
     response.headers.set("Content-Security-Policy", cspHeader);
     return response;
   }

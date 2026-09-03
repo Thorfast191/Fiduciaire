@@ -7,7 +7,7 @@ import { consumeOtp } from "@/lib/auth/otp";
 import { hashPassword } from "@/lib/auth/password";
 import { revokeAllSessionsForUser } from "@/lib/auth/session";
 import { writeAuditLog } from "@/lib/audit";
-import { getClientIp } from "@/lib/http";
+import { getClientIp, readJsonBody } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
 
 const bodySchema = z.object({
@@ -18,7 +18,7 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   const e = apiErrors(request);
-  const parsed = bodySchema.safeParse(await request.json());
+  const parsed = bodySchema.safeParse(await readJsonBody(request));
   if (!parsed.success) {
     return NextResponse.json({ ok: false, error: e.badCode }, { status: 400 });
   }

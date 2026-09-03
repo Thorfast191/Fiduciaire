@@ -216,4 +216,42 @@ export type DocumentCategory =
   | "autre";
 export type Dossier = typeof dossiers.$inferSelect;
 
+/**
+ * Messages an administrator sends to a client about one dossier — the brief's
+ * "notification automatique depuis l'espace administrateur", covering both
+ * requesting supporting documents and flagging that action is required.
+ *
+ * Kept as rows rather than fire-and-forget email so the client sees the request
+ * in their space even if the mail is lost, and so an admin can tell whether it
+ * has been read.
+ */
+export const dossierNotifications = pgTable(
+  "dossier_notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    dossierId: uuid("dossier_id")
+      .notNull()
+      .references(() => dossiers.id),
+    sentBy: uuid("sent_by")
+      .notNull()
+      .references(() => users.id),
+    kind: text("kind", {
+      enum: ["documents_requested", "action_required"],
+    }).notNull(),
+    /** Optional free text from the admin, shown to the client verbatim. */
+    message: text("message"),
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [
+    // The client's dossier view reads the unacknowledged ones for that dossier.
+    index("dossier_notifications_dossier_idx").on(t.dossierId, t.createdAt),
+  ],
+);
+
 export type TaxPeriod = typeof taxPeriods.$inferSelect;
+
+export type DossierNotification = typeof dossierNotifications.$inferSelect;
+export type NotificationKind = DossierNotification["kind"];

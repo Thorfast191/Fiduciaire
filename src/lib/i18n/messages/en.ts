@@ -52,6 +52,12 @@ export const en: Messages = {
     expand: "Show more",
     total: "Estimated total",
     create: "Create my file",
+    breakdown: "Calculation details",
+    baseLabel: "Base price",
+    fromPrefix: "from",
+    indicative:
+      "Indicative amount, excluding any supplements. The final price is confirmed when your file is opened.",
+    pickHint: "Select your situation to get an estimate.",
   },
 
   trust: {
@@ -367,6 +373,12 @@ export const en: Messages = {
     contactsHoursDays: "Monday - Friday",
     contactsHoursTime: "08:30 - 12:00 · 13:30 - 17:30",
     contactsErrEmpty: "Please provide a subject and a message.",
+    noticeDocumentsTitle: "Additional documents requested",
+    noticeDocumentsBody:
+      "Your accountant is asking you to send additional documents for this file.",
+    noticeActionTitle: "Action required",
+    noticeActionBody: "Your file needs action from you.",
+    noticeAck: "Got it",
     logout: "Log out",
     nav: {
       servicesHead: "Services",
@@ -430,6 +442,19 @@ export const en: Messages = {
       instalmentsDesc: "Advance payment requests submitted by clients.",
       reviews: "Return reviews",
       reviewsDesc: "Return reviews submitted by clients.",
+    },
+    notify: {
+      button: "Request documents",
+      title: "Notify the client",
+      sub: "The client receives an email and sees the request in their space.",
+      kindDocuments: "Request for additional documents",
+      kindAction: "Action required on the file",
+      messageLabel: "Message (optional)",
+      messagePlaceholder: "Say which documents you need…",
+      send: "Send the notification",
+      sending: "Sending…",
+      sent: "Notification sent to the client.",
+      cancel: "Cancel",
     },
     periods: {
       title: "Tax periods",
@@ -538,6 +563,17 @@ export const en: Messages = {
     completed: "Completed",
   },
 
+  legal: {
+    backHome: "Back to home",
+    pendingTitle: "Document being prepared",
+    pendingBody:
+      "This document is being drafted with our legal counsel and will be published before the platform goes live. In the meantime, write to us with any question about how your data is handled.",
+    controllerTitle: "Data controller",
+    privacyTitle: "Privacy policy",
+    privacyIntro: "How Fiduvia collects, uses and protects your personal data.",
+    noticeTitle: "Legal notice",
+    noticeIntro: "Legal information about the site's publisher.",
+  },
   common: {
     errTitle: "Something went wrong",
     errBody:

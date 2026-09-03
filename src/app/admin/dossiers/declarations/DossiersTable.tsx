@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { STATUS_CLASS, STATUS_ORDER } from "@/lib/dossierStatus";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import NotifyClient from "./NotifyClient";
 import type { DossierStatus } from "@/db/schema";
 
 export interface TableRow {
@@ -144,63 +145,72 @@ export default function DossiersTable({ rows }: { rows: TableRow[] }) {
             visible.map((r) => (
               <div
                 key={r.id}
-                className="flex items-center gap-3.5 border-b border-line px-5 py-3.5 last:border-b-0 hover:bg-sunken/50"
+                className="border-b border-line px-5 py-3.5 last:border-b-0 hover:bg-sunken/50"
               >
-                <span className="flex min-w-0 flex-1 items-center gap-[11px]">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-100 text-[12px] font-bold text-brand">
-                    {(r.firstName[0] ?? "") + (r.lastName[0] ?? "")}
+                <div className="flex items-center gap-3.5">
+                  <span className="flex min-w-0 flex-1 items-center gap-[11px]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-100 text-[12px] font-bold text-brand">
+                      {(r.firstName[0] ?? "") + (r.lastName[0] ?? "")}
+                    </span>
+
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate text-[14.5px] font-semibold text-strong">
+                        {r.firstName} {r.lastName}
+                      </span>
+                      <span className="truncate text-[12.5px] text-muted">
+                        {r.email}
+                      </span>
+                    </span>
                   </span>
 
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate text-[14.5px] font-semibold text-strong">
-                      {r.firstName} {r.lastName}
-                    </span>
-                    <span className="truncate text-[12.5px] text-muted">
-                      {r.email}
-                    </span>
+                  <span className="relative w-[230px] shrink-0">
+                    <select
+                      value={r.status}
+                      disabled={saving === r.id}
+                      onChange={(e) =>
+                        changeStatus(r.id, e.target.value as DossierStatus)
+                      }
+                      aria-label={`${t.admin.dossiers.thStatus} — ${r.firstName} ${r.lastName}`}
+                      className={`w-full cursor-pointer appearance-none rounded-full border-0 py-1.5 pl-3.5 pr-8 text-[12px] font-semibold outline-none transition-opacity focus:ring-4 focus:ring-brand/15 disabled:opacity-50 ${STATUS_CLASS[r.status]}`}
+                    >
+                      {STATUS_ORDER.map((s) => (
+                        <option key={s} value={s}>
+                          {t.status[s]}
+                        </option>
+                      ))}
+                    </select>
+
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      aria-hidden="true"
+                      className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 opacity-70"
+                    >
+                      <path
+                        d="m6 8 4 4 4-4"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </span>
-                </span>
 
-                <span className="relative w-[230px] shrink-0">
-                  <select
-                    value={r.status}
-                    disabled={saving === r.id}
-                    onChange={(e) =>
-                      changeStatus(r.id, e.target.value as DossierStatus)
-                    }
-                    aria-label={`${t.admin.dossiers.thStatus} — ${r.firstName} ${r.lastName}`}
-                    className={`w-full cursor-pointer appearance-none rounded-full border-0 py-1.5 pl-3.5 pr-8 text-[12px] font-semibold outline-none transition-opacity focus:ring-4 focus:ring-brand/15 disabled:opacity-50 ${STATUS_CLASS[r.status]}`}
-                  >
-                    {STATUS_ORDER.map((s) => (
-                      <option key={s} value={s}>
-                        {t.status[s]}
-                      </option>
-                    ))}
-                  </select>
+                  <span className="fx-figure w-[90px] shrink-0 text-[14px] text-body">
+                    {r.taxYear}
+                  </span>
 
-                  <svg
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    aria-hidden="true"
-                    className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 opacity-70"
-                  >
-                    <path
-                      d="m6 8 4 4 4-4"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
+                  <span className="fx-figure w-[120px] shrink-0 text-[13px] text-muted">
+                    {dateFmt.format(new Date(r.createdAt))}
+                  </span>
+                </div>
 
-                <span className="fx-figure w-[90px] shrink-0 text-[14px] text-body">
-                  {r.taxYear}
-                </span>
-
-                <span className="fx-figure w-[120px] shrink-0 text-[13px] text-muted">
-                  {dateFmt.format(new Date(r.createdAt))}
-                </span>
+                <div className="mt-2.5 flex">
+                  <NotifyClient
+                    dossierId={r.id}
+                    clientName={`${r.firstName} ${r.lastName}`}
+                  />
+                </div>
               </div>
             ))
           )}

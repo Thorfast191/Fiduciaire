@@ -43,6 +43,13 @@
       "when": 1788458461867,
       "tag": "0005_handy_argent",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788460319913,
+      "tag": "0006_cooing_lifeguard",
+      "breakpoints": true
     }
   ]
 }

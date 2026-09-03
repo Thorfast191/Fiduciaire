@@ -10,11 +10,12 @@ import {
   isOtpIssuanceRateLimited,
   recordOtpIssuance,
 } from "@/lib/auth/rateLimit";
+import { readJsonBody } from "@/lib/http";
 
 const bodySchema = z.object({ email: z.string().email() });
 
 export async function POST(request: NextRequest) {
-  const parsed = bodySchema.safeParse(await request.json());
+  const parsed = bodySchema.safeParse(await readJsonBody(request));
   if (parsed.success) {
     const [user] = await db
       .select()

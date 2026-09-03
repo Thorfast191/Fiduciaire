@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { createDossier, listDossiersForClient } from "@/lib/dossiers";
+import { readJsonBody } from "@/lib/http";
 
 const createBodySchema = z.object({
   clientId: z.string().uuid(),
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const parsed = createBodySchema.safeParse(await request.json());
+  const parsed = createBodySchema.safeParse(await readJsonBody(request));
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: "invalid_request" },

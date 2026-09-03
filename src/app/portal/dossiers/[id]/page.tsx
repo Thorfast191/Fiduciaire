@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { getT } from "@/lib/i18n";
 import DossierDetail from "./DossierDetail";
+import NotificationBanner from "./NotificationBanner";
+import { listNotificationsForDossier } from "@/lib/notifications";
+import { getAccessibleDossier } from "@/lib/dossiers";
+import { getCurrentUser } from "@/lib/auth/guards";
 
 /**
  * Rendered inside the portal shell, so it carries no header or footer of its
@@ -13,7 +17,21 @@ export default async function DossierDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [{ id }, { t }] = await Promise.all([params, getT()]);
+  const [{ id }, user, { t }] = await Promise.all([
+    params,
+    getCurrentUser(),
+    getT(),
+  ]);
+
+  // Only surface notifications once the dossier is confirmed to be this
+  // client's, so an id from elsewhere reveals nothing.
+  const access = user
+    ? await getAccessibleDossier(id, { id: user.id, role: user.role })
+    : { ok: false as const };
+
+  const notifications = access.ok
+    ? (await listNotificationsForDossier(id)).filter((n) => !n.acknowledgedAt)
+    : [];
 
   return (
     <div className="max-w-[1000px]">
@@ -47,6 +65,16 @@ export default async function DossierDetailPage({
           {t.portal.dossierSub}
         </p>
       </div>
+
+      <NotificationBanner
+        dossierId={id}
+        notifications={notifications.map((n) => ({
+          id: n.id,
+          kind: n.kind,
+          message: n.message,
+          createdAt: n.createdAt.toISOString(),
+        }))}
+      />
 
       <div className="mt-6">
         <DossierDetail dossierId={id} />

@@ -18,3 +18,10 @@ export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 export function isLocale(value: string | undefined | null): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value);
 }
+
+/**
+ * Public marketing paths that live under the `[lang]` segment but are served
+ * prefix-free in French, exactly like the home page. Anything not listed here
+ * is an application route (login, portal, admin) and is never locale-prefixed.
+ */
+export const PUBLIC_PATHS = ["/confidentialite", "/mentions-legales"] as const;

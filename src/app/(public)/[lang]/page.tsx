@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { LocaleSwitch } from "@/components/LocaleSwitch";
+import { LocaleSwitch, localeHref } from "@/components/LocaleSwitch";
+import { StructuredData } from "@/components/StructuredData";
+import { MobileMenu } from "@/components/MobileMenu";
+import { PriceSimulator } from "@/components/PriceSimulator";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES, isLocale } from "@/lib/i18n/config";
 
@@ -94,6 +97,7 @@ export default async function HomePage({
       lang={lang}
       className="min-h-screen bg-[var(--surface-page)] text-[var(--text-body)]"
     >
+      <StructuredData locale={lang} t={t} />
       {/* =========================================================
           HEADER
       ========================================================= */}
@@ -177,17 +181,7 @@ export default async function HomePage({
           </Link>
 
           {/* MOBILE BURGER */}
-          <button
-            type="button"
-            className="flex border-0 bg-transparent p-2 md:hidden"
-            aria-label="Menu"
-          >
-            <span className="flex w-[19px] flex-col gap-[4px]">
-              <span className="h-[2px] rounded-[2px] bg-[var(--text-strong)]" />
-              <span className="h-[2px] rounded-[2px] bg-[var(--text-strong)]" />
-              <span className="h-[2px] rounded-[2px] bg-[var(--text-strong)]" />
-            </span>
-          </button>
+          <MobileMenu t={t} />
         </nav>
       </header>
 
@@ -335,85 +329,7 @@ export default async function HomePage({
               </span>
             </div>
 
-            <div className="mt-5">
-              {/* ÉTAT CIVIL */}
-              <div>
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--petrol-800)]">
-                  {t.sim.maritalStatus}
-                </p>
-
-                <label className="flex cursor-pointer items-center gap-2 py-[5px] text-[13px] text-[var(--petrol-900)]">
-                  <input
-                    type="radio"
-                    name="civil"
-                    className="h-[17px] w-[17px] accent-[var(--brand)]"
-                  />
-                  {t.sim.single}
-                </label>
-
-                <label className="flex cursor-pointer items-center gap-2 py-[5px] text-[13px] text-[var(--petrol-900)]">
-                  <input
-                    type="radio"
-                    name="civil"
-                    className="h-[17px] w-[17px] accent-[var(--brand)]"
-                  />
-                  {t.sim.couple}
-                </label>
-              </div>
-
-              <div className="my-3 h-px bg-[var(--border-subtle)]" />
-
-              {/* PROFESSIONAL */}
-              <div>
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--petrol-800)]">
-                  {t.sim.proSituation}
-                </p>
-
-                {t.sim.proOptions.map((item) => (
-                  <label
-                    key={item}
-                    className="flex cursor-pointer items-center gap-2 py-[5px] text-[13px] text-[var(--petrol-900)]"
-                  >
-                    <input
-                      type="radio"
-                      name="professional"
-                      className="h-[17px] w-[17px] accent-[var(--brand)]"
-                    />
-                    {item}
-                  </label>
-                ))}
-              </div>
-
-              <div className="mt-4 border-t border-[var(--border-subtle)] pt-4 text-center">
-                <button
-                  type="button"
-                  className="text-[12px] font-semibold text-[var(--brand)]"
-                >
-                  {t.sim.expand}⌄
-                </button>
-              </div>
-
-              <div className="mt-4 border-t border-[var(--border-subtle)] pt-4">
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--text-muted)]">
-                      {t.sim.total}
-                    </p>
-
-                    <p className="mt-1 text-[30px] font-semibold tracking-[-0.03em] text-[var(--petrol-900)]">
-                      CHF —
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="shrink-0 rounded-[10px] bg-[var(--brand)] px-5 py-3 text-[13px] font-semibold text-white transition hover:bg-[var(--brand-hover)]"
-                  >
-                    {t.sim.create}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <PriceSimulator t={t} />
           </div>
         </div>
       </section>
@@ -1092,6 +1008,54 @@ export default async function HomePage({
             {t.cta.button}
             <Arrow />
           </a>
+
+          {/* The mockup's "Nous joindre" block, so the footer's Contact link
+              and the mobile menu have a real destination on this page. */}
+          <div
+            id="contact"
+            className="mx-auto mt-12 grid max-w-[760px] gap-4 border-t border-white/10 pt-10 text-left sm:grid-cols-3"
+          >
+            {[
+              {
+                label: t.portal.contactsEmail,
+                value: "contact@fiduvia.ch",
+                href: "mailto:contact@fiduvia.ch",
+              },
+              {
+                label: t.portal.contactsPhone,
+                value: "+41 21 000 00 00",
+                href: "tel:+41210000000",
+              },
+              {
+                label: t.portal.contactsAddress,
+                value: "Rue de Bourg 12, 1003 Lausanne",
+              },
+            ].map((c) => (
+              <div key={c.label}>
+                <p className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-white/45">
+                  {c.label}
+                </p>
+
+                {c.href ? (
+                  <a
+                    href={c.href}
+                    className="mt-1.5 block text-[15px] font-semibold text-white transition hover:text-white/70"
+                  >
+                    {c.value}
+                  </a>
+                ) : (
+                  <p className="mt-1.5 text-[15px] font-semibold text-white">
+                    {c.value}
+                  </p>
+                )}
+              </div>
+            ))}
+
+            <p className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-white/45 sm:col-span-3">
+              {t.portal.contactsHours} · {t.portal.contactsHoursDays} ·{" "}
+              {t.portal.contactsHoursTime}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1168,13 +1132,19 @@ export default async function HomePage({
             </p>
 
             <div className="flex gap-6">
-              <a href="#" className="hover:text-white/60">
+              <Link
+                href={`${localeHref(lang)}confidentialite`.replace("//", "/")}
+                className="hover:text-white/60"
+              >
                 {t.footer.privacy}
-              </a>
+              </Link>
 
-              <a href="#" className="hover:text-white/60">
+              <Link
+                href={`${localeHref(lang)}mentions-legales`.replace("//", "/")}
+                className="hover:text-white/60"
+              >
                 {t.footer.legal}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

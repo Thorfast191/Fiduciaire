@@ -9,6 +9,7 @@ import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
 import { apiErrors } from "@/lib/i18n/apiErrors";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, isLocale } from "@/lib/i18n/config";
+import { readJsonBody } from "@/lib/http";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -20,7 +21,7 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   const e = apiErrors(request);
-  const parsed = bodySchema.safeParse(await request.json());
+  const parsed = bodySchema.safeParse(await readJsonBody(request));
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: e.checkInput },

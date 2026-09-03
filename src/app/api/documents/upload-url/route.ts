@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { createPendingUpload, DOCUMENT_CATEGORIES } from "@/lib/documents";
 import { getAccessibleDossier } from "@/lib/dossiers";
+import { readJsonBody } from "@/lib/http";
 
 const GENERIC_NOT_FOUND = "Dossier introuvable.";
 
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const parsed = bodySchema.safeParse(await request.json());
+  const parsed = bodySchema.safeParse(await readJsonBody(request));
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: "invalid_request" },

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { setDossierStatus } from "@/lib/dossiers";
 import { writeAuditLog } from "@/lib/audit";
-import { getClientIp } from "@/lib/http";
+import { getClientIp, readJsonBody } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
 
 const bodySchema = z.object({
@@ -32,7 +32,7 @@ export async function PATCH(
     );
   }
 
-  const parsed = bodySchema.safeParse(await request.json());
+  const parsed = bodySchema.safeParse(await readJsonBody(request));
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: "invalid_request" },

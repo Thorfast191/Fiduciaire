@@ -48,6 +48,12 @@ export const fr = {
     expand: "Développer plus",
     total: "Total estimé",
     create: "Créer mon dossier",
+    breakdown: "Détail du calcul",
+    baseLabel: "Tarif de base",
+    fromPrefix: "dès",
+    indicative:
+      "Montant indicatif, hors suppléments éventuels. Le tarif définitif est confirmé à l'ouverture du dossier.",
+    pickHint: "Sélectionnez votre situation pour obtenir une estimation.",
   },
 
   trust: {
@@ -382,6 +388,12 @@ export const fr = {
     contactsHoursDays: "Lundi - Vendredi",
     contactsHoursTime: "08h30 - 12h00 · 13h30 - 17h30",
     contactsErrEmpty: "Merci de renseigner un sujet et un message.",
+    noticeDocumentsTitle: "Pièces complémentaires demandées",
+    noticeDocumentsBody:
+      "Votre fiduciaire vous demande de transmettre des pièces complémentaires pour ce dossier.",
+    noticeActionTitle: "Action requise",
+    noticeActionBody: "Votre dossier nécessite une action de votre part.",
+    noticeAck: "J'ai compris",
     logout: "Se déconnecter",
     nav: {
       servicesHead: "Prestations",
@@ -445,6 +457,19 @@ export const fr = {
       instalmentsDesc: "Demandes d'acomptes transmises par les clients.",
       reviews: "Relectures de déclaration",
       reviewsDesc: "Relectures de déclaration transmises par les clients.",
+    },
+    notify: {
+      button: "Demander des pièces",
+      title: "Notifier le client",
+      sub: "Le client reçoit un e-mail et voit la demande dans son espace.",
+      kindDocuments: "Demande de pièces complémentaires",
+      kindAction: "Action requise sur le dossier",
+      messageLabel: "Message (facultatif)",
+      messagePlaceholder: "Précisez les pièces attendues…",
+      send: "Envoyer la notification",
+      sending: "Envoi…",
+      sent: "Notification envoyée au client.",
+      cancel: "Annuler",
     },
     periods: {
       title: "Périodes fiscales",
@@ -553,6 +578,18 @@ export const fr = {
     completed: "Terminé",
   },
 
+  legal: {
+    backHome: "Retour à l'accueil",
+    pendingTitle: "Document en cours de rédaction",
+    pendingBody:
+      "Ce document est en cours de rédaction avec notre conseil juridique et sera publié avant la mise en service de la plateforme. Pour toute question sur le traitement de vos données dans l'intervalle, écrivez-nous.",
+    controllerTitle: "Responsable du traitement",
+    privacyTitle: "Politique de confidentialité",
+    privacyIntro:
+      "Comment Fiduvia collecte, utilise et protège vos données personnelles.",
+    noticeTitle: "Mentions légales",
+    noticeIntro: "Informations légales sur l'éditeur du site.",
+  },
   common: {
     errTitle: "Une erreur est survenue",
     errBody:
