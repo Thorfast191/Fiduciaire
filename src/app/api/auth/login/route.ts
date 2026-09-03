@@ -7,15 +7,19 @@ import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { createOtp } from "@/lib/auth/otp";
 import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
-import { isLoginRateLimited, recordLoginFailure, isOtpIssuanceRateLimited, recordOtpIssuance } from "@/lib/auth/rateLimit";
+import {
+  isLoginRateLimited,
+  recordLoginFailure,
+  isOtpIssuanceRateLimited,
+  recordOtpIssuance,
+} from "@/lib/auth/rateLimit";
 import { getClientIp } from "@/lib/http";
+import { apiErrors } from "@/lib/i18n/apiErrors";
 
 const bodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
-
-const GENERIC_ERROR = "Adresse e-mail ou mot de passe incorrect.";
 
 // Cache for dummy hash to protect against timing-based user enumeration (CWE-208)
 let cachedDummyHash: Promise<string> | null = null;
@@ -28,16 +32,20 @@ async function getDummyHash(): Promise<string> {
 }
 
 export async function POST(request: NextRequest) {
+  const e = apiErrors(request);
   const parsed = bodySchema.safeParse(await request.json());
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: GENERIC_ERROR }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: e.badCredentials },
+      { status: 401 },
+    );
   }
   const { email, password } = parsed.data;
   const ip = getClientIp(request);
 
   if (await isLoginRateLimited(email, ip)) {
     return NextResponse.json(
-      { ok: false, error: "Trop de tentatives. Réessayez dans quelques minutes." },
+      { ok: false, error: e.tooManyLogins },
       { status: 429 },
     );
   }
@@ -50,12 +58,15 @@ export async function POST(request: NextRequest) {
 
   if (!valid) {
     await recordLoginFailure(email, ip);
-    return NextResponse.json({ ok: false, error: GENERIC_ERROR }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: e.badCredentials },
+      { status: 401 },
+    );
   }
 
   if (await isOtpIssuanceRateLimited(user.id, "login")) {
     return NextResponse.json(
-      { ok: false, error: "Trop de tentatives. Réessayez dans quelques minutes." },
+      { ok: false, error: e.tooManyLogins },
       { status: 429 },
     );
   }

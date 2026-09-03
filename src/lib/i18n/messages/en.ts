@@ -212,7 +212,7 @@ export const en: Messages = {
     clientArea: "Client area",
     privacy: "Privacy policy",
     legal: "Legal notice",
-    rights: "Your accounting firm, entirely online.",
+    rights: "All rights reserved.",
   },
 
   auth: {
@@ -331,6 +331,13 @@ export const en: Messages = {
     accountLabel: "Your account",
     accountNote:
       "Your space is personal. Your documents are only accessible to authorised people.",
+    dossierBack: "Back to my files",
+    dossierTitle: "My tax file",
+    dossierSub:
+      "Follow your file's progress, send your documents and see the next steps.",
+    dossierSecureTitle: "Your documents are protected",
+    dossierSecureBody:
+      "The information and documents sent to Fiduvia are only accessible to authorised people.",
     logout: "Log out",
     nav: {
       servicesHead: "Services",
@@ -343,6 +350,34 @@ export const en: Messages = {
       assistance: "Assistance",
       payments: "Payments",
       contacts: "Contacts",
+    },
+  },
+
+  documents: {
+    title: "Documents",
+    statusLabel: "Status",
+    addTitle: "Add a document",
+    empty: "No documents yet.",
+    loading: "Loading…",
+    uploading: "Uploading…",
+    download: "Download",
+    remove: "Delete",
+    markSubmitted: "Mark as submitted",
+    errTooLarge: "File too large (20 MB maximum).",
+    errType: "File type not allowed (PDF, JPG or PNG only).",
+    errStart: "Could not start the upload.",
+    errUpload: "Could not upload the file.",
+    errConfirm: "Could not confirm the upload.",
+    errDownload: "Could not retrieve the download link.",
+    errDelete: "Could not delete the document.",
+    errSubmit: "Could not submit the file.",
+    categories: {
+      salaire: "Salary certificate",
+      releves_bancaires: "Bank statements",
+      assurance: "Insurance certificates",
+      pilier3: "Pillar 3a",
+      justificatifs: "Miscellaneous supporting documents",
+      autre: "Other",
     },
   },
 
@@ -411,6 +446,14 @@ export const en: Messages = {
   },
 
   common: {
+    errTitle: "Something went wrong",
+    errBody:
+      "We could not load this page correctly. Please try again or return to the home page.",
+    errRetry: "Try again",
+    errHome: "Back to home",
+    errPersists: "Still not working?",
+    errReassure:
+      "Your data and documents stay protected. Our team can step in if the problem persists.",
     comingSoonTag: "soon",
     comingSoonTitle: "Available soon",
     genericError: "Something went wrong. Please try again in a moment.",

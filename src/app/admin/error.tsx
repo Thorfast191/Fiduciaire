@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/lib/i18n/I18nProvider";
+
 import Link from "next/link";
 
 export default function GlobalError({
@@ -7,6 +9,7 @@ export default function GlobalError({
 }: {
   error: Error & { digest?: string };
 }) {
+  const t = useT();
   return (
     <html lang="fr">
       <body className="min-h-screen bg-surface text-strong antialiased">
@@ -21,9 +24,7 @@ export default function GlobalError({
                 fiduvia
               </Link>
 
-              <p className="mt-1.5 text-[13px] text-muted">
-                Fiduciaire & comptabilité en ligne
-              </p>
+              <p className="mt-1.5 text-[13px] text-muted">{t.auth.tagline}</p>
             </div>
 
             {/* Error Card */}
@@ -53,8 +54,7 @@ export default function GlobalError({
               </h1>
 
               <p className="mx-auto mt-3 max-w-[390px] text-[14px] leading-6 text-muted">
-                Nous n&apos;avons pas pu charger cette page correctement.
-                Veuillez réessayer ou revenir à l&apos;accueil.
+                {t.common.errBody}
               </p>
 
               {/* Actions */}
@@ -64,21 +64,21 @@ export default function GlobalError({
                   onClick={() => window.location.reload()}
                   className="inline-flex h-[48px] items-center justify-center rounded-xl bg-brand px-6 text-[13px] font-medium text-white transition hover:bg-brand-hover focus:outline-none focus:ring-4 focus:ring-brand/15"
                 >
-                  Réessayer
+                  {t.common.errRetry}
                 </button>
 
                 <Link
                   href="/"
                   className="inline-flex h-[48px] items-center justify-center rounded-xl border border-line-default bg-card px-6 text-[13px] font-medium text-strong transition hover:border-line-strong hover:bg-sunken focus:outline-none focus:ring-4 focus:ring-brand/10"
                 >
-                  Retour à l&apos;accueil
+                  {t.common.errHome}
                 </Link>
               </div>
 
               {/* Support */}
               <div className="mt-8 border-t border-line pt-6">
                 <p className="text-[12px] leading-5 text-subtle">
-                  Le problème persiste ?
+                  {t.common.errPersists}
                 </p>
 
                 <a

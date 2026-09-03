@@ -1,5 +1,7 @@
 "use client";
 
+import { fr } from "@/lib/i18n/messages/fr";
+
 export default function GlobalError({
   error,
 }: {
@@ -9,11 +11,8 @@ export default function GlobalError({
     <main
       style={{ maxWidth: 600, margin: "80px auto", fontFamily: "sans-serif" }}
     >
-      <h1>Une erreur est survenue</h1>
-      <p>
-        Veuillez réessayer ou revenir à l&apos;accueil. Notre équipe a été
-        informée.
-      </p>
+      <h1>{fr.common.errorTitle}</h1>
+      <p>{fr.common.errorBody}</p>
     </main>
   );
 }

@@ -1,12 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { fr } from "../../src/lib/i18n/messages/fr";
 import { en } from "../../src/lib/i18n/messages/en";
-import {
-  DEFAULT_LOCALE,
-  LOCALES,
-  isLocale,
-} from "../../src/lib/i18n/config";
+import { DEFAULT_LOCALE, LOCALES, isLocale } from "../../src/lib/i18n/config";
 import { otpEmailTemplate } from "../../src/lib/email/templates/otpEmail";
+import { apiErrors } from "../../src/lib/i18n/apiErrors";
 
 type Node = Record<string, unknown>;
 
@@ -114,6 +111,51 @@ describe("otpEmailTemplate", () => {
     // No locale supplied → French, matching the users.locale column default.
     expect(otpEmailTemplate({ code: "333333", purpose: "login" }).subject).toBe(
       french.subject,
+    );
+  });
+});
+
+describe("apiErrors", () => {
+  /** Minimal stand-in for the only part of NextRequest this reads. */
+  function req(locale?: string) {
+    return {
+      cookies: {
+        get: (name: string) =>
+          name === "locale" && locale ? { value: locale } : undefined,
+      },
+    } as unknown as Parameters<typeof apiErrors>[0];
+  }
+
+  it("falls back to French when no cookie is set", () => {
+    expect(apiErrors(req()).badCredentials).toBe(
+      "Adresse e-mail ou mot de passe incorrect.",
+    );
+  });
+
+  it("ignores an unsupported locale cookie", () => {
+    expect(apiErrors(req("de")).badCode).toBe("Code incorrect ou expiré.");
+  });
+
+  it("serves English when the cookie says so", () => {
+    expect(apiErrors(req("en")).badCredentials).toBe(
+      "Incorrect email address or password.",
+    );
+  });
+
+  it("exposes the same keys in both locales", () => {
+    expect(Object.keys(apiErrors(req("en"))).sort()).toEqual(
+      Object.keys(apiErrors(req("fr"))).sort(),
+    );
+  });
+
+  it("keeps the French strings the E2E suite asserts on", () => {
+    const e = apiErrors(req("fr"));
+    expect(e.badCredentials).toBe("Adresse e-mail ou mot de passe incorrect.");
+    expect(e.tooManyCodes).toBe(
+      "Trop de tentatives. Demandez un nouveau code.",
+    );
+    expect(e.tooManyLogins).toBe(
+      "Trop de tentatives. Réessayez dans quelques minutes.",
     );
   });
 });

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { DossierStatus } from "@/db/schema";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { useT } from "@/lib/i18n/I18nProvider";
 import { FormAlert } from "@/components/ui/Field";
 
 interface DocumentItem {
@@ -20,19 +21,20 @@ interface DossierData {
   status: DossierStatus;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  salaire: "Certificat de salaire",
-  releves_bancaires: "Relevés bancaires",
-  assurance: "Attestations d'assurance",
-  pilier3: "3e pilier",
-  justificatifs: "Justificatifs divers",
-  autre: "Autre",
-};
+const CATEGORY_KEYS = [
+  "salaire",
+  "releves_bancaires",
+  "assurance",
+  "pilier3",
+  "justificatifs",
+  "autre",
+] as const;
 
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 const MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
 export default function DossierDetail({ dossierId }: { dossierId: string }) {
+  const t = useT();
   const [dossier, setDossier] = useState<DossierData | null>(null);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [category, setCategory] = useState<string>("salaire");
@@ -64,11 +66,11 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
   async function handleUpload(file: File) {
     setError(null);
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setError("Type de fichier non autorisé (PDF, JPG ou PNG uniquement).");
+      setError(t.documents.errType);
       return;
     }
     if (file.size > MAX_SIZE_BYTES) {
-      setError("Fichier trop volumineux (20 Mo maximum).");
+      setError(t.documents.errTooLarge);
       return;
     }
 
@@ -86,7 +88,7 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
         }),
       });
       if (!startRes.ok) {
-        setError("Impossible de démarrer l'envoi.");
+        setError(t.documents.errStart);
         return;
       }
       const { documentId, uploadUrl } = await startRes.json();
@@ -97,7 +99,7 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
         body: file,
       });
       if (!putRes.ok) {
-        setError("Échec de l'envoi du fichier.");
+        setError(t.documents.errUpload);
         return;
       }
 
@@ -105,7 +107,7 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
         method: "POST",
       });
       if (!confirmRes.ok) {
-        setError("Échec de la confirmation de l'envoi.");
+        setError(t.documents.errConfirm);
         return;
       }
 
@@ -119,7 +121,7 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
     setError(null);
     const res = await fetch(`/api/documents/${id}/download-url`);
     if (!res.ok) {
-      setError("Impossible de récupérer le lien de téléchargement.");
+      setError(t.documents.errDownload);
       return;
     }
     const { downloadUrl } = await res.json();
@@ -134,7 +136,7 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
     setError(null);
     const res = await fetch(`/api/documents/${id}`, { method: "DELETE" });
     if (!res.ok) {
-      setError("Échec de la suppression.");
+      setError(t.documents.errDelete);
       return;
     }
     await loadDossier();
@@ -148,14 +150,14 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
       body: JSON.stringify({ status: "submitted" }),
     });
     if (!res.ok) {
-      setError("Échec de la soumission du dossier.");
+      setError(t.documents.errSubmit);
       return;
     }
     await loadDossier();
   }
 
   if (!dossier) {
-    return <p className="text-[13px] text-muted">Chargement…</p>;
+    return <p className="text-[13px] text-muted">{t.documents.loading}</p>;
   }
 
   const inputCls =
@@ -170,7 +172,9 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
           Dossier fiscal {dossier.taxYear}
         </h1>
         <div className="flex items-center gap-2">
-          <span className="text-[13px] text-muted">Statut</span>
+          <span className="text-[13px] text-muted">
+            {t.documents.statusLabel}
+          </span>
           <StatusBadge status={dossier.status} />
         </div>
       </div>
@@ -181,12 +185,12 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
           onClick={handleSubmit}
           className="mt-4 inline-flex h-[42px] items-center justify-center rounded-xl bg-brand px-5 text-[13px] font-medium text-white transition hover:bg-brand-hover focus:outline-none focus:ring-4 focus:ring-brand/15"
         >
-          Marquer comme soumis
+          {t.documents.markSubmitted}
         </button>
       )}
 
       <h2 className="mt-8 text-[15px] font-semibold text-strong">
-        Ajouter un document
+        {t.documents.addTitle}
       </h2>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <select
@@ -194,9 +198,9 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
           onChange={(e) => setCategory(e.target.value)}
           className={inputCls}
         >
-          {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+          {CATEGORY_KEYS.map((key) => (
             <option key={key} value={key}>
-              {label}
+              {t.documents.categories[key]}
             </option>
           ))}
         </select>
@@ -213,7 +217,7 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
         />
       </div>
       {uploading && (
-        <p className="mt-3 text-[13px] text-muted">Envoi en cours…</p>
+        <p className="mt-3 text-[13px] text-muted">{t.documents.uploading}</p>
       )}
       {error && (
         <div className="mt-3">
@@ -221,11 +225,11 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
         </div>
       )}
 
-      <h2 className="mt-8 text-[15px] font-semibold text-strong">Documents</h2>
+      <h2 className="mt-8 text-[15px] font-semibold text-strong">
+        {t.documents.title}
+      </h2>
       {documents.length === 0 && (
-        <p className="mt-3 text-[13px] text-muted">
-          Aucun document pour le moment.
-        </p>
+        <p className="mt-3 text-[13px] text-muted">{t.documents.empty}</p>
       )}
       <ul className="mt-4 flex flex-col gap-2">
         {documents.map((doc) => (
@@ -234,21 +238,25 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
             className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-card px-4 py-3"
           >
             <span className="text-[13px] text-strong">
-              [{CATEGORY_LABELS[doc.category] ?? doc.category}] {doc.filename}
+              [
+              {t.documents.categories[
+                doc.category as keyof typeof t.documents.categories
+              ] ?? doc.category}
+              ] {doc.filename}
             </span>{" "}
             <button
               type="button"
               onClick={() => handleDownload(doc.id)}
               className={btnGhost}
             >
-              Télécharger
+              {t.documents.download}
             </button>{" "}
             <button
               type="button"
               onClick={() => handleDelete(doc.id)}
               className={btnGhost}
             >
-              Supprimer
+              {t.documents.remove}
             </button>
           </li>
         ))}

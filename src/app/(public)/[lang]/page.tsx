@@ -1163,7 +1163,9 @@ export default async function HomePage({
 
           {/* FOOTER BOTTOM */}
           <div className="mt-12 flex flex-col justify-between gap-4 border-t border-white/10 pt-6 text-[10px] text-white/30 sm:flex-row">
-            <p>© {new Date().getFullYear()} Fiduvia. Tous droits réservés.</p>
+            <p>
+              © {new Date().getFullYear()} Fiduvia. {t.footer.rights}
+            </p>
 
             <div className="flex gap-6">
               <a href="#" className="hover:text-white/60">

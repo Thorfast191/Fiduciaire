@@ -7,11 +7,8 @@ import { hashPassword } from "@/lib/auth/password";
 import { createOtp } from "@/lib/auth/otp";
 import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
-import {
-  DEFAULT_LOCALE,
-  LOCALE_COOKIE,
-  isLocale,
-} from "@/lib/i18n/config";
+import { apiErrors } from "@/lib/i18n/apiErrors";
+import { DEFAULT_LOCALE, LOCALE_COOKIE, isLocale } from "@/lib/i18n/config";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -22,19 +19,23 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const e = apiErrors(request);
   const parsed = bodySchema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json(
-      { ok: false, error: "Merci de vérifier les informations saisies." },
+      { ok: false, error: e.checkInput },
       { status: 400 },
     );
   }
   const { email, password, firstName, lastName, phone } = parsed.data;
 
-  const [existing] = await db.select().from(users).where(eq(users.email, email));
+  const [existing] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email));
   if (existing) {
     return NextResponse.json(
-      { ok: false, error: "Un compte existe déjà avec cette adresse e-mail." },
+      { ok: false, error: e.emailExists },
       { status: 400 },
     );
   }

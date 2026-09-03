@@ -222,7 +222,7 @@ export const fr = {
     clientArea: "Espace client",
     privacy: "Politique de confidentialité",
     legal: "Mentions légales",
-    rights: "Votre fiduciaire, entièrement en ligne.",
+    rights: "Tous droits réservés.",
   },
 
   auth: {
@@ -346,6 +346,13 @@ export const fr = {
     accountLabel: "Votre compte",
     accountNote:
       "Votre espace est personnel. Vos documents ne sont accessibles qu'aux personnes autorisées.",
+    dossierBack: "Retour à mes dossiers",
+    dossierTitle: "Mon dossier fiscal",
+    dossierSub:
+      "Consultez l'avancement de votre dossier, transmettez vos documents et suivez les prochaines étapes.",
+    dossierSecureTitle: "Vos documents sont protégés",
+    dossierSecureBody:
+      "Les informations et documents transmis à Fiduvia sont accessibles uniquement aux personnes autorisées.",
     logout: "Se déconnecter",
     nav: {
       servicesHead: "Prestations",
@@ -358,6 +365,34 @@ export const fr = {
       assistance: "Assistance",
       payments: "Paiements",
       contacts: "Contacts",
+    },
+  },
+
+  documents: {
+    title: "Documents",
+    statusLabel: "Statut",
+    addTitle: "Ajouter un document",
+    empty: "Aucun document pour le moment.",
+    loading: "Chargement…",
+    uploading: "Envoi en cours…",
+    download: "Télécharger",
+    remove: "Supprimer",
+    markSubmitted: "Marquer comme soumis",
+    errTooLarge: "Fichier trop volumineux (20 Mo maximum).",
+    errType: "Type de fichier non autorisé (PDF, JPG ou PNG uniquement).",
+    errStart: "Impossible de démarrer l'envoi.",
+    errUpload: "Échec de l'envoi du fichier.",
+    errConfirm: "Échec de la confirmation de l'envoi.",
+    errDownload: "Impossible de récupérer le lien de téléchargement.",
+    errDelete: "Échec de la suppression.",
+    errSubmit: "Échec de la soumission du dossier.",
+    categories: {
+      salaire: "Certificat de salaire",
+      releves_bancaires: "Relevés bancaires",
+      assurance: "Attestations d'assurance",
+      pilier3: "3e pilier",
+      justificatifs: "Justificatifs divers",
+      autre: "Autre",
     },
   },
 
@@ -426,6 +461,14 @@ export const fr = {
   },
 
   common: {
+    errTitle: "Une erreur est survenue",
+    errBody:
+      "Nous n'avons pas pu charger cette page correctement. Veuillez réessayer ou revenir à l'accueil.",
+    errRetry: "Réessayer",
+    errHome: "Retour à l'accueil",
+    errPersists: "Le problème persiste ?",
+    errReassure:
+      "Vos données et documents restent protégés. Notre équipe peut intervenir si le problème persiste.",
     comingSoonTag: "bientôt",
     comingSoonTitle: "Bientôt disponible",
     genericError:
