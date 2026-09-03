@@ -84,9 +84,13 @@ test("admin creates a dossier, client uploads and submits, admin reviews and com
   expect(createRes.ok()).toBe(true);
   const { dossier } = await createRes.json();
 
-  await page.goto("/portal");
-  await expect(page.getByText(`Dossier ${dossier.taxYear}`)).toBeVisible({ timeout: 10_000 });
-  await page.getByText(`Dossier ${dossier.taxYear}`).click();
+  // The home shows the declaration for the selected period; pin the period so
+  // the assertion does not depend on which year the picker defaults to.
+  await page.goto(`/portal?periode=${dossier.taxYear}`);
+  await expect(
+    page.getByText(`Ma déclaration d'impôts ${dossier.taxYear}`),
+  ).toBeVisible({ timeout: 10_000 });
+  await page.getByRole("link", { name: /Ouvrir ma déclaration/ }).click();
   await page.waitForURL(new RegExp(`/portal/dossiers/${dossier.id}`));
 
   await page.locator('input[type="file"]').setInputFiles(SAMPLE_PDF);

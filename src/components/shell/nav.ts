@@ -26,7 +26,7 @@ export function clientNav(t: Messages): NavEntry[] {
     { kind: "head", label: n.otherHead },
     { kind: "soon", label: n.assistance },
     { kind: "soon", label: n.payments },
-    { kind: "soon", label: n.contacts },
+    { kind: "link", label: n.contacts, href: "/portal/contacts" },
   ];
 }
 

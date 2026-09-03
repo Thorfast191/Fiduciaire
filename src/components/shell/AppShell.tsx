@@ -20,6 +20,12 @@ interface AppShellProps {
   title: string;
   /** Topbar right-hand caption, rendered in mono uppercase. */
   meta?: string;
+  /**
+   * Route whose topbar keeps `title` instead of taking the nav entry's label.
+   * The mockup's client topbar reads "Mon espace" on the declarations module
+   * but the section's own name everywhere else.
+   */
+  titleFallbackFor?: string;
   account: ShellAccount;
   children: ReactNode;
 }
@@ -43,6 +49,7 @@ export function AppShell({
   nav,
   title,
   meta,
+  titleFallbackFor,
   account,
   children,
 }: AppShellProps) {
@@ -53,16 +60,16 @@ export function AppShell({
 
   const isAdmin = variant === "admin";
 
-  // The mockup's admin topbar shows the active section's own label
-  // (`aPageTitle`), while the client topbar always reads "Mon espace"
-  // (`clientPageTitle` falls through to `t.mySpace` for the declarations
-  // module). Deriving it from the nav keeps admin in step without threading a
-  // title down from every page.
+  // Both topbars show the active section's own label (`aPageTitle` /
+  // `clientPageTitle`), except on the route named by `titleFallbackFor`, which
+  // keeps the area's title. Deriving it from the nav avoids threading a title
+  // down from every page.
   const current = activeHref(nav, pathname);
 
-  const activeLabel = isAdmin
-    ? nav.find((e) => e.kind === "link" && e.href === current)?.label
-    : undefined;
+  const activeLabel =
+    current && current !== titleFallbackFor
+      ? nav.find((e) => e.kind === "link" && e.href === current)?.label
+      : undefined;
 
   const pageTitle = activeLabel ?? title;
 

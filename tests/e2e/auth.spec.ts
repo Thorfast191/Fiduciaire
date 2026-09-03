@@ -20,7 +20,11 @@ test("signup → verify → reaches the client portal", async ({ page }) => {
   await page.getByRole("button", { name: "Vérifier le code" }).click();
 
   await page.waitForURL("/portal");
-  await expect(page.getByText(email)).toBeVisible();
+  // The portal greets the signed-in client by name; the email is no longer
+  // printed on the home page, so assert on who we landed as instead.
+  await expect(
+    page.getByRole("heading", { name: "Bonjour Camille" }),
+  ).toBeVisible();
 });
 
 test("login → verify → reaches the client portal", async ({ page, request }) => {

@@ -1,22 +1,45 @@
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/guards";
+import { listDossiersForClient } from "@/lib/dossiers";
+import { listPeriodOptions } from "@/lib/taxPeriods";
+import { resolvePeriod } from "@/lib/adminPeriod";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
-import DossierList from "./DossierList";
 
 /**
- * Client home, rebuilt to the mockup's "NOUVEL ESPACE CLIENT" accueil
- * (`Fiduvia.dc.html:1535`): greeting + période pill, then a two-column body of
- * dossiers beside the Délais column. The mockup's single "active declaration"
- * card is replaced by the real dossier list, since this platform tracks one
- * dossier per tax year rather than one live form.
+ * Client home, matching the mockup's "NOUVEL ESPACE CLIENT" accueil
+ * (`Fiduvia.dc.html:1535`): greeting and période picker, one prominent card for
+ * the declaration of the selected period, then Documents d'aide beside Délais.
+ *
+ * The period drives the card, so a client with several tax years sees one
+ * declaration at a time rather than a list — the mockup's own model.
  */
-export default async function PortalHomePage() {
-  const [user, { locale, t }] = await Promise.all([getCurrentUser(), getT()]);
+export default async function PortalHomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ periode?: string }>;
+}) {
+  const [{ periode }, user, { locale, t }] = await Promise.all([
+    searchParams,
+    getCurrentUser(),
+    getT(),
+  ]);
 
   const firstName = user?.firstName || "Client";
-  const email = user?.email || "";
 
-  // The mockup derives both deadlines from the tax period's following year.
-  const taxYear = new Date().getFullYear() - 1;
+  const dossiers = user ? await listDossiersForClient(user.id) : [];
+  const dossierYears = dossiers.map((d) => d.taxYear);
+
+  // Offer every period the firm has opened, plus any year this client already
+  // has a dossier for, so an older dossier never becomes unreachable.
+  const options = Array.from(
+    new Set([...(await listPeriodOptions(dossierYears)), ...dossierYears]),
+  ).sort((a, b) => b - a);
+
+  const selected = resolvePeriod(options, periode);
+  const dossier = dossiers.find((d) => d.taxYear === selected);
+  const done = dossier?.status === "completed";
 
   const dayMonth = new Intl.DateTimeFormat(
     locale === "fr" ? "fr-CH" : "en-GB",
@@ -26,8 +49,6 @@ export default async function PortalHomePage() {
       year: "numeric",
     },
   );
-  const firstDeadline = dayMonth.format(new Date(taxYear + 1, 2, 15));
-  const secondDeadline = dayMonth.format(new Date(taxYear + 1, 5, 30));
 
   return (
     <div className="max-w-[1000px]">
@@ -43,22 +64,66 @@ export default async function PortalHomePage() {
           </p>
         </div>
 
-        <span className="inline-flex items-center gap-2 rounded-full border border-line-default bg-card px-4 py-2.5 text-[14px] font-semibold text-strong">
-          {t.portal.period} {taxYear}
-        </span>
+        <PeriodPicker years={options} current={selected} />
       </div>
 
-      {/* Body */}
+      {/* Active declaration */}
+      <div className="mt-6 flex flex-wrap items-center gap-6 rounded-[var(--radius-lg)] border border-line bg-card px-6 py-6 shadow-[var(--shadow-md)]">
+        <div className="min-w-[220px] flex-1">
+          {dossier ? (
+            <>
+              <span
+                className={`font-mono text-[10px] uppercase tracking-[0.1em] ${
+                  done ? "text-green-600" : "text-brand"
+                }`}
+              >
+                {done ? t.portal.declEyebrowDone : t.portal.declEyebrowTodo} ·{" "}
+                {selected}
+              </span>
+
+              <div className="disp mt-1.5 text-[24px] font-bold">
+                {t.portal.declTitle} {selected}
+              </div>
+
+              <p className="mt-1 text-[13.5px] text-muted">
+                {t.portal.declSub}
+              </p>
+
+              <div className="mt-4">
+                <StatusBadge status={dossier.status} />
+              </div>
+            </>
+          ) : (
+            <>
+              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+                {selected}
+              </span>
+
+              <div className="disp mt-1.5 text-[24px] font-bold">
+                {t.portal.declNoneTitle}
+              </div>
+
+              <p className="mt-1 text-[13.5px] text-muted">
+                {t.portal.declNoneSub}
+              </p>
+            </>
+          )}
+        </div>
+
+        {dossier ? (
+          <Link
+            href={`/portal/dossiers/${dossier.id}`}
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-brand px-[22px] py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-hover"
+          >
+            {t.portal.declOpen} →
+          </Link>
+        ) : null}
+      </div>
+
+      {/* Help documents beside deadlines */}
       <div className="mt-6 flex flex-wrap items-start gap-5">
-        {/* Dossiers */}
         <div className="min-w-[280px] flex-[1.6]">
           <h2 className="disp mb-3.5 text-[20px] font-bold">
-            {t.portal.myDossiers}
-          </h2>
-
-          <DossierList />
-
-          <h2 className="disp mb-3.5 mt-10 text-[20px] font-bold">
             {t.portal.helpDocsTitle}
           </h2>
 
@@ -68,7 +133,6 @@ export default async function PortalHomePage() {
           </div>
         </div>
 
-        {/* Délais */}
         <div className="flex min-w-[240px] flex-1 flex-col gap-4">
           <h2 className="disp -mb-0.5 text-[20px] font-bold">
             {t.portal.deadlinesTitle}
@@ -76,29 +140,15 @@ export default async function PortalHomePage() {
 
           <DeadlineCard
             label={t.portal.deadline1Label}
-            date={firstDeadline}
+            date={dayMonth.format(new Date(selected + 1, 2, 15))}
             note={t.portal.deadline1Note}
           />
 
           <DeadlineCard
             label={t.portal.deadline2Label}
-            date={secondDeadline}
+            date={dayMonth.format(new Date(selected + 1, 5, 30))}
             note={t.portal.deadline2Note}
           />
-
-          <div className="rounded-[var(--radius-md)] border border-line bg-card p-[18px] shadow-[var(--shadow-xs)]">
-            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
-              {t.portal.accountLabel}
-            </span>
-
-            <p className="mt-1.5 truncate text-[14px] font-medium text-strong">
-              {email}
-            </p>
-
-            <p className="mt-1 text-[12.5px] leading-[1.4] text-muted">
-              {t.portal.accountNote}
-            </p>
-          </div>
         </div>
       </div>
     </div>

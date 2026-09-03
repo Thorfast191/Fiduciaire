@@ -25,7 +25,8 @@ export default async function PortalLayout({
           variant="client"
           nav={clientNav(t)}
           title={t.portal.spaceTitle}
-          meta={`${t.portal.period} ${new Date().getFullYear() - 1}`}
+          titleFallbackFor="/portal"
+          meta={`${t.admin.fiscalPeriod} ${new Date().getFullYear() - 1}`}
           account={{
             name: `${firstName} ${lastName}`.trim(),
             initials,
