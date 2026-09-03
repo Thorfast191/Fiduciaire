@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { NavEntry } from "./nav";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export interface ShellAccount {
   name: string;
@@ -45,6 +46,7 @@ export function AppShell({
   account,
   children,
 }: AppShellProps) {
+  const t = useT();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -77,11 +79,13 @@ export function AppShell({
               entry={entry}
               first={i === 0}
               current={current}
+              soonTitle={t.common.comingSoonTitle}
             />
           ))}
         </nav>
 
         <AccountBlock
+          logoutLabel={t.portal.logout}
           account={account}
           isAdmin={isAdmin}
           open={accountOpen}
@@ -95,7 +99,7 @@ export function AppShell({
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Menu"
+            aria-label={t.nav.menu}
             aria-expanded={menuOpen}
             className="mr-2.5 flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[10px] border border-line bg-card lg:hidden"
           >
@@ -129,6 +133,7 @@ export function AppShell({
                 entry={entry}
                 first={i === 0}
                 current={current}
+                soonTitle={t.common.comingSoonTitle}
                 mobile
               />
             ))}
@@ -140,7 +145,7 @@ export function AppShell({
                 type="submit"
                 className="w-full px-3 py-3 text-left text-[15px] font-semibold text-on-dark"
               >
-                Se déconnecter
+                {t.portal.logout}
               </button>
             </form>
           </div>
@@ -186,11 +191,13 @@ function NavRow({
   entry,
   first,
   current,
+  soonTitle,
   mobile = false,
 }: {
   entry: NavEntry;
   first: boolean;
   current: string | undefined;
+  soonTitle: string;
   mobile?: boolean;
 }) {
   if (entry.kind === "head") {
@@ -215,7 +222,7 @@ function NavRow({
     return (
       <span
         aria-disabled="true"
-        title="Bientôt disponible"
+        title={soonTitle}
         className={`${rowClass} cursor-not-allowed whitespace-nowrap text-[14.5px] font-medium text-neutral-400/55`}
       >
         <span className="h-[7px] w-[7px] shrink-0 rounded-full bg-petrol-600/70" />
@@ -251,11 +258,13 @@ function AccountBlock({
   isAdmin,
   open,
   onToggle,
+  logoutLabel,
 }: {
   account: ShellAccount;
   isAdmin: boolean;
   open: boolean;
   onToggle: () => void;
+  logoutLabel: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -308,7 +317,7 @@ function AccountBlock({
               type="submit"
               className="w-full rounded-lg px-3 py-2.5 text-left text-[14px] font-medium text-body transition-colors hover:bg-sunken"
             >
-              Se déconnecter
+              {logoutLabel}
             </button>
           </form>
         </div>

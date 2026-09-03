@@ -1,6 +1,6 @@
 import { getAdminDashboardStats } from "@/lib/adminStats";
 import { StatCard } from "@/components/ui/StatCard";
-import { STATUS_LABELS } from "@/components/ui/StatusBadge";
+import { getT } from "@/lib/i18n";
 import type { DossierStatus } from "@/db/schema";
 
 const STATUS_ORDER: DossierStatus[] = [
@@ -33,7 +33,7 @@ const BAR_PALETTE = [
  * shows active clients instead, since payments are not implemented.
  */
 export default async function AdminHomePage() {
-  const stats = await getAdminDashboardStats();
+  const [stats, { t }] = await Promise.all([getAdminDashboardStats(), getT()]);
 
   // The période pill tracks the calendar, not the data: a stray dossier filed
   // under a far-future year must not become the headline period.
@@ -50,41 +50,39 @@ export default async function AdminHomePage() {
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <h1 className="disp text-[clamp(28px,3.4vw,34px)] font-extrabold leading-[1.05]">
-            Espace administrateur
+            {t.admin.dashTitle}
           </h1>
 
-          <p className="mt-1.5 text-[15px] text-muted">
-            Vos dossiers pour la période fiscale en cours.
-          </p>
+          <p className="mt-1.5 text-[15px] text-muted">{t.admin.dashSub}</p>
         </div>
 
         <span className="inline-flex items-center gap-2 rounded-full border border-line-default bg-card px-4 py-2.5 text-[14px] font-semibold text-strong">
-          Période {currentYear}
+          {t.portal.period} {currentYear}
         </span>
       </div>
 
       <section className="mt-[22px] grid gap-3.5 sm:grid-cols-3">
         <StatCard
-          label="DOSSIERS"
+          label={t.admin.kpiDossiers}
           value={stats.totalDossiers}
-          hint="toutes prestations confondues"
+          hint={t.admin.kpiDossiersSub}
         />
         <StatCard
-          label="DOSSIERS TRAITÉS"
+          label={t.admin.kpiCompleted}
           value={stats.completedDossiers}
-          hint="clôturés cette période"
+          hint={t.admin.kpiCompletedSub}
         />
         <StatCard
-          label="CLIENTS"
+          label={t.admin.kpiClients}
           value={stats.totalClients}
-          hint="comptes actifs"
+          hint={t.admin.kpiClientsSub}
           accent
         />
       </section>
 
       <section className="mt-4 rounded-[var(--radius-md)] border border-line bg-card p-[18px] shadow-[var(--shadow-xs)]">
         <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-muted">
-          Répartition par statut
+          {t.admin.distTitle}
         </span>
 
         <div className="mt-3 flex h-[18px] gap-[5px] overflow-hidden rounded-full">
@@ -110,7 +108,7 @@ export default async function AdminHomePage() {
               <span
                 className={`h-[9px] w-[9px] shrink-0 rounded-full ${STATUS_BAR[s]}`}
               />
-              {STATUS_LABELS[s]} · {stats.byStatus[s]}
+              {t.status[s]} · {stats.byStatus[s]}
             </span>
           ))}
         </div>
@@ -118,12 +116,12 @@ export default async function AdminHomePage() {
 
       <section className="mt-4 rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
         <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-muted">
-          Dossiers par année fiscale
+          {t.admin.byYearTitle}
         </span>
 
         <div className="mt-3.5 flex flex-col gap-3">
           {years.length === 0 && (
-            <p className="text-[13px] text-muted">Aucun dossier.</p>
+            <p className="text-[13px] text-muted">{t.admin.noDossiers}</p>
           )}
 
           {years.map((r, i) => (

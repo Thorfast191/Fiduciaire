@@ -1,0 +1,439 @@
+/**
+ * French message bundle — the source of truth for the app's copy and for the
+ * `Messages` shape every other locale must satisfy.
+ *
+ * Strings are kept byte-identical to what the pages rendered before i18n was
+ * introduced, so the Playwright suite (which pins French labels, `getByLabel`
+ * and `getByRole("button", …)`) keeps passing.
+ */
+export const fr = {
+  nav: {
+    about: "Qui sommes-nous",
+    services: "Nos prestations",
+    method: "Méthode",
+    pricing: "Tarifs",
+    faq: "FAQ",
+    login: "Se connecter",
+    loginShort: "Connexion",
+    menu: "Menu",
+  },
+
+  hero: {
+    eyebrow: "Fiduciaire en ligne · Vaud / Valais / Fribourg",
+    title: "Votre déclaration d’impôts, entre de bonnes mains.",
+    p1: "Fiduvia est un service suisse d’assistance à la déclaration fiscale. Nous vous accompagnons dans la préparation de votre déclaration d’impôts, de la collecte de vos documents jusqu’à sa transmission à l’administration fiscale compétente.",
+    p2: "Vous déposez simplement vos documents en ligne. Notre équipe les vérifie, prépare votre déclaration et s’occupe de sa transmission, en toute sécurité.",
+    p3: "Un service simple, humain et sécurisé, conçu pour vous faire gagner du temps et éviter les erreurs.",
+    note: "Votre dossier est traité sous 10 jours ouvrables dès réception de l’ensemble des documents nécessaires.",
+    cta: "Remplir ma déclaration d'impôts",
+    already: "Déjà client ?",
+  },
+
+  sim: {
+    eyebrow: "Simulateur de tarif",
+    title: "Votre tarif en quelques clics",
+    noCommitment: "Sans engagement",
+    maritalStatus: "État civil",
+    single: "Personne seule",
+    couple: "Marié·e / partenariat",
+    proSituation: "Situation professionnelle",
+    proOptions: [
+      "Étudiant / apprenti",
+      "Salarié·e",
+      "Rentier,ère (AVS, AI, LPP)",
+      "Chômage et/ou APG",
+      "Indépendant·e",
+      "Autre",
+    ],
+    expand: "Développer plus",
+    total: "Total estimé",
+    create: "Créer mon dossier",
+  },
+
+  trust: {
+    clients: "+250 clients accompagnés",
+    hosting: "Données hébergées en Suisse",
+    experts: "Experts fiscaux certifiés",
+  },
+
+  about: {
+    eyebrow: "Qui sommes-nous ?",
+    title: "Une assistance fiscale simple, humaine et entièrement en ligne.",
+    p1: "Fiduvia est un service suisse d’assistance à la déclaration d’impôts, conçu pour simplifier une démarche souvent longue et complexe.",
+    p2: "Vous nous transmettez vos documents directement depuis votre espace client. Un membre de notre équipe analyse votre dossier, prépare votre déclaration d’impôts et, lorsque le service le prévoit, la transmet aux autorités fiscales compétentes.",
+    p3: "Notre objectif est simple : vous faire gagner du temps, réduire les risques d’erreur et vous permettre de réaliser votre déclaration sans rendez-vous, entièrement en ligne.",
+    stats: [
+      { value: "10 jours*", label: "de délai moyen de traitement" },
+      { value: "3 cantons", label: "Vaud · Valais · Fribourg" },
+      { value: "100 %", label: "des échanges en ligne" },
+    ],
+    values: [
+      {
+        title: "Un gestionnaire dédié",
+        desc: "Votre dossier est attribué à un membre de notre équipe qui en assure le suivi tout au long du traitement.",
+      },
+      {
+        title: "Des données traitées avec soin",
+        desc: "Vos documents et informations fiscales sont traités dans un environnement sécurisé et hébergés en Suisse.",
+      },
+      {
+        title: "Des tarifs annoncés à l’avance",
+        desc: "Vous connaissez le prix de votre prestation avant de commencer. Aucun coût caché.",
+      },
+      {
+        title: "Un service de A à Z",
+        desc: "Vous transmettez vos documents en ligne. Nous nous occupons de la préparation, de la saisie et de la transmission de votre déclaration.",
+      },
+    ],
+    footnote:
+      "*Délai moyen indicatif, à compter de la réception de l’ensemble des documents nécessaires au traitement du dossier.",
+  },
+
+  services: {
+    eyebrow: "Découvrez nos prestations",
+    title: "Ce que nous faisons pour vous",
+    items: [
+      {
+        title: "Déclaration d'impôts",
+        desc: "La déclaration annuelle complète, pour salariés, rentiers et indépendants.",
+      },
+      {
+        title: "Départ à l'étranger",
+        desc: "En cas de départ à l'étranger en cours d'année qui revient à une période d'imposition limitée.",
+      },
+      {
+        title: "Prestation en capital",
+        desc: "Retrait LPP, 3e pilier ou capital-décès imposé séparément.",
+      },
+      {
+        title: "Décès en cours d'année",
+        desc: "En cas du décès d'une personne seule ou conjoint durant l'année.",
+      },
+      {
+        title: "Simulation d'impôts",
+        desc: "Estimez votre charge fiscale et les possibilités qui s'offrent à vous afin de l'optimiser.",
+      },
+      {
+        title: "Détermination des acomptes",
+        desc: "Calcul et ajustement de vos acomptes provisionnels.",
+      },
+    ],
+  },
+
+  steps: {
+    eyebrow: "Notre méthode",
+    titleLine1: "Une expérience",
+    titleLine2: "sans friction.",
+    sub: "De la création de votre espace jusqu'à la finalisation de votre dossier, chaque étape est conçue pour être simple, claire et transparente.",
+    items: [
+      {
+        number: "01",
+        title: "Créez votre espace",
+        desc: "Inscrivez-vous en ligne et renseignez les informations nécessaires à votre dossier.",
+      },
+      {
+        number: "02",
+        title: "Déposez vos documents",
+        desc: "Transmettez vos documents directement depuis votre espace client sécurisé.",
+      },
+      {
+        number: "03",
+        title: "Nous traitons votre dossier",
+        desc: "Notre équipe analyse votre situation et vous accompagne jusqu'à la finalisation.",
+      },
+    ],
+  },
+
+  pricing: {
+    eyebrow: "Tarifs",
+    title: "Des tarifs clairs.",
+    sub: "Une tarification transparente, adaptée à votre situation et sans mauvaise surprise.",
+    popular: "Populaire",
+    fromPerReturn: "dès / déclaration",
+    perActivity: "selon votre activité",
+    perNeeds: "selon vos besoins",
+    custom: "Sur mesure",
+    plans: [
+      {
+        name: "Particulier",
+        features: [
+          "Déclaration fiscale",
+          "Analyse de votre situation",
+          "Suivi en ligne",
+        ],
+      },
+      {
+        name: "Indépendant",
+        features: [
+          "Comptabilité",
+          "Fiscalité",
+          "Déclaration",
+          "Accompagnement",
+        ],
+      },
+      {
+        name: "Entreprise",
+        features: [
+          "Comptabilité complète",
+          "Salaires & RH",
+          "Fiscalité",
+          "Conseil",
+        ],
+      },
+    ],
+  },
+
+  faq: {
+    eyebrow: "FAQ",
+    title: "Questions fréquentes",
+    items: [
+      {
+        q: "Comment fonctionne Fiduvia ?",
+        a: "Fiduvia vous permet de gérer votre relation fiduciaire entièrement en ligne. Vous créez votre espace, transmettez vos documents et suivez l'avancement de votre dossier depuis votre espace personnel.",
+      },
+      {
+        q: "Mes documents sont-ils sécurisés ?",
+        a: "La plateforme est conçue autour de la confidentialité et de la protection des données. Les documents sont transmis via votre espace client sécurisé.",
+      },
+      {
+        q: "Puis-je suivre l'avancement de mon dossier ?",
+        a: "Oui. Votre espace client vous permet de suivre l'état de votre dossier et de voir les actions ou documents qui nécessitent votre attention.",
+      },
+      {
+        q: "À qui s'adresse Fiduvia ?",
+        a: "Fiduvia accompagne les particuliers, indépendants et entreprises qui souhaitent gérer leurs démarches comptables et fiscales de manière simple et digitale.",
+      },
+    ],
+  },
+
+  cta: {
+    eyebrow: "Parlons de votre situation",
+    titleLine1: "Prêt à simplifier",
+    titleLine2: "votre fiduciaire ?",
+    sub: "Une question ou besoin d'un accompagnement personnalisé ? Contactez-nous.",
+    button: "Nous contacter",
+  },
+
+  footer: {
+    tagline:
+      "Votre fiduciaire suisse, entièrement en ligne. Simple, transparente et proche de vous.",
+    navigation: "Navigation",
+    contact: "Contact",
+    clientArea: "Espace client",
+    privacy: "Politique de confidentialité",
+    legal: "Mentions légales",
+    rights: "Votre fiduciaire, entièrement en ligne.",
+  },
+
+  auth: {
+    brand: "fiduvia",
+    tagline: "Fiduciaire & comptabilité en ligne",
+    rights: "Votre fiduciaire, entièrement en ligne.",
+
+    login: {
+      title: "Bienvenue sur votre espace client",
+      sub: "Connectez-vous pour accéder à vos documents, paiements et démarches.",
+      submit: "Se connecter",
+      loading: "Connexion...",
+      forgot: "Mot de passe oublié ?",
+      noAccount: "Vous n'avez pas encore de compte ?",
+      createAccount: "Créer mon compte",
+      secureTitle: "Connexion sécurisée",
+      secureBody:
+        "Une vérification supplémentaire sera demandée après votre connexion.",
+    },
+
+    signup: {
+      eyebrow: "Bienvenue chez Fiduvia",
+      title: "Créer mon compte",
+      sub: "Créez votre espace personnel pour gérer vos documents, démarches et échanges avec Fiduvia.",
+      submit: "Créer mon compte",
+      loading: "Création du compte...",
+      emailHint:
+        "Cette adresse sera utilisée pour la vérification de votre compte.",
+      passwordTitle: "Votre mot de passe doit contenir :",
+      passwordRule: "Au moins 10 caractères",
+      hasAccount: "Vous avez déjà un compte ?",
+      login: "Se connecter",
+      secureTitle: "Création de compte sécurisée",
+      secureBody:
+        "Votre adresse e-mail sera vérifiée avant l'accès à votre espace client.",
+    },
+
+    verify: {
+      title: "Vérification de sécurité",
+      intro:
+        "Pour protéger votre compte, nous avons envoyé un code de vérification à l'adresse suivante :",
+      codeLabel: "Code de vérification",
+      codeHint: "Entrez les 6 chiffres reçus par e-mail.",
+      submit: "Vérifier le code",
+      loading: "Vérification...",
+      notReceived: "Vous n'avez pas reçu le code ?",
+      notReceivedBody:
+        "Vérifiez votre dossier courrier indésirable ou revenez en arrière pour recommencer.",
+      warning:
+        "Ne partagez jamais votre code de vérification avec une autre personne.",
+      fallback: "Chargement...",
+    },
+
+    forgot: {
+      title: "Mot de passe oublié ?",
+      sub: "Entrez l'adresse e-mail associée à votre compte. Si elle correspond à un compte Fiduvia, nous vous enverrons un code permettant de réinitialiser votre mot de passe.",
+      submit: "Envoyer le code",
+      loading: "Envoi en cours...",
+      doneTitle: "Vérifiez votre e-mail",
+      doneBody:
+        "Si un compte existe avec cette adresse, un code de réinitialisation a été envoyé.",
+      backToLogin: "Retour à la connexion",
+      privacyTitle: "Vos informations restent protégées",
+      privacyBody:
+        "Pour votre sécurité, nous ne vous indiquons pas si une adresse e-mail possède un compte Fiduvia.",
+    },
+
+    reset: {
+      title: "Réinitialiser votre mot de passe",
+      sub: "Saisissez le code reçu par e-mail et choisissez un nouveau mot de passe pour sécuriser votre compte.",
+      submit: "Réinitialiser le mot de passe",
+      loading: "Réinitialisation...",
+      backToLogin: "Retour à la connexion",
+      codeHint:
+        "Consultez votre boîte de réception et votre dossier courrier indésirable.",
+      passwordTitle: "Votre mot de passe doit contenir :",
+      rule1: "Au moins 10 caractères",
+      rule2: "Une combinaison difficile à deviner",
+      secureTitle: "Réinitialisation sécurisée",
+      secureBody:
+        "Votre code de vérification est nécessaire pour modifier votre mot de passe.",
+    },
+
+    fields: {
+      firstName: "Prénom",
+      firstNamePlaceholder: "Votre prénom",
+      lastName: "Nom",
+      lastNamePlaceholder: "Votre nom",
+      email: "Adresse e-mail",
+      emailPlaceholder: "vous@exemple.ch",
+      password: "Mot de passe",
+      passwordPlaceholder: "Votre mot de passe",
+      newPassword: "Nouveau mot de passe",
+      newPasswordPlaceholder: "Choisissez un mot de passe",
+      resetPasswordPlaceholder: "Choisissez un nouveau mot de passe",
+      code: "Code de vérification",
+      codePlaceholder: "Entrez le code reçu par e-mail",
+      codeShort: "6 chiffres",
+    },
+  },
+
+  portal: {
+    spaceTitle: "Mon espace",
+    spaceTag: "Espace client",
+    greeting: "Bonjour",
+    greetingSub: "Voici où en sont vos démarches fiscales.",
+    period: "Période",
+    myDossiers: "Mes dossiers fiscaux",
+    noDossiers: "Aucun dossier pour le moment.",
+    dossier: "Dossier",
+    helpDocsTitle: "Documents d'aide",
+    helpDoc1: "Liste des documents à fournir",
+    helpDoc2: "Marche à suivre du site",
+    comingSoon: "Bientôt disponible",
+    deadlinesTitle: "Délais",
+    deadline1Label: "Première échéance",
+    deadline1Note: "Délai légal pour déposer sa déclaration d'impôt.",
+    deadline2Label: "Deuxième échéance",
+    deadline2Note:
+      "Délai de tolérance pour déposer sa déclaration d'impôt sans démarches.",
+    accountLabel: "Votre compte",
+    accountNote:
+      "Votre espace est personnel. Vos documents ne sont accessibles qu'aux personnes autorisées.",
+    logout: "Se déconnecter",
+    nav: {
+      servicesHead: "Prestations",
+      taxReturns: "Déclarations d'impôts",
+      capital: "Prestation en capital",
+      simulation: "Simulation d'impôts",
+      instalments: "Détermination acomptes",
+      review: "Relecture",
+      otherHead: "Divers",
+      assistance: "Assistance",
+      payments: "Paiements",
+      contacts: "Contacts",
+    },
+  },
+
+  admin: {
+    title: "Administration",
+    dashTitle: "Espace administrateur",
+    dashSub: "Vos dossiers pour la période fiscale en cours.",
+    roleAdmin: "Administrateur",
+    roleSuper: "Super admin",
+    kpiDossiers: "DOSSIERS",
+    kpiDossiersSub: "toutes prestations confondues",
+    kpiCompleted: "DOSSIERS TRAITÉS",
+    kpiCompletedSub: "clôturés cette période",
+    kpiClients: "CLIENTS",
+    kpiClientsSub: "comptes actifs",
+    distTitle: "Répartition par statut",
+    byYearTitle: "Dossiers par année fiscale",
+    noDossiers: "Aucun dossier.",
+    nav: {
+      home: "Accueil",
+      dossiers: "Dossiers",
+      stats: "Statistiques",
+      periods: "Périodes",
+      users: "Utilisateurs",
+    },
+    dossiers: {
+      title: "Dossiers",
+      sub: "Créez et suivez les dossiers fiscaux de vos clients.",
+      count: "dossier",
+      countPlural: "dossiers",
+      empty: "Aucun dossier pour le moment.",
+      recentOf: "Les {n} dossiers les plus récents sur {total}.",
+      thClient: "Client",
+      thStatus: "Statut",
+      thYear: "Année",
+      thCreated: "Créé le",
+      createTitle: "Créer un dossier",
+      createSub: "Créez un nouveau dossier fiscal pour un client.",
+      clientIdLabel: "Identifiant du client",
+      clientIdPlaceholder: "Ex. cli_8f92...",
+      taxYearLabel: "Année fiscale",
+      createSubmit: "Créer le dossier",
+      creating: "Création...",
+      statusTitle: "Modifier le statut",
+      statusSub: "Mettez à jour l'état d'avancement d'un dossier.",
+      dossierIdLabel: "Identifiant du dossier",
+      dossierIdPlaceholder: "Ex. dos_8f92...",
+      newStatusLabel: "Nouveau statut",
+      statusSubmit: "Mettre à jour le statut",
+      updating: "Mise à jour...",
+      created: "Dossier créé :",
+      statusUpdated: "Le statut du dossier a été mis à jour.",
+      errClientId: "Veuillez renseigner l'identifiant du client.",
+      errTaxYear: "Veuillez renseigner une année fiscale valide.",
+      errCreate: "Échec de la création du dossier.",
+      errDossierId: "Veuillez renseigner l'identifiant du dossier.",
+      errStatus: "Échec du changement de statut.",
+    },
+  },
+
+  status: {
+    not_started: "Non commencé",
+    submitted: "Soumis",
+    in_review: "En cours de traitement",
+    completed: "Terminé",
+  },
+
+  common: {
+    comingSoonTag: "bientôt",
+    comingSoonTitle: "Bientôt disponible",
+    genericError:
+      "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
+    errorTitle: "Une erreur est survenue",
+    errorBody:
+      "Veuillez réessayer ou revenir à l'accueil. Notre équipe a été informée.",
+  },
+};
+
+export type Messages = typeof fr;

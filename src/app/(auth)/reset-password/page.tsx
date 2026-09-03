@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Field, FormAlert } from "@/components/ui/Field";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function ResetPasswordPage() {
+  const t = useT();
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -42,9 +44,7 @@ export default function ResetPasswordPage() {
 
       router.push("/login");
     } catch {
-      setError(
-        "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
-      );
+      setError(t.common.genericError);
       setLoading(false);
     }
   }
@@ -58,12 +58,10 @@ export default function ResetPasswordPage() {
             href="/"
             className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
           >
-            fiduvia
+            {t.auth.brand}
           </Link>
 
-          <p className="mt-1.5 text-[13px] text-muted">
-            Fiduciaire & comptabilité en ligne
-          </p>
+          <p className="mt-1.5 text-[13px] text-muted">{t.auth.tagline}</p>
         </div>
 
         {/* Card */}
@@ -87,7 +85,7 @@ export default function ResetPasswordPage() {
                 strokeLinejoin="round"
               />
             </svg>
-            Retour à la connexion
+            {t.auth.reset.backToLogin}
           </Link>
 
           {/* Header */}
@@ -112,12 +110,11 @@ export default function ResetPasswordPage() {
             </div>
 
             <h1 className="mt-5 text-[28px] font-semibold leading-[1.15] tracking-[-0.04em] text-strong">
-              Réinitialiser votre mot de passe
+              {t.auth.reset.title}
             </h1>
 
             <p className="mt-3 text-[14px] leading-6 text-muted">
-              Saisissez le code reçu par e-mail et choisissez un nouveau mot de
-              passe pour sécuriser votre compte.
+              {t.auth.reset.sub}
             </p>
           </div>
 
@@ -132,9 +129,9 @@ export default function ResetPasswordPage() {
           <form onSubmit={onSubmit} className="mt-8 space-y-5">
             <Field
               id="email"
-              label="Adresse e-mail"
+              label={t.auth.fields.email}
               type="email"
-              placeholder="vous@exemple.ch"
+              placeholder={t.auth.fields.emailPlaceholder}
               autoComplete="email"
               required
               value={form.email}
@@ -148,10 +145,12 @@ export default function ResetPasswordPage() {
                   htmlFor="code"
                   className="block text-[13px] font-medium text-strong"
                 >
-                  Code de vérification
+                  {t.auth.fields.code}
                 </label>
 
-                <span className="text-[11px] text-subtle">6 chiffres</span>
+                <span className="text-[11px] text-subtle">
+                  {t.auth.fields.codeShort}
+                </span>
               </div>
 
               <input
@@ -160,7 +159,7 @@ export default function ResetPasswordPage() {
                 type="text"
                 inputMode="numeric"
                 autoComplete="one-time-code"
-                placeholder="Entrez le code reçu par e-mail"
+                placeholder={t.auth.fields.codePlaceholder}
                 required
                 maxLength={6}
                 value={form.code}
@@ -174,8 +173,7 @@ export default function ResetPasswordPage() {
               />
 
               <p className="mt-2 text-[11px] leading-5 text-subtle">
-                Consultez votre boîte de réception et votre dossier courrier
-                indésirable.
+                {t.auth.reset.codeHint}
               </p>
             </div>
 
@@ -183,9 +181,9 @@ export default function ResetPasswordPage() {
             <div>
               <Field
                 id="newPassword"
-                label="Nouveau mot de passe"
+                label={t.auth.fields.newPassword}
                 type="password"
-                placeholder="Choisissez un nouveau mot de passe"
+                placeholder={t.auth.fields.resetPasswordPlaceholder}
                 autoComplete="new-password"
                 required
                 minLength={10}
@@ -198,18 +196,18 @@ export default function ResetPasswordPage() {
               {/* Password requirements */}
               <div className="mt-3 rounded-xl bg-sunken px-4 py-3.5">
                 <p className="text-[11px] font-medium text-brand">
-                  Votre mot de passe doit contenir :
+                  {t.auth.reset.passwordTitle}
                 </p>
 
                 <div className="mt-2 space-y-1.5 text-[11px] text-muted">
                   <p className="flex items-center gap-2">
                     <span className="h-1 w-1 rounded-full bg-subtle" />
-                    Au moins 10 caractères
+                    {t.auth.reset.rule1}
                   </p>
 
                   <p className="flex items-center gap-2">
                     <span className="h-1 w-1 rounded-full bg-subtle" />
-                    Une combinaison difficile à deviner
+                    {t.auth.reset.rule2}
                   </p>
                 </div>
               </div>
@@ -224,10 +222,10 @@ export default function ResetPasswordPage() {
               {loading ? (
                 <span className="flex items-center gap-2.5">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Réinitialisation...
+                  {t.auth.reset.loading}
                 </span>
               ) : (
-                "Réinitialiser le mot de passe"
+                t.auth.reset.submit
               )}
             </button>
           </form>
@@ -255,12 +253,11 @@ export default function ResetPasswordPage() {
 
               <div>
                 <p className="text-[13px] font-medium text-strong">
-                  Réinitialisation sécurisée
+                  {t.auth.reset.secureTitle}
                 </p>
 
                 <p className="mt-1 text-[12px] leading-5 text-muted">
-                  Votre code de vérification est nécessaire pour modifier votre
-                  mot de passe.
+                  {t.auth.reset.secureBody}
                 </p>
               </div>
             </div>
@@ -269,8 +266,7 @@ export default function ResetPasswordPage() {
 
         {/* Footer */}
         <p className="mt-7 text-center text-[11px] leading-5 text-subtle">
-          © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
-          en ligne.
+          © {new Date().getFullYear()} Fiduvia · {t.auth.rights}
         </p>
       </div>
     </main>

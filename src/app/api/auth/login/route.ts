@@ -62,7 +62,11 @@ export async function POST(request: NextRequest) {
 
   const code = await createOtp(user.id, "login");
   await recordOtpIssuance(user.id, "login");
-  const emailBody = otpEmailTemplate({ code, purpose: "login" });
+  const emailBody = otpEmailTemplate({
+    code,
+    purpose: "login",
+    locale: user.locale,
+  });
   await sendEmail({ to: user.email, ...emailBody });
 
   return NextResponse.json({ ok: true });

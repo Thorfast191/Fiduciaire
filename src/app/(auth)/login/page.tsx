@@ -4,8 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Field, FormAlert } from "@/components/ui/Field";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function LoginPage() {
+  const t = useT();
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -43,9 +45,7 @@ export default function LoginPage() {
         `/verify?email=${encodeURIComponent(form.email)}&purpose=login`,
       );
     } catch {
-      setError(
-        "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
-      );
+      setError(t.common.genericError);
       setLoading(false);
     }
   }
@@ -59,12 +59,10 @@ export default function LoginPage() {
             href="/"
             className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
           >
-            fiduvia
+            {t.auth.brand}
           </Link>
 
-          <p className="mt-1.5 text-[13px] text-muted">
-            Fiduciaire & comptabilité en ligne
-          </p>
+          <p className="mt-1.5 text-[13px] text-muted">{t.auth.tagline}</p>
         </div>
 
         {/* Login card */}
@@ -72,12 +70,11 @@ export default function LoginPage() {
           {/* Heading */}
           <div className="mb-8">
             <h1 className="text-center text-[26px] font-semibold leading-[1.2] tracking-[-0.035em] text-strong sm:text-[29px]">
-              Bienvenue sur votre espace client
+              {t.auth.login.title}
             </h1>
 
             <p className="mx-auto mt-3 max-w-[360px] text-center text-[14px] leading-6 text-muted">
-              Connectez-vous pour accéder à vos documents, paiements et
-              démarches.
+              {t.auth.login.sub}
             </p>
           </div>
 
@@ -92,9 +89,9 @@ export default function LoginPage() {
           <form onSubmit={onSubmit} className="space-y-5">
             <Field
               id="email"
-              label="Adresse e-mail"
+              label={t.auth.fields.email}
               type="email"
-              placeholder="vous@exemple.ch"
+              placeholder={t.auth.fields.emailPlaceholder}
               autoComplete="email"
               required
               value={form.email}
@@ -104,9 +101,9 @@ export default function LoginPage() {
             <div>
               <Field
                 id="password"
-                label="Mot de passe"
+                label={t.auth.fields.password}
                 type="password"
-                placeholder="Votre mot de passe"
+                placeholder={t.auth.fields.passwordPlaceholder}
                 autoComplete="current-password"
                 required
                 value={form.password}
@@ -118,7 +115,7 @@ export default function LoginPage() {
                   href="/forgot-password"
                   className="text-[13px] font-medium text-brand transition-colors hover:text-strong hover:underline"
                 >
-                  Mot de passe oublié ?
+                  {t.auth.login.forgot}
                 </Link>
               </div>
             </div>
@@ -132,25 +129,23 @@ export default function LoginPage() {
               {loading ? (
                 <span className="flex items-center gap-2.5">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Connexion...
+                  {t.auth.login.loading}
                 </span>
               ) : (
-                "Se connecter"
+                t.auth.login.submit
               )}
             </button>
           </form>
 
           {/* Create account */}
           <div className="mt-6 text-center">
-            <p className="text-[12px] text-muted">
-              Vous n&apos;avez pas encore de compte ?
-            </p>
+            <p className="text-[12px] text-muted">{t.auth.login.noAccount}</p>
 
             <Link
               href="/signup"
               className="mt-1 inline-block text-[13px] font-medium text-brand hover:text-strong hover:underline"
             >
-              Créer mon compte
+              {t.auth.login.createAccount}
             </Link>
           </div>
 
@@ -175,12 +170,11 @@ export default function LoginPage() {
 
               <div>
                 <p className="text-[13px] font-medium text-strong">
-                  Connexion sécurisée
+                  {t.auth.login.secureTitle}
                 </p>
 
                 <p className="mt-1 text-[12px] leading-5 text-muted">
-                  Une vérification supplémentaire sera demandée après votre
-                  connexion.
+                  {t.auth.login.secureBody}
                 </p>
               </div>
             </div>
@@ -190,8 +184,7 @@ export default function LoginPage() {
         {/* Footer */}
         <footer className="mt-7 text-center">
           <p className="text-[11px] leading-5 text-subtle">
-            © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
-            en ligne.
+            © {new Date().getFullYear()} Fiduvia · {t.auth.rights}
           </p>
         </footer>
       </div>

@@ -101,7 +101,9 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
         return;
       }
 
-      const confirmRes = await fetch(`/api/documents/${documentId}/confirm`, { method: "POST" });
+      const confirmRes = await fetch(`/api/documents/${documentId}/confirm`, {
+        method: "POST",
+      });
       if (!confirmRes.ok) {
         setError("Échec de la confirmation de l'envoi.");
         return;

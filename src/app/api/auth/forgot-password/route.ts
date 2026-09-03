@@ -17,7 +17,11 @@ export async function POST(request: NextRequest) {
     if (user && !(await isOtpIssuanceRateLimited(user.id, "password_reset"))) {
       const code = await createOtp(user.id, "password_reset");
       await recordOtpIssuance(user.id, "password_reset");
-      const emailBody = otpEmailTemplate({ code, purpose: "password_reset" });
+      const emailBody = otpEmailTemplate({
+        code,
+        purpose: "password_reset",
+        locale: user.locale,
+      });
       await sendEmail({ to: user.email, ...emailBody });
     }
   }

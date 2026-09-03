@@ -1,37 +1,24 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { getT } from "@/lib/i18n";
+import { I18nProvider } from "@/lib/i18n/I18nProvider";
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+/**
+ * Auth routes are self-contained pages: each renders its own `<main>`, brand
+ * mark and footer (the SP-1 reskin styled them in place rather than through a
+ * shared card). This layout therefore only establishes the language — it used
+ * to render a second brand block and a second `<main>`, which nested `<main>`
+ * elements and printed the wordmark twice on every auth screen.
+ */
+export default async function AuthLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { locale, t } = await getT();
+
   return (
-    <main className="min-h-screen bg-surface px-4 py-10 sm:px-6">
-      <div className="flex min-h-screen flex-col">
-        {/* Brand */}
-        <div className="pt-4 text-center sm:pt-8">
-          <Link
-            href="/"
-            className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
-          >
-            fiduvia
-          </Link>
-
-          <p className="mt-1.5 text-[13px] text-muted">
-            Fiduciaire & comptabilité en ligne
-          </p>
-        </div>
-
-        {/* Auth content */}
-        <div className="flex flex-1 items-center justify-center py-10">
-          <div className="w-full max-w-[440px]">{children}</div>
-        </div>
-
-        {/* Footer */}
-        <footer className="pb-4 text-center">
-          <p className="text-[11px] leading-5 text-subtle">
-            © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
-            en ligne.
-          </p>
-        </footer>
-      </div>
-    </main>
+    <I18nProvider locale={locale} messages={t}>
+      <div lang={locale}>{children}</div>
+    </I18nProvider>
   );
 }

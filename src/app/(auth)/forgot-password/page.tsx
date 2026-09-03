@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Field } from "@/components/ui/Field";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function ForgotPasswordPage() {
+  const t = useT();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,12 +41,10 @@ export default function ForgotPasswordPage() {
               href="/"
               className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
             >
-              fiduvia
+              {t.auth.brand}
             </Link>
 
-            <p className="mt-1.5 text-[13px] text-muted">
-              Fiduciaire & comptabilité en ligne
-            </p>
+            <p className="mt-1.5 text-[13px] text-muted">{t.auth.tagline}</p>
           </div>
 
           {/* Success Card */}
@@ -68,12 +68,11 @@ export default function ForgotPasswordPage() {
             </div>
 
             <h1 className="mt-6 text-[26px] font-semibold leading-[1.2] tracking-[-0.035em] text-strong">
-              Vérifiez votre e-mail
+              {t.auth.forgot.doneTitle}
             </h1>
 
             <p className="mx-auto mt-3 max-w-[360px] text-[14px] leading-6 text-muted">
-              Si un compte existe avec cette adresse, un code de
-              réinitialisation a été envoyé.
+              {t.auth.forgot.doneBody}
             </p>
 
             <div className="mt-8">
@@ -81,15 +80,14 @@ export default function ForgotPasswordPage() {
                 href="/login"
                 className="inline-flex h-[48px] items-center justify-center rounded-xl bg-brand px-7 text-[14px] font-medium text-white transition hover:bg-brand-hover focus:outline-none focus:ring-4 focus:ring-brand/15"
               >
-                Retour à la connexion
+                {t.auth.forgot.backToLogin}
               </Link>
             </div>
           </section>
 
           {/* Footer */}
           <p className="mt-7 text-center text-[11px] leading-5 text-subtle">
-            © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
-            en ligne.
+            © {new Date().getFullYear()} Fiduvia · {t.auth.rights}
           </p>
         </div>
       </main>
@@ -105,12 +103,10 @@ export default function ForgotPasswordPage() {
             href="/"
             className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
           >
-            fiduvia
+            {t.auth.brand}
           </Link>
 
-          <p className="mt-1.5 text-[13px] text-muted">
-            Fiduciaire & comptabilité en ligne
-          </p>
+          <p className="mt-1.5 text-[13px] text-muted">{t.auth.tagline}</p>
         </div>
 
         {/* Card */}
@@ -134,7 +130,7 @@ export default function ForgotPasswordPage() {
                 strokeLinejoin="round"
               />
             </svg>
-            Retour à la connexion
+            {t.auth.forgot.backToLogin}
           </Link>
 
           {/* Header */}
@@ -154,13 +150,11 @@ export default function ForgotPasswordPage() {
             </div>
 
             <h1 className="mt-5 text-[28px] font-semibold leading-[1.15] tracking-[-0.04em] text-strong">
-              Mot de passe oublié ?
+              {t.auth.forgot.title}
             </h1>
 
             <p className="mt-3 text-[14px] leading-6 text-muted">
-              Entrez l&apos;adresse e-mail associée à votre compte. Si elle
-              correspond à un compte Fiduvia, nous vous enverrons un code
-              permettant de réinitialiser votre mot de passe.
+              {t.auth.forgot.sub}
             </p>
           </div>
 
@@ -168,9 +162,9 @@ export default function ForgotPasswordPage() {
           <form onSubmit={onSubmit} className="mt-8">
             <Field
               id="email"
-              label="Adresse e-mail"
+              label={t.auth.fields.email}
               type="email"
-              placeholder="vous@exemple.ch"
+              placeholder={t.auth.fields.emailPlaceholder}
               autoComplete="email"
               required
               value={email}
@@ -185,10 +179,10 @@ export default function ForgotPasswordPage() {
               {loading ? (
                 <span className="flex items-center gap-2.5">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Envoi en cours...
+                  {t.auth.forgot.loading}
                 </span>
               ) : (
-                "Envoyer le code"
+                t.auth.forgot.submit
               )}
             </button>
           </form>
@@ -216,12 +210,11 @@ export default function ForgotPasswordPage() {
 
               <div>
                 <p className="text-[13px] font-medium text-strong">
-                  Vos informations restent protégées
+                  {t.auth.forgot.privacyTitle}
                 </p>
 
                 <p className="mt-1 text-[12px] leading-5 text-muted">
-                  Pour votre sécurité, nous ne vous indiquons pas si une adresse
-                  e-mail possède un compte Fiduvia.
+                  {t.auth.forgot.privacyBody}
                 </p>
               </div>
             </div>
@@ -230,8 +223,7 @@ export default function ForgotPasswordPage() {
 
         {/* Footer */}
         <p className="mt-7 text-center text-[11px] leading-5 text-subtle">
-          © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
-          en ligne.
+          © {new Date().getFullYear()} Fiduvia · {t.auth.rights}
         </p>
       </div>
     </main>

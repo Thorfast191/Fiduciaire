@@ -1,3 +1,5 @@
+import type { Messages } from "@/lib/i18n/messages/fr";
+
 /**
  * Sidebar nav definitions, transcribed from the client mockup.
  *
@@ -11,23 +13,31 @@ export type NavEntry =
   | { kind: "link"; label: string; href: string }
   | { kind: "soon"; label: string };
 
-export const CLIENT_NAV: NavEntry[] = [
-  { kind: "head", label: "Prestations" },
-  { kind: "link", label: "Déclarations d'impôts", href: "/portal" },
-  { kind: "soon", label: "Prestation en capital" },
-  { kind: "soon", label: "Simulation d'impôts" },
-  { kind: "soon", label: "Détermination acomptes" },
-  { kind: "soon", label: "Relecture" },
-  { kind: "head", label: "Divers" },
-  { kind: "soon", label: "Assistance" },
-  { kind: "soon", label: "Paiements" },
-  { kind: "soon", label: "Contacts" },
-];
+export function clientNav(t: Messages): NavEntry[] {
+  const n = t.portal.nav;
 
-export const ADMIN_NAV: NavEntry[] = [
-  { kind: "link", label: "Accueil", href: "/admin" },
-  { kind: "link", label: "Dossiers", href: "/admin/dossiers" },
-  { kind: "soon", label: "Statistiques" },
-  { kind: "soon", label: "Périodes" },
-  { kind: "soon", label: "Utilisateurs" },
-];
+  return [
+    { kind: "head", label: n.servicesHead },
+    { kind: "link", label: n.taxReturns, href: "/portal" },
+    { kind: "soon", label: n.capital },
+    { kind: "soon", label: n.simulation },
+    { kind: "soon", label: n.instalments },
+    { kind: "soon", label: n.review },
+    { kind: "head", label: n.otherHead },
+    { kind: "soon", label: n.assistance },
+    { kind: "soon", label: n.payments },
+    { kind: "soon", label: n.contacts },
+  ];
+}
+
+export function adminNav(t: Messages): NavEntry[] {
+  const n = t.admin.nav;
+
+  return [
+    { kind: "link", label: n.home, href: "/admin" },
+    { kind: "link", label: n.dossiers, href: "/admin/dossiers" },
+    { kind: "soon", label: n.stats },
+    { kind: "soon", label: n.periods },
+    { kind: "soon", label: n.users },
+  ];
+}

@@ -80,7 +80,10 @@ export async function consumeOtp(
     const nextAttempt = row.attemptCount + 1;
     return {
       ok: false,
-      reason: nextAttempt >= MAX_ATTEMPTS ? "too_many_attempts" : "invalid_or_expired",
+      reason:
+        nextAttempt >= MAX_ATTEMPTS
+          ? "too_many_attempts"
+          : "invalid_or_expired",
     };
   }
 

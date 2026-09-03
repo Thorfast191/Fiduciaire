@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { DossierStatus } from "@/db/schema";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 interface DossierItem {
   id: string;
@@ -12,6 +13,7 @@ interface DossierItem {
 }
 
 export default function DossierList() {
+  const t = useT();
   const [dossiers, setDossiers] = useState<DossierItem[]>([]);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function DossierList() {
   return (
     <section>
       {dossiers.length === 0 && (
-        <p className="text-[13px] text-muted">Aucun dossier pour le moment.</p>
+        <p className="text-[13px] text-muted">{t.portal.noDossiers}</p>
       )}
 
       <ul className="flex flex-col gap-2">
@@ -38,7 +40,7 @@ export default function DossierList() {
               className="flex items-center justify-between gap-3 rounded-xl border border-line bg-card px-4 py-3 transition hover:border-line-strong hover:bg-sunken"
             >
               <span className="text-[14px] font-medium text-strong">
-                Dossier {dossier.taxYear}
+                {t.portal.dossier} {dossier.taxYear}
               </span>
               <StatusBadge status={dossier.status} />
             </Link>

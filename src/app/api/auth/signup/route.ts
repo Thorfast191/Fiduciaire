@@ -7,6 +7,11 @@ import { hashPassword } from "@/lib/auth/password";
 import { createOtp } from "@/lib/auth/otp";
 import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_COOKIE,
+  isLocale,
+} from "@/lib/i18n/config";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -35,13 +40,27 @@ export async function POST(request: NextRequest) {
   }
 
   const passwordHash = await hashPassword(password);
+
+  // Whatever language the visitor signed up in is the one their transactional
+  // email should use from now on.
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
+  const locale = isLocale(cookieLocale) ? cookieLocale : DEFAULT_LOCALE;
+
   const [user] = await db
     .insert(users)
-    .values({ email, passwordHash, firstName, lastName, phone, role: "client" })
+    .values({
+      email,
+      passwordHash,
+      firstName,
+      lastName,
+      phone,
+      role: "client",
+      locale,
+    })
     .returning();
 
   const code = await createOtp(user.id, "signup");
-  const emailBody = otpEmailTemplate({ code, purpose: "signup" });
+  const emailBody = otpEmailTemplate({ code, purpose: "signup", locale });
   await sendEmail({ to: user.email, ...emailBody });
 
   return NextResponse.json({ ok: true });

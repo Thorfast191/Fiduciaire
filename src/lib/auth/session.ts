@@ -64,9 +64,7 @@ export async function getSessionUserByToken(
 }
 
 export async function revokeSessionByToken(token: string): Promise<void> {
-  await db
-    .delete(sessions)
-    .where(eq(sessions.tokenHash, hashToken(token)));
+  await db.delete(sessions).where(eq(sessions.tokenHash, hashToken(token)));
 }
 
 export async function revokeAllSessionsForUser(userId: string): Promise<void> {

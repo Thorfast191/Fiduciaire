@@ -1,13 +1,16 @@
+"use client";
+
 import type { DossierStatus } from "@/db/schema";
+import { useT } from "@/lib/i18n/I18nProvider";
 
-export const STATUS_LABELS: Record<DossierStatus, string> = {
-  not_started: "Non commencé",
-  submitted: "Soumis",
-  in_review: "En cours de traitement",
-  completed: "Terminé",
-};
+export const STATUS_ORDER: DossierStatus[] = [
+  "not_started",
+  "submitted",
+  "in_review",
+  "completed",
+];
 
-const STATUS_CLASS: Record<DossierStatus, string> = {
+export const STATUS_CLASS: Record<DossierStatus, string> = {
   not_started: "bg-status-not-started-soft text-status-not-started",
   submitted: "bg-status-submitted-soft text-status-submitted",
   in_review: "bg-status-in-review-soft text-status-in-review",
@@ -15,8 +18,11 @@ const STATUS_CLASS: Record<DossierStatus, string> = {
 };
 
 export function StatusBadge({ status }: { status: DossierStatus }) {
+  const t = useT();
+
   const cls = STATUS_CLASS[status] ?? STATUS_CLASS.not_started;
-  const label = STATUS_LABELS[status] ?? status;
+  const label = t.status[status] ?? status;
+
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${cls}`}

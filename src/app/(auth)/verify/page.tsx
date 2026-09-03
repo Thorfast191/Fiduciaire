@@ -4,8 +4,10 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FormAlert } from "@/components/ui/Field";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 function VerifyContent() {
+  const t = useT();
   const router = useRouter();
   const params = useSearchParams();
 
@@ -45,9 +47,7 @@ function VerifyContent() {
 
       router.push(body.role === "client" ? "/portal" : "/admin");
     } catch {
-      setError(
-        "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
-      );
+      setError(t.common.genericError);
       setLoading(false);
     }
   }
@@ -61,12 +61,10 @@ function VerifyContent() {
             href="/"
             className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
           >
-            fiduvia
+            {t.auth.brand}
           </Link>
 
-          <p className="mt-1.5 text-[13px] text-muted">
-            Fiduciaire & comptabilité en ligne
-          </p>
+          <p className="mt-1.5 text-[13px] text-muted">{t.auth.tagline}</p>
         </div>
 
         {/* Card */}
@@ -89,12 +87,11 @@ function VerifyContent() {
           {/* Heading */}
           <div className="mt-6">
             <h1 className="text-[29px] font-semibold leading-[1.15] tracking-[-0.04em] text-strong">
-              Vérification de sécurité
+              {t.auth.verify.title}
             </h1>
 
             <p className="mt-3 text-[14px] leading-6 text-muted">
-              Pour protéger votre compte, nous avons envoyé un code de
-              vérification à l&apos;adresse suivante :
+              {t.auth.verify.intro}
             </p>
 
             {/* Email */}
@@ -118,7 +115,7 @@ function VerifyContent() {
               htmlFor="code"
               className="mb-3 block text-[13px] font-medium text-strong"
             >
-              Code de vérification
+              {t.auth.verify.codeLabel}
             </label>
 
             <input
@@ -140,7 +137,7 @@ function VerifyContent() {
             />
 
             <p className="mt-2.5 text-center text-[11px] leading-5 text-subtle">
-              Entrez les 6 chiffres reçus par e-mail.
+              {t.auth.verify.codeHint}
             </p>
 
             {/* Submit */}
@@ -152,10 +149,10 @@ function VerifyContent() {
               {loading ? (
                 <span className="flex items-center gap-2.5">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Vérification...
+                  {t.auth.verify.loading}
                 </span>
               ) : (
-                "Vérifier le code"
+                t.auth.verify.submit
               )}
             </button>
           </form>
@@ -163,12 +160,11 @@ function VerifyContent() {
           {/* Help */}
           <div className="mt-7 border-t border-line pt-6">
             <p className="text-center text-[12px] leading-5 text-muted">
-              Vous n&apos;avez pas reçu le code ?
+              {t.auth.verify.notReceived}
             </p>
 
             <p className="mt-1 text-center text-[12px] leading-5 text-subtle">
-              Vérifiez votre dossier courrier indésirable ou revenez en arrière
-              pour recommencer.
+              {t.auth.verify.notReceivedBody}
             </p>
           </div>
 
@@ -192,8 +188,7 @@ function VerifyContent() {
               </svg>
 
               <p className="text-[11px] leading-5 text-muted">
-                Ne partagez jamais votre code de vérification avec une autre
-                personne.
+                {t.auth.verify.warning}
               </p>
             </div>
           </div>
@@ -201,8 +196,7 @@ function VerifyContent() {
 
         {/* Footer */}
         <p className="mt-7 text-center text-[11px] leading-5 text-subtle">
-          © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
-          en ligne.
+          © {new Date().getFullYear()} Fiduvia · {t.auth.rights}
         </p>
       </div>
     </main>
@@ -210,13 +204,15 @@ function VerifyContent() {
 }
 
 export default function VerifyPage() {
+  const t = useT();
+
   return (
     <Suspense
       fallback={
         <main className="flex min-h-screen items-center justify-center bg-surface">
           <div className="flex items-center gap-2 text-sm text-muted">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-line-default border-t-brand" />
-            Chargement...
+            {t.auth.verify.fallback}
           </div>
         </main>
       }

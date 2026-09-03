@@ -1,49 +1,50 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { LocaleSwitch } from "@/components/LocaleSwitch";
+import { getMessages } from "@/lib/i18n";
+import { LOCALES, isLocale } from "@/lib/i18n/config";
 
-const steps = [
-  {
-    number: "01",
-    title: "Créez votre espace",
-    description:
-      "Inscrivez-vous en ligne et renseignez les informations nécessaires à votre dossier.",
-  },
-  {
-    number: "02",
-    title: "Déposez vos documents",
-    description:
-      "Transmettez vos documents directement depuis votre espace client sécurisé.",
-  },
-  {
-    number: "03",
-    title: "Nous traitons votre dossier",
-    description:
-      "Notre équipe analyse votre situation et vous accompagne jusqu'à la finalisation.",
-  },
-];
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fiduvia.ch";
 
-const faqs = [
-  {
-    question: "Comment fonctionne Fiduvia ?",
-    answer:
-      "Fiduvia vous permet de gérer votre relation fiduciaire entièrement en ligne. Vous créez votre espace, transmettez vos documents et suivez l'avancement de votre dossier depuis votre espace personnel.",
-  },
-  {
-    question: "Mes documents sont-ils sécurisés ?",
-    answer:
-      "La plateforme est conçue autour de la confidentialité et de la protection des données. Les documents sont transmis via votre espace client sécurisé.",
-  },
-  {
-    question: "Puis-je suivre l'avancement de mon dossier ?",
-    answer:
-      "Oui. Votre espace client vous permet de suivre l'état de votre dossier et de voir les actions ou documents qui nécessitent votre attention.",
-  },
-  {
-    question: "À qui s'adresse Fiduvia ?",
-    answer:
-      "Fiduvia accompagne les particuliers, indépendants et entreprises qui souhaitent gérer leurs démarches comptables et fiscales de manière simple et digitale.",
-  },
-];
+/** Both locales are prerendered; "/" is a proxy rewrite onto /fr. */
+export function generateStaticParams() {
+  return LOCALES.map((lang) => ({ lang }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+
+  const t = getMessages(lang);
+  const path = lang === "fr" ? "/" : "/en";
+
+  return {
+    title: `Fiduvia — ${t.hero.title}`,
+    description: t.hero.p1,
+    alternates: {
+      canonical: `${SITE}${path}`,
+      languages: {
+        "fr-CH": `${SITE}/`,
+        en: `${SITE}/en`,
+        "x-default": `${SITE}/`,
+      },
+    },
+    openGraph: {
+      type: "website",
+      siteName: "Fiduvia",
+      locale: lang === "fr" ? "fr_CH" : "en",
+      url: `${SITE}${path}`,
+      title: `Fiduvia — ${t.hero.title}`,
+      description: t.hero.p1,
+    },
+  };
+}
 
 function Arrow() {
   return (
@@ -78,9 +79,21 @@ function Check() {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+
+  const t = getMessages(lang);
+
   return (
-    <main className="min-h-screen bg-[var(--surface-page)] text-[var(--text-body)]">
+    <main
+      lang={lang}
+      className="min-h-screen bg-[var(--surface-page)] text-[var(--text-body)]"
+    >
       {/* =========================================================
           HEADER
       ========================================================= */}
@@ -120,28 +133,28 @@ export default function HomePage() {
             href="#about"
             className="hidden whitespace-nowrap text-[15px] font-medium text-[var(--text-body)] transition-colors duration-150 hover:text-[var(--brand)] md:block"
           >
-            Qui sommes-nous
+            {t.nav.about}
           </Link>
 
           <Link
             href="#services"
             className="hidden whitespace-nowrap text-[15px] font-medium text-[var(--text-body)] transition-colors duration-150 hover:text-[var(--brand)] md:block"
           >
-            Nos prestations
+            {t.nav.services}
           </Link>
 
           <Link
             href="#steps"
             className="hidden whitespace-nowrap text-[15px] font-medium text-[var(--text-body)] transition-colors duration-150 hover:text-[var(--brand)] md:block"
           >
-            Méthode
+            {t.nav.method}
           </Link>
 
           <Link
             href="#tarifs"
             className="hidden whitespace-nowrap text-[15px] font-medium text-[var(--text-body)] transition-colors duration-150 hover:text-[var(--brand)] md:block"
           >
-            Tarifs
+            {t.nav.pricing}
           </Link>
 
           <Link
@@ -152,29 +165,15 @@ export default function HomePage() {
           </Link>
 
           {/* LANGUAGE */}
-          <div className="hidden items-center gap-[4px] rounded-[8px] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-[3px] sm:flex">
-            <button
-              type="button"
-              className="rounded-[7px] border-0 bg-[var(--teal-100)] px-[10px] py-[5px] text-[13px] font-bold text-[var(--brand)]"
-            >
-              FR
-            </button>
-
-            <button
-              type="button"
-              className="rounded-[7px] border-0 bg-transparent px-[10px] py-[5px] text-[13px] font-medium text-[var(--text-subtle)]"
-            >
-              EN
-            </button>
-          </div>
+          <LocaleSwitch current={lang} />
 
           {/* LOGIN */}
           <Link
             href="/login"
             className="flex shrink-0 items-center whitespace-nowrap rounded-[9px] bg-[var(--brand)] px-[18px] py-[10px] text-[14px] font-semibold text-white transition-colors duration-150 hover:bg-[var(--brand-hover)]"
           >
-            <span className="hidden sm:inline">Se connecter</span>
-            <span className="sm:hidden">Connexion</span>
+            <span className="hidden sm:inline">{t.nav.login}</span>
+            <span className="sm:hidden">{t.nav.loginShort}</span>
           </Link>
 
           {/* MOBILE BURGER */}
@@ -240,9 +239,7 @@ export default function HomePage() {
               paddingTop: "14px",
             }}
           >
-            <span className="fx-eyebrow">
-              Fiduciaire en ligne · Vaud / Valais / Fribourg
-            </span>
+            <span className="fx-eyebrow">{t.hero.eyebrow}</span>
 
             <h1
               className="disp"
@@ -255,7 +252,7 @@ export default function HomePage() {
                 letterSpacing: "-0.045em",
               }}
             >
-              Votre déclaration d’impôts, entre de bonnes mains.
+              {t.hero.title}
             </h1>
 
             <div className="mt-5 flex max-w-[640px] flex-col gap-[13px]">
@@ -263,27 +260,21 @@ export default function HomePage() {
                 className="m-0 text-[17px] leading-[1.55]"
                 style={{ color: "var(--text-muted)" }}
               >
-                Fiduvia est un service suisse d’assistance à la déclaration
-                fiscale. Nous vous accompagnons dans la préparation de votre
-                déclaration d’impôts, de la collecte de vos documents jusqu’à sa
-                transmission à l’administration fiscale compétente.
+                {t.hero.p1}
               </p>
 
               <p
                 className="m-0 text-[17px] leading-[1.55]"
                 style={{ color: "var(--text-muted)" }}
               >
-                Vous déposez simplement vos documents en ligne. Notre équipe les
-                vérifie, prépare votre déclaration et s’occupe de sa
-                transmission, en toute sécurité.
+                {t.hero.p2}
               </p>
 
               <p
                 className="m-0 text-[17px] leading-[1.55]"
                 style={{ color: "var(--text-muted)" }}
               >
-                Un service simple, humain et sécurisé, conçu pour vous faire
-                gagner du temps et éviter les erreurs.
+                {t.hero.p3}
               </p>
 
               <div className="mt-[3px] flex items-start gap-[11px]">
@@ -296,8 +287,7 @@ export default function HomePage() {
                   className="m-0 text-[15px] leading-[1.5]"
                   style={{ color: "var(--text-muted)" }}
                 >
-                  Votre dossier est traité sous 10 jours ouvrables dès réception
-                  de l’ensemble des documents nécessaires.
+                  {t.hero.note}
                 </p>
               </div>
             </div>
@@ -307,7 +297,7 @@ export default function HomePage() {
                 href="/login"
                 className="inline-flex items-center gap-[9px] rounded-[12px] bg-[var(--brand)] px-[26px] py-[15px] text-[16px] font-semibold text-white transition hover:bg-[var(--brand-hover)]"
               >
-                Remplir ma déclaration d&apos;impôts
+                {t.hero.cta}
                 <span className="text-[18px]">→</span>
               </Link>
 
@@ -315,12 +305,12 @@ export default function HomePage() {
                 className="text-[14px]"
                 style={{ color: "var(--text-muted)" }}
               >
-                Déjà client ?{" "}
+                {t.hero.already}{" "}
                 <Link
                   href="/login"
                   className="font-semibold text-[var(--brand)]"
                 >
-                  Se connecter
+                  {t.nav.login}
                 </Link>
               </span>
             </div>
@@ -333,15 +323,15 @@ export default function HomePage() {
           >
             <div className="flex items-start justify-between border-b border-[var(--border-subtle)] pb-5">
               <div>
-                <p className="fx-eyebrow text-[10px]">Simulateur de tarif</p>
+                <p className="fx-eyebrow text-[10px]">{t.sim.eyebrow}</p>
 
                 <h2 className="mt-2 text-[23px] font-bold tracking-[-0.03em] text-[var(--petrol-900)]">
-                  Votre tarif en quelques clics
+                  {t.sim.title}
                 </h2>
               </div>
 
               <span className="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.1em] text-[var(--text-subtle)]">
-                Sans engagement
+                {t.sim.noCommitment}
               </span>
             </div>
 
@@ -349,7 +339,7 @@ export default function HomePage() {
               {/* ÉTAT CIVIL */}
               <div>
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--petrol-800)]">
-                  État civil
+                  {t.sim.maritalStatus}
                 </p>
 
                 <label className="flex cursor-pointer items-center gap-2 py-[5px] text-[13px] text-[var(--petrol-900)]">
@@ -358,7 +348,7 @@ export default function HomePage() {
                     name="civil"
                     className="h-[17px] w-[17px] accent-[var(--brand)]"
                   />
-                  Personne seule
+                  {t.sim.single}
                 </label>
 
                 <label className="flex cursor-pointer items-center gap-2 py-[5px] text-[13px] text-[var(--petrol-900)]">
@@ -367,7 +357,7 @@ export default function HomePage() {
                     name="civil"
                     className="h-[17px] w-[17px] accent-[var(--brand)]"
                   />
-                  Marié·e / partenariat
+                  {t.sim.couple}
                 </label>
               </div>
 
@@ -376,17 +366,10 @@ export default function HomePage() {
               {/* PROFESSIONAL */}
               <div>
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--petrol-800)]">
-                  Situation professionnelle
+                  {t.sim.proSituation}
                 </p>
 
-                {[
-                  "Étudiant / apprenti",
-                  "Salarié·e",
-                  "Rentier,ère (AVS, AI, LPP)",
-                  "Chômage et/ou APG",
-                  "Indépendant·e",
-                  "Autre",
-                ].map((item) => (
+                {t.sim.proOptions.map((item) => (
                   <label
                     key={item}
                     className="flex cursor-pointer items-center gap-2 py-[5px] text-[13px] text-[var(--petrol-900)]"
@@ -406,7 +389,7 @@ export default function HomePage() {
                   type="button"
                   className="text-[12px] font-semibold text-[var(--brand)]"
                 >
-                  Développer plus⌄
+                  {t.sim.expand}⌄
                 </button>
               </div>
 
@@ -414,7 +397,7 @@ export default function HomePage() {
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--text-muted)]">
-                      Total estimé
+                      {t.sim.total}
                     </p>
 
                     <p className="mt-1 text-[30px] font-semibold tracking-[-0.03em] text-[var(--petrol-900)]">
@@ -426,7 +409,7 @@ export default function HomePage() {
                     type="button"
                     className="shrink-0 rounded-[10px] bg-[var(--brand)] px-5 py-3 text-[13px] font-semibold text-white transition hover:bg-[var(--brand-hover)]"
                   >
-                    Créer mon dossier
+                    {t.sim.create}
                   </button>
                 </div>
               </div>
@@ -445,17 +428,17 @@ export default function HomePage() {
         >
           <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
             <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
-            +250 clients accompagnés
+            {t.trust.clients}
           </span>
 
           <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
             <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
-            Données hébergées en Suisse
+            {t.trust.hosting}
           </span>
 
           <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
             <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
-            Experts fiscaux certifiés
+            {t.trust.experts}
           </span>
         </div>
       </section>
@@ -468,7 +451,7 @@ export default function HomePage() {
         className="mx-auto max-w-[1120px] px-[34px] py-[56px]"
       >
         <span className="fx-eyebrow block text-center text-[var(--text-muted)]">
-          Qui sommes-nous ?
+          {t.about.eyebrow}
         </span>
 
         <h2
@@ -482,38 +465,38 @@ export default function HomePage() {
             leading-[1.05]
           "
         >
-          Une assistance fiscale simple, humaine et entièrement en ligne.
+          {t.about.title}
         </h2>
 
         {/* STATS */}
         <div className="mt-[34px] grid w-full grid-cols-1 gap-[32px] sm:grid-cols-3">
           <div className="flex flex-col items-center gap-[3px] text-center">
             <span className="disp fx-figure text-[34px] font-extrabold leading-none text-[var(--brand)]">
-              10 jours*
+              {t.about.stats[0].value}
             </span>
 
             <span className="text-[13px] text-[var(--text-muted)]">
-              de délai moyen de traitement
+              {t.about.stats[0].label}
             </span>
           </div>
 
           <div className="flex flex-col items-center gap-[3px] text-center">
             <span className="disp fx-figure text-[34px] font-extrabold leading-none text-[var(--brand)]">
-              3 cantons
+              {t.about.stats[1].value}
             </span>
 
             <span className="text-[13px] text-[var(--text-muted)]">
-              Vaud · Valais · Fribourg
+              {t.about.stats[1].label}
             </span>
           </div>
 
           <div className="flex flex-col items-center gap-[3px] text-center">
             <span className="disp fx-figure text-[34px] font-extrabold leading-none text-[var(--brand)]">
-              100 %
+              {t.about.stats[2].value}
             </span>
 
             <span className="text-[13px] text-[var(--text-muted)]">
-              des échanges en ligne
+              {t.about.stats[2].label}
             </span>
           </div>
         </div>
@@ -521,22 +504,15 @@ export default function HomePage() {
         {/* DESCRIPTION */}
         <div className="mt-[34px] w-full">
           <p className="text-[15.5px] leading-[1.7] text-[var(--text-muted)]">
-            Fiduvia est un service suisse d’assistance à la déclaration
-            d’impôts, conçu pour simplifier une démarche souvent longue et
-            complexe.
+            {t.about.p1}
           </p>
 
           <p className="mt-[14px] text-[15.5px] leading-[1.7] text-[var(--text-muted)]">
-            Vous nous transmettez vos documents directement depuis votre espace
-            client. Un membre de notre équipe analyse votre dossier, prépare
-            votre déclaration d’impôts et, lorsque le service le prévoit, la
-            transmet aux autorités fiscales compétentes.
+            {t.about.p2}
           </p>
 
           <p className="mt-[14px] text-[15.5px] leading-[1.7] text-[var(--text-muted)]">
-            Notre objectif est simple : vous faire gagner du temps, réduire les
-            risques d’erreur et vous permettre de réaliser votre déclaration
-            sans rendez-vous, entièrement en ligne.
+            {t.about.p3}
           </p>
         </div>
 
@@ -564,12 +540,11 @@ export default function HomePage() {
 
             <div>
               <h3 className="disp text-[17px] font-bold">
-                Un gestionnaire dédié
+                {t.about.values[0].title}
               </h3>
 
               <p className="mt-[5px] text-[13.5px] leading-[1.55] text-[var(--text-muted)]">
-                Votre dossier est attribué à un membre de notre équipe qui en
-                assure le suivi tout au long du traitement.
+                {t.about.values[0].desc}
               </p>
             </div>
           </div>
@@ -594,12 +569,11 @@ export default function HomePage() {
 
             <div>
               <h3 className="disp text-[17px] font-bold">
-                Des données traitées avec soin
+                {t.about.values[1].title}
               </h3>
 
               <p className="mt-[5px] text-[13.5px] leading-[1.55] text-[var(--text-muted)]">
-                Vos documents et informations fiscales sont traités dans un
-                environnement sécurisé et hébergés en Suisse.
+                {t.about.values[1].desc}
               </p>
             </div>
           </div>
@@ -623,12 +597,11 @@ export default function HomePage() {
 
             <div>
               <h3 className="disp text-[17px] font-bold">
-                Des tarifs annoncés à l’avance
+                {t.about.values[2].title}
               </h3>
 
               <p className="mt-[5px] text-[13.5px] leading-[1.55] text-[var(--text-muted)]">
-                Vous connaissez le prix de votre prestation avant de commencer.
-                Aucun coût caché.
+                {t.about.values[2].desc}
               </p>
             </div>
           </div>
@@ -655,21 +628,18 @@ export default function HomePage() {
 
             <div>
               <h3 className="disp text-[17px] font-bold">
-                Un service de A à Z
+                {t.about.values[3].title}
               </h3>
 
               <p className="mt-[5px] text-[13.5px] leading-[1.55] text-[var(--text-muted)]">
-                Vous transmettez vos documents en ligne. Nous nous occupons de
-                la préparation, de la saisie et de la transmission de votre
-                déclaration.
+                {t.about.values[3].desc}
               </p>
             </div>
           </div>
         </div>
 
         <p className="mt-[16px] text-[12.5px] leading-[1.6] text-[var(--text-muted)] opacity-[0.85]">
-          *Délai moyen indicatif, à compter de la réception de l’ensemble des
-          documents nécessaires au traitement du dossier.
+          {t.about.footnote}
         </p>
       </section>
 
@@ -683,11 +653,11 @@ export default function HomePage() {
         {/* SECTION TITLE */}
         <div className="text-center">
           <span className="fx-eyebrow text-[var(--text-muted)]">
-            Découvrez nos prestations
+            {t.services.eyebrow}
           </span>
 
           <h2 className="disp mt-[6px] text-[clamp(28px,3.4vw,36px)] font-extrabold leading-[1.05]">
-            Ce que nous faisons pour vous
+            {t.services.title}
           </h2>
         </div>
 
@@ -714,12 +684,11 @@ export default function HomePage() {
             </div>
 
             <h3 className="disp mt-[4px] text-[19px] font-bold">
-              Déclaration d&apos;impôts
+              {t.services.items[0].title}
             </h3>
 
             <p className="m-0 text-[13.5px] leading-[1.5] text-[var(--text-muted)]">
-              La déclaration annuelle complète, pour salariés, rentiers et
-              indépendants.
+              {t.services.items[0].desc}
             </p>
           </div>
 
@@ -742,12 +711,11 @@ export default function HomePage() {
             </div>
 
             <h3 className="disp mt-[4px] text-[19px] font-bold">
-              Départ à l&apos;étranger
+              {t.services.items[1].title}
             </h3>
 
             <p className="m-0 text-[13.5px] leading-[1.5] text-[var(--text-muted)]">
-              En cas de départ à l&apos;étranger en cours d&apos;année qui
-              revient à une période d&apos;imposition limitée.
+              {t.services.items[1].desc}
             </p>
           </div>
 
@@ -770,11 +738,11 @@ export default function HomePage() {
             </div>
 
             <h3 className="disp mt-[4px] text-[19px] font-bold">
-              Prestation en capital
+              {t.services.items[2].title}
             </h3>
 
             <p className="m-0 text-[13.5px] leading-[1.5] text-[var(--text-muted)]">
-              Retrait LPP, 3e pilier ou capital-décès imposé séparément.
+              {t.services.items[2].desc}
             </p>
           </div>
 
@@ -797,12 +765,11 @@ export default function HomePage() {
             </div>
 
             <h3 className="disp mt-[4px] text-[19px] font-bold">
-              Décès en cours d&apos;année
+              {t.services.items[3].title}
             </h3>
 
             <p className="m-0 text-[13.5px] leading-[1.5] text-[var(--text-muted)]">
-              En cas du décès d&apos;une personne seule ou conjoint durant
-              l&apos;année.
+              {t.services.items[3].desc}
             </p>
           </div>
 
@@ -826,12 +793,11 @@ export default function HomePage() {
             </div>
 
             <h3 className="disp mt-[4px] text-[19px] font-bold">
-              Simulation d&apos;impôts
+              {t.services.items[4].title}
             </h3>
 
             <p className="m-0 text-[13.5px] leading-[1.5] text-[var(--text-muted)]">
-              Estimez votre charge fiscale et les possibilités qui
-              s&apos;offrent à vous afin de l&apos;optimiser.
+              {t.services.items[4].desc}
             </p>
           </div>
 
@@ -856,11 +822,11 @@ export default function HomePage() {
             </div>
 
             <h3 className="disp mt-[4px] text-[19px] font-bold">
-              Détermination des acomptes
+              {t.services.items[5].title}
             </h3>
 
             <p className="m-0 text-[13.5px] leading-[1.5] text-[var(--text-muted)]">
-              Calcul et ajustement de vos acomptes provisionnels.
+              {t.services.items[5].desc}
             </p>
           </div>
         </div>
@@ -877,24 +843,24 @@ export default function HomePage() {
           <div className="grid gap-16 lg:grid-cols-[.8fr_1.2fr] lg:gap-28">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--teal-300)]">
-                Notre méthode
+                {t.steps.eyebrow}
               </p>
 
               <h2 className="mt-5 max-w-[500px] text-[42px] font-bold leading-[1] tracking-[-0.045em] text-white sm:text-[55px]">
-                Une expérience
+                {t.steps.titleLine1}
                 <br />
-                <span className="text-[var(--teal-300)]">sans friction.</span>
+                <span className="text-[var(--teal-300)]">
+                  {t.steps.titleLine2}
+                </span>
               </h2>
 
               <p className="mt-7 max-w-[430px] text-[14px] leading-7 text-white/55">
-                De la création de votre espace jusqu&apos;à la finalisation de votre
-                dossier, chaque étape est conçue pour être simple, claire et
-                transparente.
+                {t.steps.sub}
               </p>
             </div>
 
             <div>
-              {steps.map((step) => (
+              {t.steps.items.map((step) => (
                 <div
                   key={step.number}
                   className="grid gap-5 border-t border-white/15 py-8 sm:grid-cols-[70px_1fr]"
@@ -909,7 +875,7 @@ export default function HomePage() {
                     </h3>
 
                     <p className="mt-3 max-w-[560px] text-[13px] leading-6 text-white/50">
-                      {step.description}
+                      {step.desc}
                     </p>
                   </div>
                 </div>
@@ -927,29 +893,30 @@ export default function HomePage() {
       <section id="tarifs" className="bg-[var(--surface-page)] py-28 sm:py-32">
         <div className="mx-auto w-full max-w-[1100px] px-6">
           <div className="text-center">
-            <p className="fx-eyebrow">Tarifs</p>
+            <p className="fx-eyebrow">{t.nav.pricing}</p>
 
             <h2 className="mt-5 text-[42px] font-bold tracking-[-0.045em] sm:text-[54px]">
-              Des tarifs clairs.
+              {t.pricing.title}
             </h2>
 
             <p className="mx-auto mt-5 max-w-[600px] text-[15px] leading-7 text-[var(--text-muted)]">
-              Une tarification transparente, adaptée à votre situation et sans
-              mauvaise surprise.
+              {t.pricing.sub}
             </p>
           </div>
 
           <div className="mt-14 grid gap-4 md:grid-cols-3">
             {/* PARTICULIER */}
             <div className="rounded-[18px] border border-[var(--border-subtle)] bg-white p-7">
-              <p className="fx-eyebrow text-[10px]">Particulier</p>
+              <p className="fx-eyebrow text-[10px]">
+                {t.pricing.plans[0].name}
+              </p>
 
               <p className="fx-figure mt-5 text-[32px] font-semibold text-[var(--petrol-900)]">
                 CHF 250.–
               </p>
 
               <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-                dès / déclaration
+                {t.pricing.fromPerReturn}
               </p>
 
               <div className="my-7 h-px bg-[var(--border-subtle)]" />
@@ -957,17 +924,17 @@ export default function HomePage() {
               <ul className="space-y-3 text-[12px] text-[var(--petrol-800)]">
                 <li className="flex items-center gap-2">
                   <Check />
-                  Déclaration fiscale
+                  {t.pricing.plans[0].features[0]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Analyse de votre situation
+                  {t.pricing.plans[0].features[1]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Suivi en ligne
+                  {t.pricing.plans[0].features[2]}
                 </li>
               </ul>
             </div>
@@ -975,17 +942,19 @@ export default function HomePage() {
             {/* INDEPENDANT */}
             <div className="relative rounded-[18px] border-2 border-[var(--brand)] bg-white p-7">
               <span className="absolute right-5 top-5 rounded-full bg-[var(--teal-100)] px-3 py-1 font-[var(--font-mono)] text-[9px] uppercase tracking-[0.08em] text-[var(--brand)]">
-                Populaire
+                {t.pricing.popular}
               </span>
 
-              <p className="fx-eyebrow text-[10px]">Indépendant</p>
+              <p className="fx-eyebrow text-[10px]">
+                {t.pricing.plans[1].name}
+              </p>
 
               <p className="mt-5 text-[32px] font-bold tracking-[-0.03em] text-[var(--petrol-900)]">
-                Sur mesure
+                {t.pricing.custom}
               </p>
 
               <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-                selon votre activité
+                {t.pricing.perActivity}
               </p>
 
               <div className="my-7 h-px bg-[var(--border-subtle)]" />
@@ -993,36 +962,38 @@ export default function HomePage() {
               <ul className="space-y-3 text-[12px] text-[var(--petrol-800)]">
                 <li className="flex items-center gap-2">
                   <Check />
-                  Comptabilité
+                  {t.pricing.plans[1].features[0]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Fiscalité
+                  {t.pricing.plans[1].features[1]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Déclaration
+                  {t.pricing.plans[1].features[2]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Accompagnement
+                  {t.pricing.plans[1].features[3]}
                 </li>
               </ul>
             </div>
 
             {/* ENTREPRISE */}
             <div className="rounded-[18px] border border-[var(--border-subtle)] bg-white p-7">
-              <p className="fx-eyebrow text-[10px]">Entreprise</p>
+              <p className="fx-eyebrow text-[10px]">
+                {t.pricing.plans[2].name}
+              </p>
 
               <p className="mt-5 text-[32px] font-bold tracking-[-0.03em] text-[var(--petrol-900)]">
-                Sur mesure
+                {t.pricing.custom}
               </p>
 
               <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-                selon vos besoins
+                {t.pricing.perNeeds}
               </p>
 
               <div className="my-7 h-px bg-[var(--border-subtle)]" />
@@ -1030,22 +1001,22 @@ export default function HomePage() {
               <ul className="space-y-3 text-[12px] text-[var(--petrol-800)]">
                 <li className="flex items-center gap-2">
                   <Check />
-                  Comptabilité complète
+                  {t.pricing.plans[2].features[0]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Fiscalité
+                  {t.pricing.plans[2].features[2]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Salaires & RH
+                  {t.pricing.plans[2].features[1]}
                 </li>
 
                 <li className="flex items-center gap-2">
                   <Check />
-                  Conseil
+                  {t.pricing.plans[2].features[3]}
                 </li>
               </ul>
             </div>
@@ -1062,15 +1033,15 @@ export default function HomePage() {
             <p className="fx-eyebrow">FAQ</p>
 
             <h2 className="mt-5 text-[42px] font-bold tracking-[-0.045em] sm:text-[54px]">
-              Questions fréquentes
+              {t.faq.title}
             </h2>
           </div>
 
           <div className="mt-14 divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
-            {faqs.map((faq) => (
-              <details key={faq.question} className="group py-6">
+            {t.faq.items.map((faq) => (
+              <details key={faq.q} className="group py-6">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[15px] font-semibold text-[var(--petrol-900)]">
-                  {faq.question}
+                  {faq.q}
 
                   <span className="text-[var(--brand)] transition-transform group-open:rotate-45">
                     <svg
@@ -1087,7 +1058,7 @@ export default function HomePage() {
                 </summary>
 
                 <p className="mt-4 max-w-[700px] text-[13px] leading-6 text-[var(--text-muted)]">
-                  {faq.answer}
+                  {faq.a}
                 </p>
               </details>
             ))}
@@ -1101,25 +1072,24 @@ export default function HomePage() {
       <section className="bg-[var(--surface-page)] px-6 py-28">
         <div className="mx-auto max-w-[900px] rounded-[28px] bg-[var(--petrol-900)] px-7 py-16 text-center sm:px-12 sm:py-20">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--teal-300)]">
-            Parlons de votre situation
+            {t.cta.eyebrow}
           </p>
 
           <h2 className="mt-5 text-[42px] font-bold leading-[1] tracking-[-0.045em] text-white sm:text-[56px]">
-            Prêt à simplifier
+            {t.cta.titleLine1}
             <br />
-            votre fiduciaire ?
+            {t.cta.titleLine2}
           </h2>
 
           <p className="mx-auto mt-6 max-w-[520px] text-[14px] leading-7 text-white/55">
-            Une question ou besoin d&apos;un accompagnement personnalisé ?
-            Contactez-nous.
+            {t.cta.sub}
           </p>
 
           <a
             href="mailto:contact@fiduvia.ch"
             className="mt-8 inline-flex h-[50px] items-center justify-center gap-3 rounded-full bg-white px-7 text-[13px] font-semibold text-[var(--petrol-900)] transition hover:bg-[var(--surface-page)]"
           >
-            Nous contacter
+            {t.cta.button}
             <Arrow />
           </a>
         </div>
@@ -1141,32 +1111,31 @@ export default function HomePage() {
               </Link>
 
               <p className="mt-5 max-w-[350px] text-[13px] leading-6 text-white/45">
-                Votre fiduciaire suisse, entièrement en ligne. Simple,
-                transparente et proche de vous.
+                {t.footer.tagline}
               </p>
             </div>
 
             {/* NAVIGATION */}
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/30">
-                Navigation
+                {t.footer.navigation}
               </p>
 
               <div className="mt-5 space-y-3 text-[12px] text-white/55">
                 <a href="#about" className="block hover:text-white">
-                  Qui sommes-nous ?
+                  {t.about.eyebrow}
                 </a>
 
                 <a href="#services" className="block hover:text-white">
-                  Nos prestations
+                  {t.nav.services}
                 </a>
 
                 <a href="#steps" className="block hover:text-white">
-                  Méthode
+                  {t.nav.method}
                 </a>
 
                 <a href="#tarifs" className="block hover:text-white">
-                  Tarifs
+                  {t.nav.pricing}
                 </a>
               </div>
             </div>
@@ -1174,7 +1143,7 @@ export default function HomePage() {
             {/* CONTACT */}
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/30">
-                Contact
+                {t.footer.contact}
               </p>
 
               <div className="mt-5 space-y-3 text-[12px] text-white/55">
@@ -1186,7 +1155,7 @@ export default function HomePage() {
                 </a>
 
                 <Link href="/login" className="block hover:text-white">
-                  Espace client
+                  {t.footer.clientArea}
                 </Link>
               </div>
             </div>
@@ -1198,11 +1167,11 @@ export default function HomePage() {
 
             <div className="flex gap-6">
               <a href="#" className="hover:text-white/60">
-                Politique de confidentialité
+                {t.footer.privacy}
               </a>
 
               <a href="#" className="hover:text-white/60">
-                Mentions légales
+                {t.footer.legal}
               </a>
             </div>
           </div>

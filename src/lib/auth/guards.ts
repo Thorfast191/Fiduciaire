@@ -1,6 +1,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getSessionUserByToken, SESSION_COOKIE_NAME, type SessionUser } from "@/lib/auth/session";
+import {
+  getSessionUserByToken,
+  SESSION_COOKIE_NAME,
+  type SessionUser,
+} from "@/lib/auth/session";
 import type { Role } from "@/db/schema";
 
 export async function getCurrentUser(): Promise<SessionUser | null> {

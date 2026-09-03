@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Field, FormAlert } from "@/components/ui/Field";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function SignupPage() {
+  const t = useT();
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -45,9 +47,7 @@ export default function SignupPage() {
         `/verify?email=${encodeURIComponent(form.email)}&purpose=signup`,
       );
     } catch {
-      setError(
-        "Une erreur est survenue. Veuillez réessayer dans quelques instants.",
-      );
+      setError(t.common.genericError);
       setLoading(false);
     }
   }
@@ -61,27 +61,24 @@ export default function SignupPage() {
             href="/"
             className="inline-block text-[27px] font-semibold tracking-[-0.04em] text-strong"
           >
-            fiduvia
+            {t.auth.brand}
           </Link>
 
-          <p className="mt-1.5 text-[13px] text-muted">
-            Fiduciaire & comptabilité en ligne
-          </p>
+          <p className="mt-1.5 text-[13px] text-muted">{t.auth.tagline}</p>
         </div>
 
         {/* Card */}
         <section className="rounded-[20px] border border-line bg-card px-6 py-8 shadow-md sm:px-10 sm:py-10">
           {/* Header */}
           <div>
-            <p className="fx-eyebrow">Bienvenue chez Fiduvia</p>
+            <p className="fx-eyebrow">{t.auth.signup.eyebrow}</p>
 
             <h1 className="mt-3 text-[29px] font-semibold leading-[1.15] tracking-[-0.04em] text-strong">
-              Créer mon compte
+              {t.auth.signup.title}
             </h1>
 
             <p className="mt-3 text-[14px] leading-6 text-muted">
-              Créez votre espace personnel pour gérer vos documents, démarches
-              et échanges avec Fiduvia.
+              {t.auth.signup.sub}
             </p>
           </div>
 
@@ -98,9 +95,9 @@ export default function SignupPage() {
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <Field
                 id="firstName"
-                label="Prénom"
+                label={t.auth.fields.firstName}
                 type="text"
-                placeholder="Votre prénom"
+                placeholder={t.auth.fields.firstNamePlaceholder}
                 autoComplete="given-name"
                 required
                 value={form.firstName}
@@ -111,9 +108,9 @@ export default function SignupPage() {
 
               <Field
                 id="lastName"
-                label="Nom"
+                label={t.auth.fields.lastName}
                 type="text"
-                placeholder="Votre nom"
+                placeholder={t.auth.fields.lastNamePlaceholder}
                 autoComplete="family-name"
                 required
                 value={form.lastName}
@@ -125,9 +122,9 @@ export default function SignupPage() {
             <div>
               <Field
                 id="email"
-                label="Adresse e-mail"
+                label={t.auth.fields.email}
                 type="email"
-                placeholder="vous@exemple.ch"
+                placeholder={t.auth.fields.emailPlaceholder}
                 autoComplete="email"
                 required
                 value={form.email}
@@ -135,8 +132,7 @@ export default function SignupPage() {
               />
 
               <p className="mt-2 text-[11px] leading-5 text-subtle">
-                Cette adresse sera utilisée pour la vérification de votre
-                compte.
+                {t.auth.signup.emailHint}
               </p>
             </div>
 
@@ -144,9 +140,9 @@ export default function SignupPage() {
             <div>
               <Field
                 id="password"
-                label="Mot de passe"
+                label={t.auth.fields.password}
                 type="password"
-                placeholder="Choisissez un mot de passe"
+                placeholder={t.auth.fields.newPasswordPlaceholder}
                 autoComplete="new-password"
                 required
                 minLength={10}
@@ -156,12 +152,12 @@ export default function SignupPage() {
 
               <div className="mt-3 rounded-xl bg-sunken px-4 py-3.5">
                 <p className="text-[11px] font-medium text-brand">
-                  Votre mot de passe doit contenir :
+                  {t.auth.signup.passwordTitle}
                 </p>
 
                 <p className="mt-1.5 flex items-center gap-2 text-[11px] text-muted">
                   <span className="h-1 w-1 rounded-full bg-subtle" />
-                  Au moins 10 caractères
+                  {t.auth.signup.passwordRule}
                 </p>
               </div>
             </div>
@@ -175,11 +171,11 @@ export default function SignupPage() {
               {loading ? (
                 <span className="flex items-center gap-2.5">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Création du compte...
+                  {t.auth.signup.loading}
                 </span>
               ) : (
                 <>
-                  Créer mon compte
+                  {t.auth.signup.submit}
                   <svg
                     viewBox="0 0 20 20"
                     fill="none"
@@ -201,15 +197,13 @@ export default function SignupPage() {
 
           {/* Existing account */}
           <div className="mt-7 border-t border-line pt-6 text-center">
-            <p className="text-[13px] text-muted">
-              Vous avez déjà un compte ?
-            </p>
+            <p className="text-[13px] text-muted">{t.auth.signup.hasAccount}</p>
 
             <Link
               href="/login"
               className="mt-2 inline-block text-[13px] font-medium text-brand transition hover:text-strong hover:underline"
             >
-              Se connecter
+              {t.auth.signup.login}
             </Link>
           </div>
 
@@ -236,12 +230,11 @@ export default function SignupPage() {
 
               <div>
                 <p className="text-[13px] font-medium text-strong">
-                  Création de compte sécurisée
+                  {t.auth.signup.secureTitle}
                 </p>
 
                 <p className="mt-1 text-[12px] leading-5 text-muted">
-                  Votre adresse e-mail sera vérifiée avant l&apos;accès à votre
-                  espace client.
+                  {t.auth.signup.secureBody}
                 </p>
               </div>
             </div>
@@ -250,8 +243,7 @@ export default function SignupPage() {
 
         {/* Footer */}
         <p className="mt-7 text-center text-[11px] leading-5 text-subtle">
-          © {new Date().getFullYear()} Fiduvia · Votre fiduciaire, entièrement
-          en ligne.
+          © {new Date().getFullYear()} Fiduvia · {t.auth.rights}
         </p>
       </div>
     </main>

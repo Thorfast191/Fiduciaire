@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 
 import "./globals.css";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 
 const displayFont = Schibsted_Grotesk({
   variable: "--font-display",
@@ -32,13 +33,27 @@ const markFont = EB_Garamond({
   weight: ["400", "500", "600"],
 });
 
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fiduvia.ch";
+
 export const metadata: Metadata = {
-  title: "Fiduvia",
+  metadataBase: new URL(SITE),
+  title: {
+    default: "Fiduvia",
+    template: "%s · Fiduvia",
+  },
   description: "Fiduvia — fiduciaire et comptabilité 100% en ligne en Suisse.",
 };
 
-export const dynamic = "force-dynamic";
-
+/**
+ * `<html lang>` carries the site's default language. Pages served in another
+ * locale re-declare it on their own root element — the document-level default
+ * cannot vary here without reading a cookie, which would mark every route
+ * dynamic and stop the marketing pages from prerendering.
+ *
+ * There is deliberately no `force-dynamic`: `/portal` and `/admin` opt into
+ * dynamic rendering by reading the session cookie, while `/fr` and `/en` are
+ * static, which is what the French-SEO work needs.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,7 +61,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="fr"
+      lang={DEFAULT_LOCALE}
       className={`${displayFont.variable} ${textFont.variable} ${monoFont.variable} ${markFont.variable}`}
     >
       <body>{children}</body>

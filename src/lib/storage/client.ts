@@ -22,7 +22,10 @@ const client = new S3Client({
   forcePathStyle: true,
 });
 
-export async function getUploadUrl(key: string, mimeType: string): Promise<string> {
+export async function getUploadUrl(
+  key: string,
+  mimeType: string,
+): Promise<string> {
   const command = new PutObjectCommand({
     Bucket: env.STORAGE_BUCKET,
     Key: key,
@@ -31,13 +34,18 @@ export async function getUploadUrl(key: string, mimeType: string): Promise<strin
   return getSignedUrl(client, command, { expiresIn: SIGNED_URL_TTL_SECONDS });
 }
 
-export async function getDownloadUrl(key: string, filename: string): Promise<string> {
+export async function getDownloadUrl(
+  key: string,
+  filename: string,
+): Promise<string> {
   // RFC 6266: filename="..." is an ASCII-only fallback for older clients;
   // filename*=UTF-8''... is what modern browsers actually use, so accented
   // characters (common in French filenames — "Déclaration", "Relevé")
   // download correctly instead of as mojibake, and embedded quotes can't
   // spoof a second filename parameter.
-  const asciiFallback = filename.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_");
+  const asciiFallback = filename
+    .replace(/[^\x20-\x7e]/g, "_")
+    .replace(/["\\]/g, "_");
   const encoded = encodeURIComponent(filename);
   const command = new GetObjectCommand({
     Bucket: env.STORAGE_BUCKET,
@@ -49,7 +57,9 @@ export async function getDownloadUrl(key: string, filename: string): Promise<str
 
 export async function objectExists(key: string): Promise<boolean> {
   try {
-    await client.send(new HeadObjectCommand({ Bucket: env.STORAGE_BUCKET, Key: key }));
+    await client.send(
+      new HeadObjectCommand({ Bucket: env.STORAGE_BUCKET, Key: key }),
+    );
     return true;
   } catch (err) {
     const name = (err as { name?: string }).name;

@@ -4,7 +4,9 @@ import { env } from "@/lib/env";
 const transporter = nodemailer.createTransport({
   host: env.SMTP_HOST,
   port: env.SMTP_PORT,
-  auth: env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
+  auth: env.SMTP_USER
+    ? { user: env.SMTP_USER, pass: env.SMTP_PASS }
+    : undefined,
 });
 
 export async function sendEmail(params: {

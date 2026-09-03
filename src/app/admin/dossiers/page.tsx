@@ -1,12 +1,7 @@
 import { countAllDossiers, listAllDossiersWithClient } from "@/lib/dossiers";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { getT } from "@/lib/i18n";
 import DossierAdminForms from "./DossierAdminForms";
-
-const dateFmt = new Intl.DateTimeFormat("fr-CH", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-});
 
 /**
  * Admin dossiers, matching the mockup's dossier table (`Fiduvia.dc.html:3049`):
@@ -15,26 +10,34 @@ const dateFmt = new Intl.DateTimeFormat("fr-CH", {
  * par" and "Canton" columns are dropped — this platform has neither.
  */
 export default async function AdminDossiersPage() {
-  const [rows, total] = await Promise.all([
+  const [rows, total, { locale, t }] = await Promise.all([
     listAllDossiersWithClient(),
     countAllDossiers(),
+    getT(),
   ]);
+
+  const dateFmt = new Intl.DateTimeFormat(locale === "fr" ? "fr-CH" : "en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
   return (
     <div className="max-w-[1040px]">
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <h1 className="disp text-[clamp(28px,3.4vw,34px)] font-extrabold leading-[1.05]">
-            Dossiers
+            {t.admin.dossiers.title}
           </h1>
 
           <p className="mt-1.5 text-[15px] text-muted">
-            Créez et suivez les dossiers fiscaux de vos clients.
+            {t.admin.dossiers.sub}
           </p>
         </div>
 
         <span className="inline-flex items-center gap-2 rounded-full border border-line-default bg-card px-4 py-2.5 text-[14px] font-semibold text-strong">
-          {total} dossier{total > 1 ? "s" : ""}
+          {total}{" "}
+          {total > 1 ? t.admin.dossiers.countPlural : t.admin.dossiers.count}
         </span>
       </div>
 
@@ -42,15 +45,21 @@ export default async function AdminDossiersPage() {
       <div className="mt-[22px] overflow-x-auto">
         <div className="min-w-[720px] rounded-2xl border border-line bg-card">
           <div className="flex items-center gap-3.5 border-b border-line px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.05em] text-muted">
-            <span className="min-w-0 flex-1">Client</span>
-            <span className="w-[190px] shrink-0">Statut</span>
-            <span className="w-[110px] shrink-0">Année</span>
-            <span className="w-[110px] shrink-0">Créé le</span>
+            <span className="min-w-0 flex-1">{t.admin.dossiers.thClient}</span>
+            <span className="w-[190px] shrink-0">
+              {t.admin.dossiers.thStatus}
+            </span>
+            <span className="w-[110px] shrink-0">
+              {t.admin.dossiers.thYear}
+            </span>
+            <span className="w-[110px] shrink-0">
+              {t.admin.dossiers.thCreated}
+            </span>
           </div>
 
           {rows.length === 0 ? (
             <p className="px-5 py-8 text-center text-[13px] text-muted">
-              Aucun dossier pour le moment.
+              {t.admin.dossiers.empty}
             </p>
           ) : (
             rows.map((r) => (
@@ -92,7 +101,9 @@ export default async function AdminDossiersPage() {
 
       {total > rows.length && (
         <p className="mt-3 text-[12.5px] text-muted">
-          Les {rows.length} dossiers les plus récents sur {total}.
+          {t.admin.dossiers.recentOf
+            .replace("{n}", String(rows.length))
+            .replace("{total}", String(total))}
         </p>
       )}
 

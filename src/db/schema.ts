@@ -18,6 +18,11 @@ export const users = pgTable("users", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   phone: text("phone"),
+  // Language for transactional email. The UI reads a cookie, which a mail
+  // job has no access to, so the preference is persisted per user.
+  locale: text("locale", { enum: ["fr", "en"] })
+    .notNull()
+    .default("fr"),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   disabledAt: timestamp("disabled_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
