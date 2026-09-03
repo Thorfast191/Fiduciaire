@@ -82,3 +82,42 @@ Blocked on the client:
 - **Infomaniak**: bucket, credentials, instance, domain, TLS.
 - **Legal text**: privacy policy, CGUV, cookie policy.
 - **`dossiers` uniqueness**: needs a data clean-up decision.
+
+
+---
+
+## Addendum — 2026-09-04, commit `31e3a01`
+
+Everything listed as "unblocked" in §5 above is now built.
+
+| Item | Outcome |
+|---|---|
+| Requirement 5 — admin-triggered notifications | **Done.** `dossier_notifications` (migration 0006), admin control on the declarations table, client banner with acknowledgement, email in the recipient's `users.locale` |
+| French SEO | **Done.** `sitemap.ts`, `robots.ts`, JSON-LD (`AccountingService` + `FAQPage`) |
+| Marketing burger | **Done.** Real menu; the nav links are hidden below `md`, so a phone previously had no way to reach any section |
+| Price simulator | **Done.** Computes from the client's own tariff cards (CHF 80 / 120 / 250), labelled indicative |
+| Footer `href="#"` | **Done.** `/confidentialite` and `/mentions-legales` exist in both locales, prerendered, and the proxy serves them prefix-free in French |
+| Malformed JSON → 500 | **Done.** `readJsonBody` in all 8 routes. `forgot-password` still answers 200 to everything by design |
+| `#contact` on marketing | **Done.** Coordinates + hours block above the footer |
+
+**Deliberately not done:** the legal pages contain no drafted legal text. A
+privacy policy and legal notice are the client's to supply and have reviewed;
+the pages say so and give the controller's contact details.
+
+**Test-design fix:** `tests/unit/routes/login.test.ts` now uses a fresh IP per
+run. The login limiter counts `audit_log` rows per IP over a rolling 15 minutes
+and that table only grows, so fixed IPs made unrelated tests fail on the wrong
+message after a few suite runs. Verified stable across three consecutive runs.
+
+## Still blocked — nothing further can ship without these
+
+1. **Stripe**: pricing model, API keys, CHF/TWINT, and whether payment gates
+   submission. Requirement 3b cannot start without them.
+2. **Status vocabulary**: the demo's `Demande de pièces` / `Pièces reçues` /
+   `Réclamation` versus our four-value enum. Urgent — inline editing and the
+   notification flow are both built on ours.
+3. **Infomaniak**: bucket, credentials, instance, domain, TLS/HSTS go-live.
+4. **Legal text** for the two pages above.
+5. **`dossiers(client_id, tax_year)` uniqueness**: 27 duplicate groups in dev
+   would make the constraint fail; needs a data clean-up decision.
+6. **Rotate the demo accounts** before production.
