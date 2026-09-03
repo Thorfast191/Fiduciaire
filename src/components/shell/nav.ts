@@ -36,8 +36,8 @@ export function adminNav(t: Messages): NavEntry[] {
   return [
     { kind: "link", label: n.home, href: "/admin" },
     { kind: "link", label: n.dossiers, href: "/admin/dossiers" },
-    { kind: "soon", label: n.stats },
-    { kind: "soon", label: n.periods },
-    { kind: "soon", label: n.users },
+    { kind: "link", label: n.stats, href: "/admin/stats" },
+    { kind: "link", label: n.periods, href: "/admin/periodes" },
+    { kind: "link", label: n.users, href: "/admin/utilisateurs" },
   ];
 }

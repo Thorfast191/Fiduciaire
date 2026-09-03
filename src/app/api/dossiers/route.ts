@@ -12,15 +12,24 @@ export async function POST(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const user = token ? await getSessionUserByToken(token) : null;
   if (!user) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: "unauthorized" },
+      { status: 401 },
+    );
   }
   if (user.role !== "admin" && user.role !== "super_admin") {
-    return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { ok: false, error: "forbidden" },
+      { status: 403 },
+    );
   }
 
   const parsed = createBodySchema.safeParse(await request.json());
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: "invalid_request" }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: "invalid_request" },
+      { status: 400 },
+    );
   }
 
   const dossier = await createDossier({
@@ -35,7 +44,10 @@ export async function GET(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const user = token ? await getSessionUserByToken(token) : null;
   if (!user) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: "unauthorized" },
+      { status: 401 },
+    );
   }
 
   let clientId: string;
@@ -44,7 +56,10 @@ export async function GET(request: NextRequest) {
   } else {
     const queryClientId = request.nextUrl.searchParams.get("clientId");
     if (!queryClientId || !z.string().uuid().safeParse(queryClientId).success) {
-      return NextResponse.json({ ok: false, error: "clientId requis" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "clientId requis" },
+        { status: 400 },
+      );
     }
     clientId = queryClientId;
   }

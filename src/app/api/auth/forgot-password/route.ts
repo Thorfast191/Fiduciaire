@@ -6,14 +6,20 @@ import { users } from "@/db/schema";
 import { createOtp } from "@/lib/auth/otp";
 import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
-import { isOtpIssuanceRateLimited, recordOtpIssuance } from "@/lib/auth/rateLimit";
+import {
+  isOtpIssuanceRateLimited,
+  recordOtpIssuance,
+} from "@/lib/auth/rateLimit";
 
 const bodySchema = z.object({ email: z.string().email() });
 
 export async function POST(request: NextRequest) {
   const parsed = bodySchema.safeParse(await request.json());
   if (parsed.success) {
-    const [user] = await db.select().from(users).where(eq(users.email, parsed.data.email));
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, parsed.data.email));
     if (user && !(await isOtpIssuanceRateLimited(user.id, "password_reset"))) {
       const code = await createOtp(user.id, "password_reset");
       await recordOtpIssuance(user.id, "password_reset");

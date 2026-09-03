@@ -20,6 +20,7 @@ const ERRORS = {
     emailExists: "Un compte existe déjà avec cette adresse e-mail.",
     invalidTransition: "Transition de statut non autorisée.",
     dossierNotFound: "Dossier introuvable.",
+    periodExists: "Cette période fiscale existe déjà.",
   },
   en: {
     badCredentials: "Incorrect email address or password.",
@@ -30,6 +31,7 @@ const ERRORS = {
     emailExists: "An account already exists with this email address.",
     invalidTransition: "That status change is not allowed.",
     dossierNotFound: "File not found.",
+    periodExists: "That tax period already exists.",
   },
 } satisfies Record<Locale, Record<string, string>>;
 

@@ -5,6 +5,7 @@ import {
   timestamp,
   integer,
   jsonb,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -96,6 +97,23 @@ export const dossiers = pgTable("dossiers", {
     .default(sql`now()`),
 });
 
+/**
+ * Fiscal periods the firm has opened. Admins create a period and activate or
+ * deactivate it; only active periods are offered to clients. Dossiers still
+ * carry their own `tax_year`, so deactivating a period hides it from new
+ * filings without touching existing ones.
+ */
+export const taxPeriods = pgTable("tax_periods", {
+  year: integer("year").primaryKey(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
 export const documents = pgTable("documents", {
   id: uuid("id").primaryKey().defaultRandom(),
   ownerId: uuid("owner_id")
@@ -137,3 +155,5 @@ export type DocumentCategory =
   | "justificatifs"
   | "autre";
 export type Dossier = typeof dossiers.$inferSelect;
+
+export type TaxPeriod = typeof taxPeriods.$inferSelect;

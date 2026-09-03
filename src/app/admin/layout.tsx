@@ -25,7 +25,7 @@ export default async function AdminLayout({
           variant="admin"
           nav={adminNav(t)}
           title={t.admin.title}
-          meta={`${t.portal.period} ${new Date().getFullYear() - 1}`}
+          meta={`${t.admin.fiscalPeriod} ${new Date().getFullYear() - 1}`}
           account={{
             name: user
               ? `${user.firstName} ${user.lastName}`

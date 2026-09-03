@@ -8,13 +8,6 @@ import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
 import type { DossierStatus } from "@/db/schema";
 
-const STATUS_BAR: Record<DossierStatus, string> = {
-  not_started: "bg-status-not-started",
-  submitted: "bg-status-submitted",
-  in_review: "bg-status-in-review",
-  completed: "bg-status-completed",
-};
-
 /** The mockup's `aPalette` (`Fiduvia.dc.html:2966`). */
 const PALETTE = [
   "var(--brand)",
@@ -24,35 +17,36 @@ const PALETTE = [
   "var(--amber-600)",
 ];
 
+const STATUS_BAR: Record<DossierStatus, string> = {
+  not_started: "bg-status-not-started",
+  submitted: "bg-status-submitted",
+  in_review: "bg-status-in-review",
+  completed: "bg-status-completed",
+};
+
 /**
- * Admin dashboard, matching the mockup's "ADMIN ACCUEIL" artboard
- * (`Fiduvia.dc.html:2884`): KPIs, a status distribution strip and per-prestation
- * bars, all scoped to the période picker.
- *
- * Two deliberate departures, both for want of a backend: the mockup's third KPI
- * is the signed-in admin's personal revenue, shown here as active clients; and
- * its figures cover only the dossiers that admin has reserved, which this
- * platform has no concept of, so they are global.
+ * Global statistics, matching the mockup's admin "Statistiques" artboard: the
+ * same status strip as the dashboard, but scoped to the chosen period and
+ * headlined by processed / in-progress counts rather than totals. The mockup's
+ * third KPI is revenue; this shows active clients, since payments do not exist.
  */
-export default async function AdminHomePage({
+export default async function AdminStatsPage({
   searchParams,
 }: {
   searchParams: Promise<{ periode?: string }>;
 }) {
-  const [{ periode }, periods, { t }] = await Promise.all([
+  const [{ periode }, years, { t }] = await Promise.all([
     searchParams,
     listTaxYears(),
     getT(),
   ]);
 
-  const options = await listPeriodOptions(periods);
+  const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
 
   const stats = await getAdminDashboardStats(selected);
   const statusTotal = STATUS_ORDER.reduce((a, s) => a + stats.byStatus[s], 0);
 
-  // Only tax returns exist; the mockup lists every prestation, so the others
-  // appear at zero rather than being hidden.
   const h = t.admin.hub;
   const prestations = [
     { label: h.declarations, count: stats.totalDossiers },
@@ -68,10 +62,10 @@ export default async function AdminHomePage({
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <h1 className="disp text-[clamp(28px,3.4vw,34px)] font-extrabold leading-[1.05]">
-            {t.admin.dashTitle}
+            {t.admin.stats.title}
           </h1>
 
-          <p className="mt-1.5 text-[15px] text-muted">{t.admin.dashSub}</p>
+          <p className="mt-1.5 text-[15px] text-muted">{t.admin.stats.sub}</p>
         </div>
 
         <PeriodPicker years={options} current={selected} />
@@ -79,19 +73,19 @@ export default async function AdminHomePage({
 
       <section className="mt-[22px] grid gap-3.5 sm:grid-cols-3">
         <StatCard
-          label={t.admin.kpiDossiers}
-          value={stats.totalDossiers}
-          hint={t.admin.kpiDossiersSub}
-        />
-        <StatCard
-          label={t.admin.kpiCompleted}
+          label={t.admin.stats.processed}
           value={stats.completedDossiers}
-          hint={t.admin.kpiCompletedSub}
+          hint={t.admin.stats.processedSub}
         />
         <StatCard
-          label={t.admin.kpiClients}
+          label={t.admin.stats.inProgress}
+          value={stats.inProgressDossiers}
+          hint={t.admin.stats.inProgressSub}
+        />
+        <StatCard
+          label={t.admin.stats.clients}
           value={stats.totalClients}
-          hint={t.admin.kpiClientsSub}
+          hint={t.admin.stats.clientsSub}
           accent
         />
       </section>

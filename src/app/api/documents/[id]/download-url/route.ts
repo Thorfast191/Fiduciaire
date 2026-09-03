@@ -15,19 +15,34 @@ export async function GET(
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const user = token ? await getSessionUserByToken(token) : null;
   if (!user) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: "unauthorized" },
+      { status: 401 },
+    );
   }
 
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) {
-    return NextResponse.json({ ok: false, error: GENERIC_NOT_FOUND }, { status: 404 });
+    return NextResponse.json(
+      { ok: false, error: GENERIC_NOT_FOUND },
+      { status: 404 },
+    );
   }
-  const result = await getAccessibleDocument(id, { id: user.id, role: user.role });
+  const result = await getAccessibleDocument(id, {
+    id: user.id,
+    role: user.role,
+  });
   if (!result.ok) {
-    return NextResponse.json({ ok: false, error: GENERIC_NOT_FOUND }, { status: 404 });
+    return NextResponse.json(
+      { ok: false, error: GENERIC_NOT_FOUND },
+      { status: 404 },
+    );
   }
 
-  const downloadUrl = await getDownloadUrl(result.document.storageKey, result.document.filename);
+  const downloadUrl = await getDownloadUrl(
+    result.document.storageKey,
+    result.document.filename,
+  );
 
   await writeAuditLog({
     actorUserId: user.id,

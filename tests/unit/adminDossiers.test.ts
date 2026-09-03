@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { randomUUID } from "node:crypto";
 import { db } from "@/db/client";
 import { users, dossiers } from "@/db/schema";
-import { listAllDossiersWithClient } from "@/lib/dossiers";
+import { listAllDossiersWithClient, listTaxYears } from "@/lib/dossiers";
 
 async function makeClient(first: string, last: string): Promise<string> {
   const [u] = await db
@@ -29,7 +29,7 @@ describe("listAllDossiersWithClient", () => {
       .insert(dossiers)
       .values({ clientId, taxYear: year, status: "in_review" });
 
-    const rows = (await listAllDossiersWithClient(1000)).filter(
+    const rows = (await listAllDossiersWithClient({ limit: 1000 })).filter(
       (r) => r.taxYear === year,
     );
 
@@ -50,7 +50,7 @@ describe("listAllDossiersWithClient", () => {
       { clientId, taxYear: base + 1 },
     ]);
 
-    const years = (await listAllDossiersWithClient(1000))
+    const years = (await listAllDossiersWithClient({ limit: 1000 }))
       .filter((r) => r.taxYear >= base && r.taxYear <= base + 2)
       .map((r) => r.taxYear);
 
@@ -58,7 +58,7 @@ describe("listAllDossiersWithClient", () => {
   });
 
   it("returns at most `limit` rows, each with a resolved client", async () => {
-    const rows = await listAllDossiersWithClient(5);
+    const rows = await listAllDossiersWithClient({ limit: 5 });
 
     expect(rows.length).toBeLessThanOrEqual(5);
 
@@ -67,5 +67,39 @@ describe("listAllDossiersWithClient", () => {
       expect(typeof r.email).toBe("string");
       expect(r.email.length).toBeGreaterThan(0);
     }
+  });
+
+  it("scopes to one tax year when asked", async () => {
+    const year = 930000 + Math.floor(Math.random() * 60000);
+    const clientId = await makeClient("Scope", "Test");
+
+    await db.insert(dossiers).values([
+      { clientId, taxYear: year },
+      { clientId, taxYear: year + 1 },
+    ]);
+
+    const rows = await listAllDossiersWithClient({ taxYear: year, limit: 1000 });
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].taxYear).toBe(year);
+  });
+});
+
+describe("listTaxYears", () => {
+  it("returns distinct years, newest first, with no duplicates", async () => {
+    const base = 940000 + Math.floor(Math.random() * 50000);
+    const clientId = await makeClient("Years", "Test");
+
+    await db.insert(dossiers).values([
+      { clientId, taxYear: base },
+      { clientId, taxYear: base },
+      { clientId, taxYear: base + 1 },
+    ]);
+
+    const years = await listTaxYears();
+    const mine = years.filter((y) => y === base || y === base + 1);
+
+    expect(mine).toEqual([base + 1, base]);
+    expect(years).toEqual([...years].sort((a, b) => b - a));
   });
 });

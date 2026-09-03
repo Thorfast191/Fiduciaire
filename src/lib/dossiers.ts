@@ -49,9 +49,10 @@ export interface AdminDossierRow {
  * resolves. Bounded by `limit` — the table renders every row it is given, and
  * an unbounded list grows without limit as periods accumulate.
  */
-export async function listAllDossiersWithClient(
-  limit = 50,
-): Promise<AdminDossierRow[]> {
+export async function listAllDossiersWithClient({
+  limit = 200,
+  taxYear,
+}: { limit?: number; taxYear?: number } = {}): Promise<AdminDossierRow[]> {
   return db
     .select({
       id: dossiers.id,
@@ -65,14 +66,25 @@ export async function listAllDossiersWithClient(
     })
     .from(dossiers)
     .innerJoin(users, eq(users.id, dossiers.clientId))
+    .where(taxYear ? eq(dossiers.taxYear, taxYear) : undefined)
     .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))
     .limit(limit);
 }
 
-export async function countAllDossiers(): Promise<number> {
+/** Distinct tax years that have at least one dossier, newest first. */
+export async function listTaxYears(): Promise<number[]> {
+  const rows = await db
+    .selectDistinct({ taxYear: dossiers.taxYear })
+    .from(dossiers)
+    .orderBy(desc(dossiers.taxYear));
+  return rows.map((r) => r.taxYear);
+}
+
+export async function countAllDossiers(taxYear?: number): Promise<number> {
   const [row] = await db
     .select({ value: sql<number>`count(*)` })
-    .from(dossiers);
+    .from(dossiers)
+    .where(taxYear ? eq(dossiers.taxYear, taxYear) : undefined);
   return Number(row?.value ?? 0);
 }
 

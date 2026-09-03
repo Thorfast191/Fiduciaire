@@ -18,15 +18,24 @@ export async function POST(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const user = token ? await getSessionUserByToken(token) : null;
   if (!user) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, error: "unauthorized" },
+      { status: 401 },
+    );
   }
   if (user.role !== "client") {
-    return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { ok: false, error: "forbidden" },
+      { status: 403 },
+    );
   }
 
   const parsed = bodySchema.safeParse(await request.json());
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: "invalid_request" }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: "invalid_request" },
+      { status: 400 },
+    );
   }
 
   const dossierCheck = await getAccessibleDossier(parsed.data.dossierId, {
@@ -34,7 +43,10 @@ export async function POST(request: NextRequest) {
     role: user.role,
   });
   if (!dossierCheck.ok) {
-    return NextResponse.json({ ok: false, error: GENERIC_NOT_FOUND }, { status: 404 });
+    return NextResponse.json(
+      { ok: false, error: GENERIC_NOT_FOUND },
+      { status: 404 },
+    );
   }
 
   const result = await createPendingUpload({
@@ -48,8 +60,15 @@ export async function POST(request: NextRequest) {
   });
 
   if (!result.ok) {
-    return NextResponse.json({ ok: false, error: result.error }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: result.error },
+      { status: 400 },
+    );
   }
 
-  return NextResponse.json({ ok: true, documentId: result.documentId, uploadUrl: result.uploadUrl });
+  return NextResponse.json({
+    ok: true,
+    documentId: result.documentId,
+    uploadUrl: result.uploadUrl,
+  });
 }
