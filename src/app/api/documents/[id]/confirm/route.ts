@@ -4,13 +4,13 @@ import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { confirmUpload } from "@/lib/documents";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp } from "@/lib/http";
-
-const GENERIC_NOT_FOUND = "Document introuvable.";
+import { apiErrors } from "@/lib/i18n/apiErrors";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const e = apiErrors(request);
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const user = token ? await getSessionUserByToken(token) : null;
   if (!user) {
@@ -23,7 +23,7 @@ export async function POST(
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) {
     return NextResponse.json(
-      { ok: false, error: GENERIC_NOT_FOUND },
+      { ok: false, error: e.documentNotFound },
       { status: 404 },
     );
   }
@@ -32,14 +32,32 @@ export async function POST(
   if (!result.ok) {
     if (result.error === "not_found") {
       return NextResponse.json(
-        { ok: false, error: GENERIC_NOT_FOUND },
+        { ok: false, error: e.documentNotFound },
         { status: 404 },
       );
     }
-    return NextResponse.json(
-      { ok: false, error: "Le fichier n'a pas été reçu par le stockage." },
-      { status: 400 },
-    );
+
+    // A rejected upload means the bytes in storage disagreed with what the
+    // client declared when it asked for the URL — worth an audit entry.
+    if (result.error !== "not_uploaded") {
+      await writeAuditLog({
+        actorUserId: user.id,
+        action: "document_rejected",
+        targetType: "document",
+        targetId: id,
+        metadata: { reason: result.error },
+        ip: getClientIp(request),
+      });
+    }
+
+    const message =
+      result.error === "invalid_type"
+        ? e.uploadInvalidType
+        : result.error === "too_large"
+          ? e.uploadTooLarge
+          : e.uploadNotReceived;
+
+    return NextResponse.json({ ok: false, error: message }, { status: 400 });
   }
 
   await writeAuditLog({

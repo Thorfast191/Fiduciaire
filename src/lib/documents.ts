@@ -2,7 +2,11 @@ import crypto from "node:crypto";
 import { and, desc, eq, isNull, isNotNull } from "drizzle-orm";
 import { db } from "@/db/client";
 import { documents, type Document, type Role } from "@/db/schema";
-import { getUploadUrl, objectExists } from "@/lib/storage/client";
+import {
+  deleteObject,
+  getObjectMetadata,
+  getUploadUrl,
+} from "@/lib/storage/client";
 
 export const ALLOWED_MIME_TYPES = [
   "application/pdf",
@@ -78,8 +82,25 @@ export async function createPendingUpload(params: {
 }
 
 export type ConfirmUploadResult =
-  { ok: true } | { ok: false; error: "not_found" | "not_uploaded" };
+  | { ok: true }
+  | {
+      ok: false;
+      error: "not_found" | "not_uploaded" | "invalid_type" | "too_large";
+    };
 
+/**
+ * Marks an upload visible, but only after checking what was *actually* stored.
+ *
+ * The size and MIME type recorded by `createPendingUpload` are the client's
+ * claim: a presigned PUT does not bind Content-Length, and the signed
+ * Content-Type is not enforced by every S3-compatible backend, so a caller can
+ * request a URL for a 5-byte PNG and upload an arbitrary executable. This reads
+ * the object's real metadata, re-applies the allow-list and size cap to it, and
+ * persists the true values — so what the UI lists is what is in the bucket.
+ *
+ * An object that fails the checks is removed rather than left addressable, and
+ * its row is soft-deleted so the confirmation cannot simply be retried.
+ */
 export async function confirmUpload(
   documentId: string,
   requesterId: string,
@@ -95,14 +116,40 @@ export async function confirmUpload(
     return { ok: true };
   }
 
-  const exists = await objectExists(doc.storageKey);
-  if (!exists) {
+  const metadata = await getObjectMetadata(doc.storageKey);
+  if (!metadata) {
     return { ok: false, error: "not_uploaded" };
+  }
+
+  async function reject(
+    error: "invalid_type" | "too_large",
+  ): Promise<ConfirmUploadResult> {
+    await deleteObject(doc.storageKey);
+    await db
+      .update(documents)
+      .set({ deletedAt: new Date() })
+      .where(eq(documents.id, documentId));
+    return { ok: false, error };
+  }
+
+  // Some backends report no type at all; treat that as unacceptable rather
+  // than letting it through as an implicit default.
+  const actualType = metadata.contentType.split(";")[0].trim().toLowerCase();
+  if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(actualType)) {
+    return reject("invalid_type");
+  }
+
+  if (metadata.contentLength <= 0 || metadata.contentLength > MAX_SIZE_BYTES) {
+    return reject("too_large");
   }
 
   await db
     .update(documents)
-    .set({ uploadedAt: new Date() })
+    .set({
+      uploadedAt: new Date(),
+      mimeType: actualType,
+      sizeBytes: metadata.contentLength,
+    })
     .where(eq(documents.id, documentId));
   return { ok: true };
 }

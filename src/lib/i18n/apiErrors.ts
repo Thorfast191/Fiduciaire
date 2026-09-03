@@ -21,6 +21,11 @@ const ERRORS = {
     invalidTransition: "Transition de statut non autorisée.",
     dossierNotFound: "Dossier introuvable.",
     periodExists: "Cette période fiscale existe déjà.",
+    documentNotFound: "Document introuvable.",
+    uploadNotReceived: "Le fichier n'a pas été reçu par le stockage.",
+    uploadInvalidType:
+      "Le fichier envoyé n'est pas d'un type autorisé (PDF, JPG ou PNG).",
+    uploadTooLarge: "Le fichier envoyé dépasse la taille autorisée (20 Mo).",
   },
   en: {
     badCredentials: "Incorrect email address or password.",
@@ -32,6 +37,11 @@ const ERRORS = {
     invalidTransition: "That status change is not allowed.",
     dossierNotFound: "File not found.",
     periodExists: "That tax period already exists.",
+    documentNotFound: "Document not found.",
+    uploadNotReceived: "The file was not received by storage.",
+    uploadInvalidType:
+      "The uploaded file is not an allowed type (PDF, JPG or PNG).",
+    uploadTooLarge: "The uploaded file exceeds the size limit (20 MB).",
   },
 } satisfies Record<Locale, Record<string, string>>;
 

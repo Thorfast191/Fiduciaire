@@ -3,6 +3,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/lib/env";
@@ -55,15 +56,43 @@ export async function getDownloadUrl(
   return getSignedUrl(client, command, { expiresIn: SIGNED_URL_TTL_SECONDS });
 }
 
-export async function objectExists(key: string): Promise<boolean> {
+export interface ObjectMetadata {
+  contentLength: number;
+  contentType: string;
+}
+
+/**
+ * The object's real size and type as stored, not what the uploader claimed.
+ *
+ * A presigned PUT does not bind Content-Length, and the Content-Type it signs
+ * is not enforced by every S3-compatible backend, so the values recorded when
+ * the upload was requested cannot be trusted. Returns null when the object is
+ * absent.
+ */
+export async function getObjectMetadata(
+  key: string,
+): Promise<ObjectMetadata | null> {
   try {
-    await client.send(
+    const head = await client.send(
       new HeadObjectCommand({ Bucket: env.STORAGE_BUCKET, Key: key }),
     );
-    return true;
+    return {
+      contentLength: head.ContentLength ?? 0,
+      contentType: head.ContentType ?? "application/octet-stream",
+    };
   } catch (err) {
     const name = (err as { name?: string }).name;
-    if (name === "NotFound" || name === "NoSuchKey") return false;
+    if (name === "NotFound" || name === "NoSuchKey") return null;
     throw err;
   }
+}
+
+export async function objectExists(key: string): Promise<boolean> {
+  return (await getObjectMetadata(key)) !== null;
+}
+
+export async function deleteObject(key: string): Promise<void> {
+  await client.send(
+    new DeleteObjectCommand({ Bucket: env.STORAGE_BUCKET, Key: key }),
+  );
 }

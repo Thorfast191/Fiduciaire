@@ -25,11 +25,17 @@ export async function createDossier(params: {
 export async function listDossiersForClient(
   clientId: string,
 ): Promise<Dossier[]> {
-  return db
-    .select()
-    .from(dossiers)
-    .where(eq(dossiers.clientId, clientId))
-    .orderBy(desc(dossiers.taxYear));
+  return (
+    db
+      .select()
+      .from(dossiers)
+      .where(eq(dossiers.clientId, clientId))
+      // `createdAt` breaks ties: nothing stops two dossiers sharing a tax year
+      // (there is no uniqueness constraint on client_id + tax_year), and the
+      // client home picks the first match for the selected period — so the one
+      // it picks has to be the most recent, not whichever the planner returned.
+      .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))
+  );
 }
 
 export interface AdminDossierRow {
