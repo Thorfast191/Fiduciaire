@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, gte, isNull } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   dossierNotifications,
@@ -9,6 +9,9 @@ import {
 } from "@/db/schema";
 import { sendEmail } from "@/lib/email/send";
 import { notificationEmailTemplate } from "@/lib/email/templates/notificationEmail";
+
+/** How long an identical notification is treated as a retry rather than a new send. */
+const DUPLICATE_WINDOW_MS = 60 * 1000;
 
 export type SendNotificationResult =
   | { ok: true; notification: DossierNotification }
@@ -40,13 +43,41 @@ export async function sendDossierNotification(params: {
 
   if (!row) return { ok: false, error: "dossier_not_found" };
 
+  const message = params.message?.trim() || null;
+
+  // A double-clicked "Notify" button, or a retried request, must not send the
+  // client the same email twice. An identical notification on the same dossier
+  // within the window resolves to the row already written rather than adding a
+  // second one. The window is deliberately short: re-sending the same reminder
+  // an hour later is a legitimate nudge, not a duplicate.
+  const [duplicate] = await db
+    .select()
+    .from(dossierNotifications)
+    .where(
+      and(
+        eq(dossierNotifications.dossierId, params.dossierId),
+        eq(dossierNotifications.kind, params.kind),
+        message === null
+          ? isNull(dossierNotifications.message)
+          : eq(dossierNotifications.message, message),
+        gte(
+          dossierNotifications.createdAt,
+          new Date(Date.now() - DUPLICATE_WINDOW_MS),
+        ),
+      ),
+    )
+    .orderBy(desc(dossierNotifications.createdAt))
+    .limit(1);
+
+  if (duplicate) return { ok: true, notification: duplicate };
+
   const [notification] = await db
     .insert(dossierNotifications)
     .values({
       dossierId: params.dossierId,
       sentBy: params.sentBy,
       kind: params.kind,
-      message: params.message?.trim() || null,
+      message,
     })
     .returning();
 

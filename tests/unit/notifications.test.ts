@@ -259,3 +259,74 @@ describe("notificationEmailTemplate", () => {
     expect(mail.html).toContain("&lt;script&gt;");
   });
 });
+
+describe("sendDossierNotification — duplicate suppression", () => {
+  it("does not create a second row when the same request is sent twice", async () => {
+    const client = await makeClient();
+    const admin = await makeAdmin();
+    const dossier = await makeDossier(client.id);
+
+    const first = await sendDossierNotification({
+      dossierId: dossier.id,
+      sentBy: admin.id,
+      kind: "documents_requested",
+      message: "Merci d'envoyer votre certificat de salaire.",
+    });
+    const second = await sendDossierNotification({
+      dossierId: dossier.id,
+      sentBy: admin.id,
+      kind: "documents_requested",
+      message: "Merci d'envoyer votre certificat de salaire.",
+    });
+
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(true);
+    // The retry resolves to the row the first call created.
+    if (first.ok && second.ok) {
+      expect(second.notification.id).toBe(first.notification.id);
+    }
+    expect(await listNotificationsForDossier(dossier.id)).toHaveLength(1);
+  });
+
+  it("still allows a genuinely different message", async () => {
+    const client = await makeClient();
+    const admin = await makeAdmin();
+    const dossier = await makeDossier(client.id);
+
+    await sendDossierNotification({
+      dossierId: dossier.id,
+      sentBy: admin.id,
+      kind: "documents_requested",
+      message: "Certificat de salaire.",
+    });
+    await sendDossierNotification({
+      dossierId: dossier.id,
+      sentBy: admin.id,
+      kind: "documents_requested",
+      message: "Relevé bancaire également.",
+    });
+
+    expect(await listNotificationsForDossier(dossier.id)).toHaveLength(2);
+  });
+
+  it("still allows the same message under a different kind", async () => {
+    const client = await makeClient();
+    const admin = await makeAdmin();
+    const dossier = await makeDossier(client.id);
+
+    await sendDossierNotification({
+      dossierId: dossier.id,
+      sentBy: admin.id,
+      kind: "documents_requested",
+      message: "Action attendue.",
+    });
+    await sendDossierNotification({
+      dossierId: dossier.id,
+      sentBy: admin.id,
+      kind: "action_required",
+      message: "Action attendue.",
+    });
+
+    expect(await listNotificationsForDossier(dossier.id)).toHaveLength(2);
+  });
+});
