@@ -1,4 +1,4 @@
-import { eq, desc, sql } from "drizzle-orm";
+import { and, eq, desc, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   dossiers,
@@ -8,18 +8,43 @@ import {
   type Role,
 } from "@/db/schema";
 
+/**
+ * Ensures a client has a dossier for a tax year, and returns it.
+ *
+ * `(client_id, tax_year)` is unique, so asking twice is not a request for a
+ * second dossier — it is a request for the same one. The conflict is absorbed
+ * and the existing row returned rather than surfacing as a database error, which
+ * would otherwise turn an admin double-submit into a 500. The outcome an admin
+ * wants either way is "this client has a dossier for this year", and that is
+ * what they get.
+ */
 export async function createDossier(params: {
   clientId: string;
   taxYear: number;
 }): Promise<Dossier> {
-  const [dossier] = await db
+  const [inserted] = await db
     .insert(dossiers)
     .values({
       clientId: params.clientId,
       taxYear: params.taxYear,
     })
+    .onConflictDoNothing({
+      target: [dossiers.clientId, dossiers.taxYear],
+    })
     .returning();
-  return dossier;
+
+  if (inserted) return inserted;
+
+  const [existing] = await db
+    .select()
+    .from(dossiers)
+    .where(
+      and(
+        eq(dossiers.clientId, params.clientId),
+        eq(dossiers.taxYear, params.taxYear),
+      ),
+    );
+  return existing;
 }
 
 export async function listDossiersForClient(
@@ -30,10 +55,9 @@ export async function listDossiersForClient(
       .select()
       .from(dossiers)
       .where(eq(dossiers.clientId, clientId))
-      // `createdAt` breaks ties: nothing stops two dossiers sharing a tax year
-      // (there is no uniqueness constraint on client_id + tax_year), and the
-      // client home picks the first match for the selected period — so the one
-      // it picks has to be the most recent, not whichever the planner returned.
+      // `(client_id, tax_year)` is unique, so a year yields at most one row and
+      // the client home's pick for a period is unambiguous. `createdAt` is kept
+      // only to give rows within a year a stable, deterministic order.
       .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))
   );
 }

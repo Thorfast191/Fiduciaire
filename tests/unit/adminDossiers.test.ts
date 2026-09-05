@@ -88,11 +88,14 @@ describe("listAllDossiersWithClient", () => {
 describe("listTaxYears", () => {
   it("returns distinct years, newest first, with no duplicates", async () => {
     const base = 940000 + Math.floor(Math.random() * 50000);
+    // A client can no longer hold two dossiers for one year, so the repeated
+    // year that `listTaxYears` must collapse comes from two different clients.
     const clientId = await makeClient("Years", "Test");
+    const otherId = await makeClient("Years", "Other");
 
     await db.insert(dossiers).values([
       { clientId, taxYear: base },
-      { clientId, taxYear: base },
+      { clientId: otherId, taxYear: base },
       { clientId, taxYear: base + 1 },
     ]);
 

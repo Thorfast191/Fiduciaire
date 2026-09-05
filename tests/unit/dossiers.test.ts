@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { db } from "../../src/db/client";
-import { users } from "../../src/db/schema";
+import { eq } from "drizzle-orm";
+import { users, dossiers } from "../../src/db/schema";
 import { hashPassword } from "../../src/lib/auth/password";
 import {
   createDossier,
@@ -110,5 +111,44 @@ describe("setDossierStatus", () => {
 
     const result = await setDossierStatus(dossier.id, "completed", { id: admin.id, role: "admin" });
     expect(result).toEqual({ ok: true, previousStatus: "not_started" });
+  });
+});
+
+describe("createDossier — one dossier per client per tax year", () => {
+  it("returns the existing dossier instead of creating a second one", async () => {
+    const client = await makeUser();
+
+    const first = await createDossier({ clientId: client.id, taxYear: 2031 });
+    const second = await createDossier({ clientId: client.id, taxYear: 2031 });
+
+    expect(second.id).toBe(first.id);
+
+    const all = await listDossiersForClient(client.id);
+    expect(all.filter((d) => d.taxYear === 2031)).toHaveLength(1);
+  });
+
+  it("does not lose the existing dossier's status when asked again", async () => {
+    const client = await makeUser();
+    const created = await createDossier({ clientId: client.id, taxYear: 2032 });
+
+    await db
+      .update(dossiers)
+      .set({ status: "completed" })
+      .where(eq(dossiers.id, created.id));
+
+    const again = await createDossier({ clientId: client.id, taxYear: 2032 });
+    expect(again.id).toBe(created.id);
+    expect(again.status).toBe("completed");
+  });
+
+  it("still separates different clients and different years", async () => {
+    const a = await makeUser();
+    const b = await makeUser();
+
+    const a2033 = await createDossier({ clientId: a.id, taxYear: 2033 });
+    const a2034 = await createDossier({ clientId: a.id, taxYear: 2034 });
+    const b2033 = await createDossier({ clientId: b.id, taxYear: 2033 });
+
+    expect(new Set([a2033.id, a2034.id, b2033.id]).size).toBe(3);
   });
 });

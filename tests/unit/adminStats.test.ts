@@ -37,12 +37,15 @@ describe("getAdminDashboardStats", () => {
     const uniqueYear = 900000 + Math.floor(Math.random() * 90000);
     const before = await getAdminDashboardStats();
 
+    // One dossier per client per year is now enforced, so the three rows this
+    // test counts need three distinct clients rather than two.
     const c1 = await makeClient();
     const c2 = await makeClient();
+    const c3 = await makeClient();
     await db.insert(dossiers).values([
       { clientId: c1, taxYear: uniqueYear, status: "completed" },
-      { clientId: c1, taxYear: uniqueYear, status: "in_review" },
-      { clientId: c2, taxYear: uniqueYear, status: "completed" },
+      { clientId: c2, taxYear: uniqueYear, status: "in_review" },
+      { clientId: c3, taxYear: uniqueYear, status: "completed" },
     ]);
 
     const after = await getAdminDashboardStats();
@@ -57,7 +60,7 @@ describe("getAdminDashboardStats", () => {
     // Shared counters: tolerate concurrent inserts from other test files
     // (no test in this suite deletes dossiers or users).
     expect(after.totalDossiers).toBeGreaterThanOrEqual(before.totalDossiers + 3);
-    expect(after.totalClients).toBeGreaterThanOrEqual(before.totalClients + 2);
+    expect(after.totalClients).toBeGreaterThanOrEqual(before.totalClients + 3);
     expect(after.byStatus.completed).toBeGreaterThanOrEqual(
       before.byStatus.completed + 2,
     );

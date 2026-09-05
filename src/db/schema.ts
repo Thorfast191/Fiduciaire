@@ -143,9 +143,12 @@ export const dossiers = pgTable(
       .default(sql`now()`),
   },
   (t) => [
-    // The client portal lists a client's dossiers; the admin area filters the
-    // whole table by period.
-    index("dossiers_client_id_idx").on(t.clientId, t.taxYear),
+    // One dossier per client per tax year. The client home shows a single
+    // declaration card for the selected period, and the admin table assumes the
+    // same, so a second row for a year is not a variant — it is an ambiguity
+    // neither screen can resolve. Also serves the client-portal lookup, so the
+    // separate (client_id, tax_year) index is no longer needed.
+    uniqueIndex("dossiers_client_tax_year_idx").on(t.clientId, t.taxYear),
     index("dossiers_tax_year_idx").on(t.taxYear),
   ],
 );
