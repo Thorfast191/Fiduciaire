@@ -1,11 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { NextRequest } from "next/server";
+import { eq } from "drizzle-orm";
 import { db } from "../../../src/db/client";
-import { users } from "../../../src/db/schema";
+import { users, documents } from "../../../src/db/schema";
 import { hashPassword } from "../../../src/lib/auth/password";
 import { createSession, SESSION_COOKIE_NAME } from "../../../src/lib/auth/session";
 import { createPendingUpload, confirmUpload, listDocumentsForOwner } from "../../../src/lib/documents";
 import { createDossier } from "../../../src/lib/dossiers";
+import { objectExists } from "../../../src/lib/storage/client";
 import { DELETE as deleteDoc } from "../../../src/app/api/documents/[id]/route";
 
 async function makeUser(role: "client" | "admin" = "client") {
@@ -101,5 +103,46 @@ describe("DELETE /api/documents/:id", () => {
     request.cookies.set(SESSION_COOKIE_NAME, token);
     const res = await deleteDoc(request, withParams("not-a-uuid"));
     expect(res.status).toBe(404);
+  });
+});
+
+describe("DELETE /api/documents/:id — storage purge", () => {
+  it("removes the object from the bucket, not just the database row", async () => {
+    const owner = await makeUser();
+    const docId = await uploadConfirmedDoc(owner.id);
+
+    const [before] = await db
+      .select()
+      .from(documents)
+      .where(eq(documents.id, docId));
+    expect(await objectExists(before.storageKey)).toBe(true);
+
+    const { token } = await createSession(owner.id, {});
+    const request = req();
+    request.cookies.set(SESSION_COOKIE_NAME, token);
+    expect((await deleteDoc(request, withParams(docId))).status).toBe(200);
+
+    // The row is retained as an audit trail; the bytes must be gone.
+    expect(await objectExists(before.storageKey)).toBe(false);
+    const [after] = await db
+      .select()
+      .from(documents)
+      .where(eq(documents.id, docId));
+    expect(after.deletedAt).not.toBeNull();
+  });
+
+  it("is safe to call twice when the object is already gone", async () => {
+    const owner = await makeUser();
+    const docId = await uploadConfirmedDoc(owner.id);
+    const { token } = await createSession(owner.id, {});
+
+    const first = req();
+    first.cookies.set(SESSION_COOKIE_NAME, token);
+    expect((await deleteDoc(first, withParams(docId))).status).toBe(200);
+
+    const second = req();
+    second.cookies.set(SESSION_COOKIE_NAME, token);
+    // Already soft-deleted, so it is no longer accessible: 404, not a crash.
+    expect((await deleteDoc(second, withParams(docId))).status).toBe(404);
   });
 });

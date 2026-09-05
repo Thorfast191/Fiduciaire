@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { and, desc, eq, isNull, isNotNull } from "drizzle-orm";
 import { db } from "@/db/client";
+import { logger } from "@/lib/logger";
 import { documents, type Document, type Role } from "@/db/schema";
 import {
   deleteObject,
@@ -209,9 +210,38 @@ export async function getAccessibleDocument(
   return { ok: true, document: doc };
 }
 
+/**
+ * Marks a document deleted and removes its bytes from storage.
+ *
+ * The row is kept — `deletedAt` is the audit trail of what was held and when it
+ * went — but the object itself is purged. Leaving it in the bucket would mean a
+ * client who deletes a tax document still has it stored indefinitely, with no
+ * lifecycle rule to remove it and no way to tell from the UI.
+ *
+ * Order matters: the row is marked first so the deletion is honoured even if
+ * storage is unreachable. A failed object delete leaves an orphan, which is a
+ * cleanup problem; a failed row update would leave a document the client
+ * believes is gone still listed, which is a correctness problem.
+ */
 export async function softDeleteDocument(documentId: string): Promise<void> {
+  const [doc] = await db
+    .select({ storageKey: documents.storageKey })
+    .from(documents)
+    .where(eq(documents.id, documentId));
+
   await db
     .update(documents)
     .set({ deletedAt: new Date() })
     .where(eq(documents.id, documentId));
+
+  if (!doc) return;
+
+  try {
+    await deleteObject(doc.storageKey);
+  } catch (err) {
+    logger.error(
+      { err, documentId, storageKey: doc.storageKey },
+      "document row soft-deleted but its object could not be removed",
+    );
+  }
 }
