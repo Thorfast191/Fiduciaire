@@ -13,7 +13,13 @@ function uniqueEmail(prefix: string) {
 async function loginAsNewClient(page: Page, request: APIRequestContext, prefix: string) {
   const email = uniqueEmail(prefix);
   await request.post("/api/auth/signup", {
-    data: { email, password: "a-long-enough-password", firstName: "A", lastName: "B" },
+    data: {
+      email,
+      password: "a-long-enough-password",
+      firstName: "A",
+      lastName: "B",
+      acceptTerms: true,
+    },
   });
   await getLatestOtpForEmail(email); // drain the signup OTP email first
 

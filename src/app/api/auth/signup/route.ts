@@ -17,6 +17,9 @@ const bodySchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   phone: z.string().optional(),
+  // Required, and required to be true: the checkbox in the browser is a
+  // convenience, this is the check that actually gates account creation.
+  acceptTerms: z.literal(true),
 });
 
 export async function POST(request: NextRequest) {
@@ -58,6 +61,7 @@ export async function POST(request: NextRequest) {
       phone,
       role: "client",
       locale,
+      termsAcceptedAt: new Date(),
     })
     .returning();
 

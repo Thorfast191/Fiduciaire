@@ -30,7 +30,11 @@ async function makeAccount(ip: string) {
   const email = `login-${Date.now()}-${Math.random()}@example.test`;
   const password = "a-long-enough-password";
   await signup(
-    req("/api/auth/signup", { email, password, firstName: "A", lastName: "B" }, ip),
+    req(
+      "/api/auth/signup",
+      { email, password, firstName: "A", lastName: "B", acceptTerms: true },
+      ip,
+    ),
   );
   return { email, password };
 }

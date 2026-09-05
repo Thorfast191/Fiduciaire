@@ -11,7 +11,13 @@ test("signup → verify → reaches the client portal", async ({ page }) => {
   await page.getByLabel("Prénom").fill("Camille");
   await page.getByLabel("Nom", { exact: true }).fill("Rochat");
   await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByLabel("Mot de passe").fill("a-long-enough-password");
+  // Two password labels exist on this page now, so this must not match
+  // "Confirmer le mot de passe" as well.
+  await page.getByLabel("Mot de passe", { exact: true }).fill("a-long-enough-password");
+  await page
+    .getByLabel("Confirmer le mot de passe")
+    .fill("a-long-enough-password");
+  await page.getByLabel(/J'accepte les conditions/).check();
   await page.getByRole("button", { name: "Créer mon compte" }).click();
 
   await page.waitForURL(/\/verify/);
@@ -30,7 +36,13 @@ test("signup → verify → reaches the client portal", async ({ page }) => {
 test("login → verify → reaches the client portal", async ({ page, request }) => {
   const email = uniqueEmail("e2e-login");
   await request.post("/api/auth/signup", {
-    data: { email, password: "a-long-enough-password", firstName: "A", lastName: "B" },
+    data: {
+      email,
+      password: "a-long-enough-password",
+      firstName: "A",
+      lastName: "B",
+      acceptTerms: true,
+    },
   });
   await getLatestOtpForEmail(email); // drain the signup OTP email first
 
@@ -49,7 +61,13 @@ test("login → verify → reaches the client portal", async ({ page, request })
 test("wrong password shows a generic error and does not proceed", async ({ page, request }) => {
   const email = uniqueEmail("e2e-wrongpw");
   await request.post("/api/auth/signup", {
-    data: { email, password: "a-long-enough-password", firstName: "A", lastName: "B" },
+    data: {
+      email,
+      password: "a-long-enough-password",
+      firstName: "A",
+      lastName: "B",
+      acceptTerms: true,
+    },
   });
 
   await page.goto("/login");
@@ -64,7 +82,13 @@ test("wrong password shows a generic error and does not proceed", async ({ page,
 test("locks out after 5 wrong OTP attempts", async ({ page, request }) => {
   const email = uniqueEmail("e2e-otplock");
   await request.post("/api/auth/signup", {
-    data: { email, password: "a-long-enough-password", firstName: "A", lastName: "B" },
+    data: {
+      email,
+      password: "a-long-enough-password",
+      firstName: "A",
+      lastName: "B",
+      acceptTerms: true,
+    },
   });
   await getLatestOtpForEmail(email);
 
@@ -80,7 +104,13 @@ test("locks out after 5 wrong OTP attempts", async ({ page, request }) => {
 test("locks out after 5 failed login attempts from the same browser", async ({ page, request }) => {
   const email = uniqueEmail("e2e-loginlock");
   await request.post("/api/auth/signup", {
-    data: { email, password: "a-long-enough-password", firstName: "A", lastName: "B" },
+    data: {
+      email,
+      password: "a-long-enough-password",
+      firstName: "A",
+      lastName: "B",
+      acceptTerms: true,
+    },
   });
 
   await page.goto("/login");

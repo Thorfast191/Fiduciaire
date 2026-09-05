@@ -13,9 +13,11 @@ export default function SignupPage() {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     firstName: "",
     lastName: "",
   });
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,6 +26,18 @@ export default function SignupPage() {
     e.preventDefault();
 
     setError("");
+
+    // Checked here so the mismatch is caught before a round trip; the server
+    // never sees the confirmation field, and enforces acceptTerms itself.
+    if (form.password !== form.confirmPassword) {
+      setError(t.auth.signup.passwordMismatch);
+      return;
+    }
+    if (!acceptTerms) {
+      setError(t.auth.signup.termsRequired);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -32,7 +46,13 @@ export default function SignupPage() {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          acceptTerms,
+        }),
       });
 
       const body = await res.json();
@@ -160,6 +180,41 @@ export default function SignupPage() {
                   {t.auth.signup.passwordRule}
                 </p>
               </div>
+            </div>
+
+            {/* Confirm password */}
+            <Field
+              id="confirmPassword"
+              label={t.auth.fields.confirmPassword}
+              type="password"
+              placeholder={t.auth.fields.confirmPasswordPlaceholder}
+              autoComplete="new-password"
+              required
+              minLength={10}
+              value={form.confirmPassword}
+              onChange={(e) =>
+                setForm({ ...form, confirmPassword: e.target.value })
+              }
+            />
+
+            {/* Terms acceptance */}
+            <div className="flex items-start gap-3">
+              <input
+                id="acceptTerms"
+                name="acceptTerms"
+                type="checkbox"
+                required
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                className="mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer rounded-[6px] border border-line-strong accent-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
+              />
+
+              <label
+                htmlFor="acceptTerms"
+                className="cursor-pointer text-[12px] leading-5 text-muted"
+              >
+                {t.auth.signup.termsLabel}
+              </label>
             </div>
 
             {/* Submit */}

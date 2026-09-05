@@ -50,6 +50,13 @@
       "when": 1788460319913,
       "tag": "0006_cooing_lifeguard",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788634855468,
+      "tag": "0007_black_chronomancer",
+      "breakpoints": true
     }
   ]
 }

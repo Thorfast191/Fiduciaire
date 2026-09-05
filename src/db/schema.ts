@@ -27,6 +27,16 @@ export const users = pgTable("users", {
     .notNull()
     .default("fr"),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+  /**
+   * When the user accepted the CGVU at signup.
+   *
+   * Stored rather than merely validated: for a Swiss fiduciary the acceptance
+   * is the evidence that the contractual relationship was formed, which the
+   * client's own CGV assert ("l'acceptation électronique des CGVU … constituent
+   * la preuve de l'accord du Client"). Nullable because accounts created by an
+   * administrator never pass through the public signup form.
+   */
+  termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
   disabledAt: timestamp("disabled_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
