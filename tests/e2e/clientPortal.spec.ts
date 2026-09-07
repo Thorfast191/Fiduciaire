@@ -182,3 +182,44 @@ test("deleting a document removes it from the dossier's list", async ({
   await page.getByRole("button", { name: "Supprimer" }).click();
   await expect(page.getByText("sample.pdf")).not.toBeVisible();
 });
+
+test("a client opens a prestation request and the admin sees it under that prestation", async ({
+  page,
+  request,
+}) => {
+  // A period the firm has opened, so the request form has a year to offer.
+  const year = 2090 + Math.floor(Math.random() * 10);
+  await adminContext.request.post("/api/tax-periods", { data: { year } });
+  await adminContext.request.patch("/api/tax-periods", {
+    data: { year, isActive: true },
+  });
+
+  const email = await loginAsNewClient(page, request, "e2e-prestation");
+
+  // Every prestation in the sidebar is reachable, not a greyed "bientôt".
+  await page.getByRole("link", { name: "Prestation en capital" }).click();
+  await page.waitForURL("**/portal/prestations/capital");
+  await expect(
+    page.getByRole("heading", { name: "Prestation en capital" }),
+  ).toBeVisible();
+
+  await page.getByLabel("Année fiscale").selectOption(String(year));
+  await page.getByRole("button", { name: /Nouvelle demande/ }).click();
+
+  // Opening a request lands on the dossier, named for its prestation rather
+  // than as a tax declaration.
+  await page.waitForURL(/\/portal\/dossiers\//);
+  await expect(
+    page.getByRole("heading", { name: "Prestation en capital", exact: true }),
+  ).toBeVisible();
+
+  // The same request shows up under the admin's capital table, and not under
+  // declarations.
+  const capital = await adminContext.newPage();
+  await capital.goto(`/admin/dossiers/capital?periode=${year}`);
+  await expect(capital.getByText(email)).toBeVisible();
+
+  await capital.goto(`/admin/dossiers/declarations?periode=${year}`);
+  await expect(capital.getByText(email)).toHaveCount(0);
+  await capital.close();
+});

@@ -5,6 +5,7 @@ import NotificationBanner from "./NotificationBanner";
 import { listNotificationsForDossier } from "@/lib/notifications";
 import { getAccessibleDossier } from "@/lib/dossiers";
 import { getCurrentUser } from "@/lib/auth/guards";
+import { SERVICE_SLUG, serviceLabel } from "@/lib/serviceTypes";
 
 /**
  * Rendered inside the portal shell, so it carries no header or footer of its
@@ -33,10 +34,18 @@ export default async function DossierDetailPage({
     ? (await listNotificationsForDossier(id)).filter((n) => !n.acknowledgedAt)
     : [];
 
+  // Name the prestation this dossier belongs to, and send "back" to the list it
+  // was opened from rather than always to the declarations home.
+  const serviceType = access.ok ? access.dossier.serviceType : "declaration";
+  const backHref =
+    serviceType === "declaration"
+      ? "/portal"
+      : `/portal/prestations/${SERVICE_SLUG[serviceType]}`;
+
   return (
     <div className="max-w-[1000px]">
       <Link
-        href="/portal"
+        href={backHref}
         className="inline-flex items-center gap-2 text-[12px] font-medium text-muted transition hover:text-strong"
       >
         <svg
@@ -58,7 +67,9 @@ export default async function DossierDetailPage({
 
       <div className="mt-5">
         <h1 className="disp text-[clamp(28px,3.4vw,34px)] font-extrabold leading-[1.05]">
-          {t.portal.dossierTitle}
+          {serviceType === "declaration"
+            ? t.portal.dossierTitle
+            : serviceLabel(t, serviceType)}
         </h1>
 
         <p className="mt-1.5 max-w-[600px] text-[15px] text-muted">

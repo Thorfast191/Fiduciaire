@@ -61,3 +61,16 @@ export async function listPeriodOptions(
   const active = await listActiveTaxPeriodYears();
   return active.length > 0 ? active : dossierYears;
 }
+
+/**
+ * Whether the firm currently accepts filings for a year. Used to gate the
+ * prestation requests a client opens for themselves; admins are not gated,
+ * because opening a dossier for a closed year is a legitimate correction.
+ */
+export async function isActivePeriod(year: number): Promise<boolean> {
+  const [row] = await db
+    .select({ isActive: taxPeriods.isActive })
+    .from(taxPeriods)
+    .where(eq(taxPeriods.year, year));
+  return row?.isActive === true;
+}

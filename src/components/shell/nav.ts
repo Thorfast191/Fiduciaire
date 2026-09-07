@@ -1,4 +1,5 @@
 import type { Messages } from "@/lib/i18n/messages/fr";
+import { SERVICE_SLUG, type ServiceType } from "@/lib/serviceTypes";
 
 /**
  * Sidebar nav definitions, transcribed from the client mockup.
@@ -15,14 +16,22 @@ export type NavEntry =
 
 export function clientNav(t: Messages): NavEntry[] {
   const n = t.portal.nav;
+  const prestation = (type: ServiceType) =>
+    `/portal/prestations/${SERVICE_SLUG[type]}`;
 
   return [
     { kind: "head", label: n.servicesHead },
     { kind: "link", label: n.taxReturns, href: "/portal" },
-    { kind: "soon", label: n.capital },
-    { kind: "soon", label: n.simulation },
-    { kind: "soon", label: n.instalments },
-    { kind: "soon", label: n.review },
+    { kind: "link", label: n.capital, href: prestation("capital") },
+    // The mockup reaches "départ" and "décès" from inside the declaration
+    // questionnaire, which this project does not have. They are advertised on
+    // the marketing page, so they get their own sidebar entries here rather
+    // than being unreachable.
+    { kind: "link", label: n.departure, href: prestation("departure") },
+    { kind: "link", label: n.deces, href: prestation("deces") },
+    { kind: "link", label: n.simulation, href: prestation("simulation") },
+    { kind: "link", label: n.instalments, href: prestation("acompte") },
+    { kind: "link", label: n.review, href: prestation("relecture") },
     { kind: "head", label: n.otherHead },
     { kind: "soon", label: n.assistance },
     { kind: "soon", label: n.payments },

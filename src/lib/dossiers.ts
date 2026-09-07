@@ -7,29 +7,38 @@ import {
   type DossierStatus,
   type Role,
 } from "@/db/schema";
+import type { ServiceType } from "@/lib/serviceTypes";
 
 /**
- * Ensures a client has a dossier for a tax year, and returns it.
+ * Ensures a client has a dossier of a given prestation for a tax year, and
+ * returns it.
  *
- * `(client_id, tax_year)` is unique, so asking twice is not a request for a
- * second dossier — it is a request for the same one. The conflict is absorbed
- * and the existing row returned rather than surfacing as a database error, which
- * would otherwise turn an admin double-submit into a 500. The outcome an admin
- * wants either way is "this client has a dossier for this year", and that is
- * what they get.
+ * `(client_id, tax_year, service_type)` is unique, so asking twice is not a
+ * request for a second dossier — it is a request for the same one. The conflict
+ * is absorbed and the existing row returned rather than surfacing as a database
+ * error, which would otherwise turn a double-submit into a 500. The outcome the
+ * caller wants either way is "this client has this prestation for this year",
+ * and that is what they get.
+ *
+ * `serviceType` defaults to `declaration`: that is what every dossier was before
+ * prestations were split out, and what the admin year flow still creates.
  */
 export async function createDossier(params: {
   clientId: string;
   taxYear: number;
+  serviceType?: ServiceType;
 }): Promise<Dossier> {
+  const serviceType = params.serviceType ?? "declaration";
+
   const [inserted] = await db
     .insert(dossiers)
     .values({
       clientId: params.clientId,
       taxYear: params.taxYear,
+      serviceType,
     })
     .onConflictDoNothing({
-      target: [dossiers.clientId, dossiers.taxYear],
+      target: [dossiers.clientId, dossiers.taxYear, dossiers.serviceType],
     })
     .returning();
 
@@ -42,6 +51,7 @@ export async function createDossier(params: {
       and(
         eq(dossiers.clientId, params.clientId),
         eq(dossiers.taxYear, params.taxYear),
+        eq(dossiers.serviceType, serviceType),
       ),
     );
   return existing;
@@ -49,15 +59,23 @@ export async function createDossier(params: {
 
 export async function listDossiersForClient(
   clientId: string,
+  serviceType?: ServiceType,
 ): Promise<Dossier[]> {
   return (
     db
       .select()
       .from(dossiers)
-      .where(eq(dossiers.clientId, clientId))
-      // `(client_id, tax_year)` is unique, so a year yields at most one row and
-      // the client home's pick for a period is unambiguous. `createdAt` is kept
-      // only to give rows within a year a stable, deterministic order.
+      .where(
+        serviceType
+          ? and(
+              eq(dossiers.clientId, clientId),
+              eq(dossiers.serviceType, serviceType),
+            )
+          : eq(dossiers.clientId, clientId),
+      )
+      // `(client_id, tax_year, service_type)` is unique, so a year yields at
+      // most one row per prestation and the client home's pick for a period is
+      // unambiguous. `createdAt` only gives rows within a year a stable order.
       .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))
   );
 }
@@ -65,6 +83,7 @@ export async function listDossiersForClient(
 export interface AdminDossierRow {
   id: string;
   taxYear: number;
+  serviceType: ServiceType;
   status: DossierStatus;
   createdAt: Date;
   clientId: string;
@@ -82,11 +101,17 @@ export interface AdminDossierRow {
 export async function listAllDossiersWithClient({
   limit = 200,
   taxYear,
-}: { limit?: number; taxYear?: number } = {}): Promise<AdminDossierRow[]> {
+  serviceType,
+}: {
+  limit?: number;
+  taxYear?: number;
+  serviceType?: ServiceType;
+} = {}): Promise<AdminDossierRow[]> {
   return db
     .select({
       id: dossiers.id,
       taxYear: dossiers.taxYear,
+      serviceType: dossiers.serviceType,
       status: dossiers.status,
       createdAt: dossiers.createdAt,
       clientId: dossiers.clientId,
@@ -96,7 +121,12 @@ export async function listAllDossiersWithClient({
     })
     .from(dossiers)
     .innerJoin(users, eq(users.id, dossiers.clientId))
-    .where(taxYear ? eq(dossiers.taxYear, taxYear) : undefined)
+    .where(
+      and(
+        taxYear ? eq(dossiers.taxYear, taxYear) : undefined,
+        serviceType ? eq(dossiers.serviceType, serviceType) : undefined,
+      ),
+    )
     .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))
     .limit(limit);
 }
@@ -110,12 +140,39 @@ export async function listTaxYears(): Promise<number[]> {
   return rows.map((r) => r.taxYear);
 }
 
-export async function countAllDossiers(taxYear?: number): Promise<number> {
+export async function countAllDossiers(
+  taxYear?: number,
+  serviceType?: ServiceType,
+): Promise<number> {
   const [row] = await db
     .select({ value: sql<number>`count(*)` })
     .from(dossiers)
-    .where(taxYear ? eq(dossiers.taxYear, taxYear) : undefined);
+    .where(
+      and(
+        taxYear ? eq(dossiers.taxYear, taxYear) : undefined,
+        serviceType ? eq(dossiers.serviceType, serviceType) : undefined,
+      ),
+    );
   return Number(row?.value ?? 0);
+}
+
+/**
+ * How many dossiers exist per prestation, for the admin Dossiers hub cards.
+ * One grouped query rather than one count per card.
+ */
+export async function countDossiersByService(
+  taxYear?: number,
+): Promise<Record<string, number>> {
+  const rows = await db
+    .select({
+      serviceType: dossiers.serviceType,
+      value: sql<number>`count(*)`,
+    })
+    .from(dossiers)
+    .where(taxYear ? eq(dossiers.taxYear, taxYear) : undefined)
+    .groupBy(dossiers.serviceType);
+
+  return Object.fromEntries(rows.map((r) => [r.serviceType, Number(r.value)]));
 }
 
 export type AccessCheckResult =

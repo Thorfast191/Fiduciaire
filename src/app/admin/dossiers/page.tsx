@@ -1,10 +1,17 @@
 import Link from "next/link";
-import { countAllDossiers, listTaxYears } from "@/lib/dossiers";
+import { countDossiersByService, listTaxYears } from "@/lib/dossiers";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
 import type { Messages } from "@/lib/i18n/messages/fr";
+import {
+  SERVICE_SLUG,
+  SERVICE_TYPES,
+  serviceDescription,
+  serviceLabel,
+  type ServiceType,
+} from "@/lib/serviceTypes";
 
 /** The mockup's `aPalette` (`Fiduvia.dc.html:2966`). */
 const PALETTE = [
@@ -15,44 +22,31 @@ const PALETTE = [
   "var(--amber-600)",
 ];
 
-function cards(t: Messages, declarations: number) {
-  const h = t.admin.hub;
+const GLYPH: Record<ServiceType, string> = {
+  declaration: "M4 6h5l2 2h9v10H4z",
+  capital: "M4 8h16v11H4z",
+  departure: "M2 12h14l-3-4m3 4-3 4M18 4v16",
+  deces: "M12 21s-7-4.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 12c0 4.5-7 9-7 9z",
+  simulation: "M5 19V9m5 10V5m5 14v-7m5 7V8",
+  acompte: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4",
+  relecture: "M6 4h9l4 4v12H6zM14 4v5h5M9 14h6",
+};
 
-  return [
-    {
-      label: h.declarations,
-      desc: h.declarationsDesc,
-      count: declarations,
-      href: "/admin/dossiers/declarations",
-      glyph: "M4 6h5l2 2h9v10H4z",
-    },
-    { label: h.capital, desc: h.capitalDesc, count: 0, glyph: "M4 8h16v11H4z" },
-    {
-      label: h.simulations,
-      desc: h.simulationsDesc,
-      count: 0,
-      glyph: "M5 19V9m5 10V5m5 14v-7m5 7V8",
-    },
-    {
-      label: h.instalments,
-      desc: h.instalmentsDesc,
-      count: 0,
-      glyph: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4",
-    },
-    {
-      label: h.reviews,
-      desc: h.reviewsDesc,
-      count: 0,
-      glyph: "M6 4h9l4 4v12H6zM14 4v5h5M9 14h6",
-    },
-  ];
+function cards(t: Messages, counts: Record<string, number>) {
+  return SERVICE_TYPES.map((type) => ({
+    type,
+    label: serviceLabel(t, type),
+    desc: serviceDescription(t, type),
+    count: counts[type] ?? 0,
+    href: `/admin/dossiers/${SERVICE_SLUG[type]}`,
+    glyph: GLYPH[type],
+  }));
 }
 
 /**
  * Prestation hub, matching the mockup's admin "Dossiers" artboard
  * (`Fiduvia.dc.html:2933`): one card per service, each showing its live count
- * and drilling into its own table. Only tax returns exist on this platform, so
- * the other four are present but not clickable.
+ * for the selected period and drilling into its own table.
  */
 export default async function AdminDossiersHubPage({
   searchParams,
@@ -67,7 +61,7 @@ export default async function AdminDossiersHubPage({
 
   const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
-  const declarations = await countAllDossiers(selected);
+  const counts = await countDossiersByService(selected);
 
   return (
     <div className="max-w-[1040px]">
@@ -84,7 +78,7 @@ export default async function AdminDossiersHubPage({
       </div>
 
       <div className="mt-[22px] grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-        {cards(t, declarations).map((card, i) => {
+        {cards(t, counts).map((card, i) => {
           const body = (
             <>
               <div className="flex items-center gap-[11px]">
@@ -126,25 +120,14 @@ export default async function AdminDossiersHubPage({
             </>
           );
 
-          const cls =
-            "flex flex-col gap-2.5 rounded-[var(--radius-md)] border border-line bg-card p-[18px] shadow-[var(--shadow-xs)]";
-
-          return card.href ? (
+          return (
             <Link
-              key={card.label}
+              key={card.type}
               href={`${card.href}?periode=${selected}`}
-              className={`${cls} transition-colors hover:border-teal-300 hover:shadow-[var(--shadow-sm)]`}
+              className="flex flex-col gap-2.5 rounded-[var(--radius-md)] border border-line bg-card p-[18px] shadow-[var(--shadow-xs)] transition-colors hover:border-teal-300 hover:shadow-[var(--shadow-sm)]"
             >
               {body}
             </Link>
-          ) : (
-            <div
-              key={card.label}
-              title={t.common.comingSoonTitle}
-              className={`${cls} cursor-not-allowed opacity-55`}
-            >
-              {body}
-            </div>
           );
         })}
       </div>

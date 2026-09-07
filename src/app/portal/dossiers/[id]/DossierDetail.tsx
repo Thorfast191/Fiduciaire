@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { DossierStatus } from "@/db/schema";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useT } from "@/lib/i18n/I18nProvider";
+import { serviceLabel, type ServiceType } from "@/lib/serviceTypes";
 import { FormAlert } from "@/components/ui/Field";
 
 interface DocumentItem {
@@ -18,6 +19,7 @@ interface DocumentItem {
 interface DossierData {
   id: string;
   taxYear: number;
+  serviceType: ServiceType;
   status: DossierStatus;
 }
 
@@ -169,7 +171,10 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
     <section className="rounded-2xl border border-line bg-card p-5 shadow-sm sm:p-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-[20px] font-semibold tracking-[-0.03em] text-strong">
-          Dossier fiscal {dossier.taxYear}
+          {dossier.serviceType === "declaration"
+            ? t.documents.fiscalDossier
+            : serviceLabel(t, dossier.serviceType)}{" "}
+          {dossier.taxYear}
         </h1>
         <div className="flex items-center gap-2">
           <span className="text-[13px] text-muted">

@@ -10,6 +10,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { SERVICE_TYPES } from "@/lib/serviceTypes";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -130,6 +131,13 @@ export const dossiers = pgTable(
       .notNull()
       .references(() => users.id),
     taxYear: integer("tax_year").notNull(),
+    /**
+     * Which prestation this dossier is. Every row predating service types is a
+     * tax declaration, which is why that is the default.
+     */
+    serviceType: text("service_type", { enum: SERVICE_TYPES })
+      .notNull()
+      .default("declaration"),
     status: text("status", {
       enum: ["not_started", "submitted", "in_review", "completed"],
     })
@@ -143,13 +151,17 @@ export const dossiers = pgTable(
       .default(sql`now()`),
   },
   (t) => [
-    // One dossier per client per tax year. The client home shows a single
-    // declaration card for the selected period, and the admin table assumes the
-    // same, so a second row for a year is not a variant — it is an ambiguity
-    // neither screen can resolve. Also serves the client-portal lookup, so the
-    // separate (client_id, tax_year) index is no longer needed.
-    uniqueIndex("dossiers_client_tax_year_idx").on(t.clientId, t.taxYear),
+    // One dossier per client per tax year *per prestation*. Within a single
+    // prestation a second row for a year is still an ambiguity no screen can
+    // resolve — but a client may legitimately have a declaration and a capital
+    // request for the same year, so the service type is part of the key.
+    uniqueIndex("dossiers_client_year_service_idx").on(
+      t.clientId,
+      t.taxYear,
+      t.serviceType,
+    ),
     index("dossiers_tax_year_idx").on(t.taxYear),
+    index("dossiers_service_type_idx").on(t.serviceType),
   ],
 );
 
