@@ -71,6 +71,13 @@
       "when": 1788805901447,
       "tag": "0009_lowly_sabretooth",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788821903734,
+      "tag": "0010_unknown_phantom_reporter",
+      "breakpoints": true
     }
   ]
 }

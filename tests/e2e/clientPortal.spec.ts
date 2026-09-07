@@ -99,11 +99,34 @@ test("admin creates a dossier, client uploads and submits, admin reviews and com
   await page.getByRole("link", { name: /Ouvrir ma déclaration/ }).click();
   await page.waitForURL(new RegExp(`/portal/dossiers/${dossier.id}`));
 
-  await page.locator('input[type="file"]').setInputFiles(SAMPLE_PDF);
-  await expect(page.getByText("sample.pdf")).toBeVisible({ timeout: 10_000 });
+  // A declaration opens the seven-page questionnaire. Jump to the last page,
+  // where the required documents are listed and the return is submitted.
+  await page.getByRole("button", { name: /Transmission documents/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Toutes vos pièces justificatives" }),
+  ).toBeVisible({ timeout: 10_000 });
 
-  await page.getByRole("button", { name: "Marquer comme soumis" }).click();
-  await expect(page.getByText("Soumis")).toBeVisible();
+  // With no answers given, five pieces are always required.
+  const inputs = page.locator('input[type="file"]');
+  const required = await inputs.count();
+  expect(required).toBeGreaterThan(0);
+
+  // Submission is refused until every requested document is provided.
+  const submit = page.getByRole("button", { name: "Transmettre ma déclaration" });
+  await expect(submit).toBeDisabled();
+
+  for (let i = 0; i < required; i += 1) {
+    await inputs.nth(i).setInputFiles(SAMPLE_PDF);
+    await expect(
+      page.getByText(`${i + 1} / ${required} documents transmis`),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
+  await expect(submit).toBeEnabled();
+  await submit.click();
+  await expect(page.getByText(/transmise à notre équipe/)).toBeVisible({
+    timeout: 10_000,
+  });
 
   const reviewRes = await adminContext.request.patch(`/api/dossiers/${dossier.id}/status`, {
     data: { status: "in_review" },
@@ -115,7 +138,7 @@ test("admin creates a dossier, client uploads and submits, admin reviews and com
   expect(completeRes.ok()).toBe(true);
 
   await page.reload();
-  await expect(page.getByText("Terminé")).toBeVisible();
+  await expect(page.getByText(/transmise à notre équipe/)).toBeVisible();
 });
 
 test("a client cannot see another client's dossier", async ({ page, request, browser }) => {
@@ -143,8 +166,11 @@ test("downloading a document from a dossier returns the exact bytes that were up
   const clientEmail = await loginAsNewClient(page, request, "e2e-portal-download");
   const clientId = await getUserIdByEmail(clientEmail);
 
+  // A capital request rather than a declaration: this test is about document
+  // mechanics, and a declaration now opens the seven-page questionnaire whose
+  // uploads are covered separately.
   const createRes = await adminContext.request.post("/api/dossiers", {
-    data: { clientId, taxYear: 2025 },
+    data: { clientId, taxYear: 2025, serviceType: "capital" },
   });
   const { dossier } = await createRes.json();
 
@@ -170,8 +196,11 @@ test("deleting a document removes it from the dossier's list", async ({
   const clientEmail = await loginAsNewClient(page, request, "e2e-portal-delete");
   const clientId = await getUserIdByEmail(clientEmail);
 
+  // A capital request rather than a declaration: this test is about document
+  // mechanics, and a declaration now opens the seven-page questionnaire whose
+  // uploads are covered separately.
   const createRes = await adminContext.request.post("/api/dossiers", {
-    data: { clientId, taxYear: 2025 },
+    data: { clientId, taxYear: 2025, serviceType: "capital" },
   });
   const { dossier } = await createRes.json();
 

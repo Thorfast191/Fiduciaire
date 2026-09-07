@@ -6,6 +6,11 @@ import { listNotificationsForDossier } from "@/lib/notifications";
 import { getAccessibleDossier } from "@/lib/dossiers";
 import { getCurrentUser } from "@/lib/auth/guards";
 import { SERVICE_SLUG, serviceLabel } from "@/lib/serviceTypes";
+import { normaliseAnswers } from "@/lib/declaration";
+import { listDocumentsForDossier } from "@/lib/documents";
+import { listDossiersForClient } from "@/lib/dossiers";
+import { Questionnaire } from "@/components/declaration/Questionnaire";
+import { SituationPicker } from "@/components/declaration/SituationPicker";
 
 /**
  * Rendered inside the portal shell, so it carries no header or footer of its
@@ -15,11 +20,14 @@ import { SERVICE_SLUG, serviceLabel } from "@/lib/serviceTypes";
  */
 export default async function DossierDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ situation?: string }>;
 }) {
-  const [{ id }, user, { t }] = await Promise.all([
+  const [{ id }, { situation: showSituation }, user, { t }] = await Promise.all([
     params,
+    searchParams,
     getCurrentUser(),
     getT(),
   ]);
@@ -41,6 +49,45 @@ export default async function DossierDetailPage({
     serviceType === "declaration"
       ? "/portal"
       : `/portal/prestations/${SERVICE_SLUG[serviceType]}`;
+
+  // A tax declaration is the seven-page questionnaire; every other prestation
+  // keeps the simpler upload-and-submit screen.
+  if (access.ok && serviceType === "declaration") {
+    const [documents, siblings] = await Promise.all([
+      listDocumentsForDossier(id),
+      user ? listDossiersForClient(user.id, "declaration") : Promise.resolve([]),
+    ]);
+
+    const answers = normaliseAnswers(access.dossier.answers);
+    const previous = siblings
+      .map((row) => row.taxYear)
+      .filter((year) => year < access.dossier.taxYear)
+      .sort((a, b) => b - a)[0];
+
+    return (
+      <>
+        {showSituation ? (
+          <SituationPicker
+            t={t}
+            dossierId={id}
+            taxYear={access.dossier.taxYear}
+            current={answers.situation}
+          />
+        ) : null}
+
+        <Questionnaire
+          t={t}
+          dossierId={id}
+          taxYear={access.dossier.taxYear}
+          status={access.dossier.status}
+          initialAnswers={answers}
+          initialStep={access.dossier.currentStep}
+          uploadedKeys={documents.map((doc) => doc.category)}
+          previousYear={previous}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="max-w-[1000px]">

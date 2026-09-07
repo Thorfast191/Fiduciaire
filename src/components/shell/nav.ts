@@ -33,8 +33,8 @@ export function clientNav(t: Messages): NavEntry[] {
     { kind: "link", label: n.instalments, href: prestation("acompte") },
     { kind: "link", label: n.review, href: prestation("relecture") },
     { kind: "head", label: n.otherHead },
-    { kind: "soon", label: n.assistance },
-    { kind: "soon", label: n.payments },
+    { kind: "link", label: n.assistance, href: "/portal/assistance" },
+    { kind: "link", label: n.payments, href: "/portal/paiements" },
     { kind: "link", label: n.contacts, href: "/portal/contacts" },
   ];
 }

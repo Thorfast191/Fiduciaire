@@ -11,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { SERVICE_TYPES } from "@/lib/serviceTypes";
+import { DOCUMENT_CATEGORIES } from "@/lib/documents";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -143,6 +144,15 @@ export const dossiers = pgTable(
     })
       .notNull()
       .default("not_started"),
+    /**
+     * The declaration questionnaire's answers. JSON rather than columns: the
+     * shape is a form, not a query surface — nothing filters or aggregates on
+     * an individual answer, and the mockup's own model is a single object per
+     * year. `src/lib/declaration.ts` owns its shape and tolerates old rows.
+     */
+    answers: jsonb("answers").notNull().default({}),
+    /** Which of the seven questionnaire pages the client is on. */
+    currentStep: integer("current_step").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .default(sql`now()`),
@@ -196,16 +206,9 @@ export const documents = pgTable(
       .notNull()
       .references(() => dossiers.id),
     filename: text("filename").notNull(),
-    category: text("category", {
-      enum: [
-        "salaire",
-        "releves_bancaires",
-        "assurance",
-        "pilier3",
-        "justificatifs",
-        "autre",
-      ],
-    }).notNull(),
+    // The list lives in `src/lib/documents.ts` so the column, the upload route
+    // and the questionnaire's requirement matching cannot drift apart.
+    category: text("category", { enum: DOCUMENT_CATEGORIES }).notNull(),
     storageKey: text("storage_key").notNull().unique(),
     mimeType: text("mime_type").notNull(),
     sizeBytes: integer("size_bytes").notNull(),
@@ -280,3 +283,75 @@ export type TaxPeriod = typeof taxPeriods.$inferSelect;
 
 export type DossierNotification = typeof dossierNotifications.$inferSelect;
 export type NotificationKind = DossierNotification["kind"];
+
+/**
+ * A client's Fiduvia Assistance subscription for one tax period.
+ *
+ * One row per client per year: subscribing again for the same period replaces
+ * the selection rather than stacking, which is how the mockup's à la carte
+ * panel behaves.
+ */
+export const assistanceSubscriptions = pgTable(
+  "assistance_subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id),
+    taxYear: integer("tax_year").notNull(),
+    /** Selected option keys, from `ASSISTANCE_OPTIONS`. */
+    services: jsonb("services").notNull().default([]),
+    /** Price in CHF at the time of subscribing, so later price changes do not rewrite history. */
+    totalChf: integer("total_chf").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [
+    uniqueIndex("assistance_client_year_idx").on(t.clientId, t.taxYear),
+  ],
+);
+
+/**
+ * A payment a client has made. Recorded by the firm rather than collected
+ * online: there is no gateway yet, so this is the ledger the "Mes paiements"
+ * screen reads, and the row an administrator creates once money arrives.
+ */
+export const payments = pgTable(
+  "payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id),
+    taxYear: integer("tax_year").notNull(),
+    /** What was paid for, e.g. a declaration or a capital benefit. */
+    label: text("label").notNull(),
+    method: text("method", {
+      enum: ["bank_transfer", "card", "twint", "other"],
+    })
+      .notNull()
+      .default("bank_transfer"),
+    amountChf: integer("amount_chf").notNull(),
+    status: text("status", { enum: ["paid", "pending"] })
+      .notNull()
+      .default("paid"),
+    paidAt: timestamp("paid_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [
+    index("payments_client_idx").on(t.clientId),
+    index("payments_year_idx").on(t.taxYear),
+  ],
+);
+
+export type AssistanceSubscription =
+  typeof assistanceSubscriptions.$inferSelect;
+export type Payment = typeof payments.$inferSelect;
