@@ -62,6 +62,20 @@ function isPublicPath(pathname: string): boolean {
   return (PUBLIC_PATHS as readonly string[]).includes(pathname);
 }
 
+/**
+ * Marks a request that this proxy has already rewritten onto a /fr route.
+ *
+ * A production build re-runs middleware on the internally rewritten path, so
+ * "/" -> rewrite "/fr" would immediately match the "/fr" -> "/" redirect below
+ * and bounce forever; the browser sees a 307 to the URL it just asked for.
+ * `next dev` does not re-enter, which is why this only appears once built.
+ *
+ * The rewrite forwards this header on the internal request, so the second pass
+ * can tell "someone typed /fr" from "we rewrote / onto /fr" and skip the
+ * redirect in the latter case.
+ */
+const REWRITE_MARKER = "x-locale-rewritten";
+
 function localeRoute(
   pathname: string,
 ): { locale: Locale; rewriteTo?: string; redirectTo?: string } | null {
@@ -97,6 +111,8 @@ export function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
 
+  const alreadyRewritten = request.headers.get(REWRITE_MARKER) === "1";
+
   if (isProtectedPath(pathname) && !request.cookies.has(SESSION_COOKIE_NAME)) {
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.headers.set("Content-Security-Policy", cspHeader);
@@ -105,13 +121,15 @@ export function proxy(request: NextRequest) {
 
   const route = localeRoute(pathname);
 
-  if (route?.redirectTo) {
+  if (route?.redirectTo && !alreadyRewritten) {
     const response = NextResponse.redirect(
       new URL(route.redirectTo, request.url),
     );
     response.headers.set("Content-Security-Policy", cspHeader);
     return response;
   }
+
+  if (route?.rewriteTo) requestHeaders.set(REWRITE_MARKER, "1");
 
   const response = route?.rewriteTo
     ? NextResponse.rewrite(new URL(route.rewriteTo, request.url), {
