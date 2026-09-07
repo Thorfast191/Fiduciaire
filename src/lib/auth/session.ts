@@ -14,6 +14,8 @@ export interface SessionUser {
   role: Role;
   firstName: string;
   lastName: string;
+  /** Optional; shown and editable in "Mon profil". */
+  phone: string | null;
 }
 
 function hashToken(token: string): string {
@@ -48,6 +50,7 @@ export async function getSessionUserByToken(
       role: users.role,
       firstName: users.firstName,
       lastName: users.lastName,
+      phone: users.phone,
     })
     .from(sessions)
     .innerJoin(users, eq(sessions.userId, users.id))

@@ -530,6 +530,24 @@ export const en: Messages = {
       contacts: "Contacts",
     },
 
+    profile: {
+      menu: "My profile",
+      title: "My profile",
+      sub: "Edit your personal information.",
+      firstName: "First name",
+      lastName: "Last name",
+      email: "Email address",
+      emailLocked:
+        "Your email address is how you sign in and where verification codes are sent. Contact us to change it.",
+      phone: "Phone",
+      newPassword: "New password",
+      passwordHint:
+        "Leave blank to keep your current password. Minimum 10 characters.",
+      cancel: "Cancel",
+      save: "Save",
+      saving: "Saving...",
+    },
+
     prestation: {
       newRequest: "New request",
       yearLabel: "Tax year",

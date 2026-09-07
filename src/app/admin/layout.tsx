@@ -31,6 +31,13 @@ export default async function AdminLayout({
               ? `${user.firstName} ${user.lastName}`
               : t.admin.roleAdmin,
             initials,
+            profile: {
+              firstName: user?.firstName ?? "",
+              lastName: user?.lastName ?? "",
+              email: user?.email ?? "",
+              phone: user?.phone ?? "",
+              initials,
+            },
             tag:
               user?.role === "super_admin"
                 ? t.admin.roleSuper

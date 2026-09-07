@@ -5,12 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { NavEntry } from "./nav";
 import { useT } from "@/lib/i18n/I18nProvider";
+import { ProfileModal, type ProfileFields } from "./ProfileModal";
 
 export interface ShellAccount {
   name: string;
   initials: string;
   /** Small mono caption under the name — "Espace client", "SUPER ADMIN", … */
   tag: string;
+  /** Editable fields behind "Mon profil". */
+  profile: ProfileFields;
 }
 
 interface AppShellProps {
@@ -57,6 +60,13 @@ export function AppShell({
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  function openProfile() {
+    setAccountOpen(false);
+    setMenuOpen(false);
+    setProfileOpen(true);
+  }
 
   const isAdmin = variant === "admin";
 
@@ -92,6 +102,8 @@ export function AppShell({
         </nav>
 
         <AccountBlock
+          profileLabel={t.portal.profile.menu}
+          onOpenProfile={openProfile}
           logoutLabel={t.portal.logout}
           account={account}
           isAdmin={isAdmin}
@@ -147,6 +159,14 @@ export function AppShell({
 
             <span className="my-2 h-px bg-line-ondark" />
 
+            <button
+              type="button"
+              onClick={openProfile}
+              className="w-full px-3 py-3 text-left text-[15px] font-semibold text-on-dark"
+            >
+              {t.portal.profile.menu}
+            </button>
+
             <form action="/api/auth/logout" method="post">
               <button
                 type="submit"
@@ -161,6 +181,14 @@ export function AppShell({
         <div className="w-full max-w-[1240px] px-5 pb-20 pt-8 sm:px-9">
           {children}
         </div>
+
+        {profileOpen ? (
+          <ProfileModal
+            t={t}
+            fields={account.profile}
+            onClose={() => setProfileOpen(false)}
+          />
+        ) : null}
       </div>
     </div>
   );
@@ -265,12 +293,16 @@ function AccountBlock({
   isAdmin,
   open,
   onToggle,
+  profileLabel,
+  onOpenProfile,
   logoutLabel,
 }: {
   account: ShellAccount;
   isAdmin: boolean;
   open: boolean;
   onToggle: () => void;
+  profileLabel: string;
+  onOpenProfile: () => void;
   logoutLabel: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -319,6 +351,14 @@ function AccountBlock({
 
       {open ? (
         <div className="absolute inset-x-0 bottom-[calc(100%+6px)] z-50 rounded-xl border border-line-default bg-white p-1.5 shadow-[0_20px_44px_-18px_rgba(11,32,48,.5)]">
+          <button
+            type="button"
+            onClick={onOpenProfile}
+            className="w-full rounded-lg px-3 py-2.5 text-left text-[14px] font-medium text-body transition-colors hover:bg-sunken"
+          >
+            {profileLabel}
+          </button>
+
           <form action="/api/auth/logout" method="post">
             <button
               type="submit"

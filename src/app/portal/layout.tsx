@@ -31,6 +31,13 @@ export default async function PortalLayout({
             name: `${firstName} ${lastName}`.trim(),
             initials,
             tag: t.portal.spaceTag,
+            profile: {
+              firstName,
+              lastName,
+              email: user?.email ?? "",
+              phone: user?.phone ?? "",
+              initials,
+            },
           }}
         >
           {children}

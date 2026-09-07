@@ -38,6 +38,8 @@ describe("sessions", () => {
       role: "client",
       firstName: "Test",
       lastName: "User",
+      // Carried so "Mon profil" can show it without a second query.
+      phone: null,
     });
   });
 

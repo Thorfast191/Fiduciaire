@@ -531,6 +531,24 @@ export const fr = {
       contacts: "Contacts",
     },
 
+    profile: {
+      menu: "Mon profil",
+      title: "Mon profil",
+      sub: "Modifiez vos informations personnelles.",
+      firstName: "Prénom",
+      lastName: "Nom",
+      email: "Adresse e-mail",
+      emailLocked:
+        "L'adresse e-mail sert à vous connecter et à recevoir vos codes de vérification. Contactez-nous pour la modifier.",
+      phone: "Téléphone",
+      newPassword: "Nouveau mot de passe",
+      passwordHint:
+        "Laissez vide pour conserver le mot de passe actuel. Minimum 10 caractères.",
+      cancel: "Annuler",
+      save: "Enregistrer",
+      saving: "Enregistrement...",
+    },
+
     prestation: {
       newRequest: "Nouvelle demande",
       yearLabel: "Année fiscale",
