@@ -102,6 +102,21 @@ function localeRoute(
   return null;
 }
 
+/**
+ * A redirect to a path on the public origin.
+ *
+ * Middleware requires an absolute Location, and building one from `request.url`
+ * bakes in whatever origin Next resolved — behind a reverse proxy that is the
+ * internal listener, so visitors were sent to http://localhost:3001/... and got
+ * nowhere. NEXT_PUBLIC_SITE_URL is the address the deployment is actually
+ * reached on, which makes this independent of proxy headers, ports and scheme.
+ * Falls back to the request's own origin when it is unset, as in development.
+ */
+function redirectTo(pathname: string, request: NextRequest): NextResponse {
+  const base = process.env.NEXT_PUBLIC_SITE_URL || request.url;
+  return NextResponse.redirect(new URL(pathname, base));
+}
+
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
@@ -114,7 +129,7 @@ export function proxy(request: NextRequest) {
   const alreadyRewritten = request.headers.get(REWRITE_MARKER) === "1";
 
   if (isProtectedPath(pathname) && !request.cookies.has(SESSION_COOKIE_NAME)) {
-    const response = NextResponse.redirect(new URL("/login", request.url));
+    const response = redirectTo("/login", request);
     response.headers.set("Content-Security-Policy", cspHeader);
     return response;
   }
@@ -122,17 +137,21 @@ export function proxy(request: NextRequest) {
   const route = localeRoute(pathname);
 
   if (route?.redirectTo && !alreadyRewritten) {
-    const response = NextResponse.redirect(
-      new URL(route.redirectTo, request.url),
-    );
+    const response = redirectTo(route.redirectTo, request);
     response.headers.set("Content-Security-Policy", cspHeader);
     return response;
   }
 
   if (route?.rewriteTo) requestHeaders.set(REWRITE_MARKER, "1");
 
-  const response = route?.rewriteTo
-    ? NextResponse.rewrite(new URL(route.rewriteTo, request.url), {
+  let rewriteTarget: URL | undefined;
+  if (route?.rewriteTo) {
+    rewriteTarget = request.nextUrl.clone();
+    rewriteTarget.pathname = route.rewriteTo;
+  }
+
+  const response = rewriteTarget
+    ? NextResponse.rewrite(rewriteTarget, {
         request: { headers: requestHeaders },
       })
     : NextResponse.next({ request: { headers: requestHeaders } });

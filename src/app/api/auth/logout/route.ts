@@ -20,8 +20,13 @@ export async function POST(request: NextRequest) {
       });
     }
   }
-  const response = NextResponse.redirect(new URL("/login", request.url), {
+  // A relative Location, resolved by the browser against the address it
+  // actually used. `new URL("/login", request.url)` bakes in the origin Next
+  // sees, which behind a reverse proxy is the internal listener — logging out
+  // then sent people to http://localhost:3001/login, which resolves nowhere.
+  const response = new NextResponse(null, {
     status: 303,
+    headers: { Location: "/login" },
   });
   response.cookies.delete(SESSION_COOKIE_NAME);
   return response;

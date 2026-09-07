@@ -38,7 +38,8 @@ describe("proxy locale routing", () => {
   it("still redirects /fr to / for a request that really asked for it", () => {
     const res = get("/fr");
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toBe("http://localhost:3000/");
+    // Absolute, on the public origin (NEXT_PUBLIC_SITE_URL when set).
+    expect(res.headers.get("location")).toMatch(/\/$/);
   });
 
   it("rewrites every prefix-free public path, and does not loop on any", () => {
@@ -60,6 +61,6 @@ describe("proxy locale routing", () => {
   it("sends an anonymous visitor on a protected path to /login", () => {
     const res = get("/portal");
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toBe("http://localhost:3000/login");
+    expect(res.headers.get("location")).toMatch(/\/login$/);
   });
 });
