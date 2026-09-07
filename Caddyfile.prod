@@ -1,0 +1,15 @@
+# Production reverse proxy. Caddy terminates TLS (certificates are obtained and
+# renewed automatically) and forwards to the app on the compose network.
+#
+# Replace the site address before deploying. Note that fiduvia.ch currently
+# serves the client's static mockup — point this at a staging host first.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	# The app deliberately does not send HSTS itself: it is served over plain
+	# HTTP in development and behind this proxy in production, and only the
+	# proxy knows TLS is actually terminated. Two years, including subdomains.
+	header Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
+	reverse_proxy app:3000
+}
