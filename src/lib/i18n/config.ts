@@ -24,4 +24,8 @@ export function isLocale(value: string | undefined | null): value is Locale {
  * prefix-free in French, exactly like the home page. Anything not listed here
  * is an application route (login, portal, admin) and is never locale-prefixed.
  */
-export const PUBLIC_PATHS = ["/confidentialite", "/mentions-legales"] as const;
+export const PUBLIC_PATHS = [
+  "/confidentialite",
+  "/mentions-legales",
+  "/faq",
+] as const;

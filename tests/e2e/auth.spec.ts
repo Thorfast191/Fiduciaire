@@ -152,3 +152,64 @@ test("security headers are present on page routes, and HSTS is absent", async ({
   expect(headers["content-security-policy"]).toContain("script-src 'self' 'nonce-");
   expect(headers["strict-transport-security"]).toBeUndefined();
 });
+
+test("the marketing site logs in through a modal, without leaving the page", async ({
+  page,
+  request,
+}) => {
+  const email = uniqueEmail("e2e-modal");
+  await request.post("/api/auth/signup", {
+    data: {
+      email,
+      password: "a-long-enough-password",
+      firstName: "A",
+      lastName: "B",
+      acceptTerms: true,
+    },
+  });
+  await getLatestOtpForEmail(email); // drain the signup OTP email first
+
+  await page.goto("/");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeHidden();
+
+  await page
+    .locator("header")
+    .getByRole("link", { name: "Se connecter" })
+    .click();
+
+  // The modal opens over the home page rather than navigating to /login.
+  await expect(dialog).toBeVisible();
+  await expect(page).toHaveURL("/");
+  await expect(
+    dialog.getByRole("heading", { name: "Connexion à votre espace" }),
+  ).toBeVisible();
+
+  // Escape closes it and leaves the page where it was.
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(page).toHaveURL("/");
+
+  await page
+    .locator("header")
+    .getByRole("link", { name: "Se connecter" })
+    .click();
+  await dialog.getByLabel("Adresse e-mail").fill(email);
+  await dialog.getByLabel("Mot de passe").fill("totally-wrong");
+  await dialog.getByRole("button", { name: "Se connecter" }).click();
+
+  // A rejected password is reported inside the modal, still without navigating.
+  await expect(dialog.getByRole("alert")).toHaveText(
+    "Adresse e-mail ou mot de passe incorrect.",
+  );
+  await expect(page).toHaveURL("/");
+
+  await dialog.getByLabel("Mot de passe").fill("a-long-enough-password");
+  await dialog.getByRole("button", { name: "Se connecter" }).click();
+
+  await page.waitForURL(/\/verify/);
+  const code = await getLatestOtpForEmail(email);
+  await page.getByPlaceholder("000000").fill(code);
+  await page.getByRole("button", { name: "Vérifier le code" }).click();
+  await page.waitForURL("/portal");
+});

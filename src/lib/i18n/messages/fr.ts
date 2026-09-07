@@ -124,112 +124,224 @@ export const fr = {
         desc: "Calcul et ajustement de vos acomptes provisionnels.",
       },
     ],
+    /**
+     * The same prestations keyed by service type, for the portal and admin
+     * where a dossier's type has to be named. `items` above stays an array
+     * because the marketing grid renders it in the mockup's order.
+     */
+    types: {
+      declaration: {
+        name: "Déclaration d'impôts",
+        desc: "La déclaration annuelle complète, pour salariés, rentiers et indépendants.",
+      },
+      capital: {
+        name: "Prestation en capital",
+        desc: "Retrait LPP, 3e pilier ou capital-décès imposé séparément.",
+      },
+      departure: {
+        name: "Départ à l'étranger",
+        desc: "En cas de départ à l'étranger en cours d'année qui revient à une période d'imposition limitée.",
+      },
+      deces: {
+        name: "Décès en cours d'année",
+        desc: "En cas du décès d'une personne seule ou conjoint durant l'année.",
+      },
+      simulation: {
+        name: "Simulation d'impôts",
+        desc: "Estimez votre charge fiscale et les possibilités qui s'offrent à vous afin de l'optimiser.",
+      },
+      acompte: {
+        name: "Détermination des acomptes",
+        desc: "Calcul et ajustement de vos acomptes provisionnels.",
+      },
+      relecture: {
+        name: "Relecture",
+        desc: "Relecture de votre déclaration d'impôt déjà préparée.",
+      },
+    },
   },
 
   steps: {
-    eyebrow: "Notre méthode",
-    titleLine1: "Une expérience",
-    titleLine2: "sans friction.",
-    sub: "De la création de votre espace jusqu'à la finalisation de votre dossier, chaque étape est conçue pour être simple, claire et transparente.",
+    eyebrow: "Comment ça marche",
+    title: "Votre déclaration d'impôts en 3 étapes, entièrement en ligne.",
     items: [
       {
         number: "01",
-        title: "Créez votre espace",
-        desc: "Inscrivez-vous en ligne et renseignez les informations nécessaires à votre dossier.",
+        title: "Créez votre compte",
+        desc: "Créez votre compte Fiduvia en quelques clics et accédez à votre espace client sécurisé. Vous pourrez ensuite choisir la prestation adaptée à votre situation.",
       },
       {
         number: "02",
-        title: "Déposez vos documents",
-        desc: "Transmettez vos documents directement depuis votre espace client sécurisé.",
+        title: "Déposez vos informations et documents",
+        desc: "Répondez aux questions concernant votre situation fiscale et transmettez directement vos documents depuis votre espace client. Notre équipe dispose ainsi de toutes les informations nécessaires pour traiter votre dossier.",
       },
       {
         number: "03",
-        title: "Nous traitons votre dossier",
-        desc: "Notre équipe analyse votre situation et vous accompagne jusqu'à la finalisation.",
+        title: "Nous préparons et transmettons votre déclaration",
+        desc: "Un membre de notre équipe analyse votre dossier, prépare votre déclaration d'impôts et vérifie les informations fournies. Une fois le dossier finalisé, nous transmettons votre déclaration aux autorités fiscales compétentes lorsque cette prestation est comprise dans votre service.",
       },
     ],
   },
 
+
   pricing: {
     eyebrow: "Tarifs",
-    title: "Des tarifs clairs.",
-    sub: "Une tarification transparente, adaptée à votre situation et sans mauvaise surprise.",
-    popular: "Populaire",
-    fromPerReturn: "dès / déclaration",
-    perActivity: "selon votre activité",
-    perNeeds: "selon vos besoins",
-    custom: "Sur mesure",
+    title: "Des prix clairs, sans surprise",
+    sub: "Un prix fixe annoncé avant de commencer. Pas d'honoraires cachés.",
+    from: "Dès",
+    choose: "Choisir",
     plans: [
       {
-        name: "Particulier",
+        name: "Personne seule",
+        price: "CHF 80",
         features: [
-          "Déclaration fiscale",
-          "Analyse de votre situation",
-          "Suivi en ligne",
+          "Déclaration complète",
+          "Vérification par un·e fiduciaire",
+          "Dépôt auprès de l'administration",
         ],
       },
       {
-        name: "Indépendant",
+        name: "Marié·e / couple",
+        price: "CHF 120",
         features: [
-          "Comptabilité",
-          "Fiscalité",
-          "Déclaration",
-          "Accompagnement",
+          "Déclaration commune",
+          "Optimisation des déductions",
+          "Suivi jusqu'à la taxation",
         ],
       },
       {
-        name: "Entreprise",
+        name: "Indépendant·e",
+        price: "CHF 250",
         features: [
-          "Comptabilité complète",
-          "Salaires & RH",
-          "Fiscalité",
-          "Conseil",
+          "Revenus d'activité indépendante",
+          "Comptes et amortissements",
+          "Conseil fiscal personnalisé",
         ],
       },
     ],
   },
+
 
   faq: {
     eyebrow: "FAQ",
     title: "Questions fréquentes",
+    allButton: "Afficher toutes les questions",
     items: [
       {
+        q: "Qu’est-ce que Fiduvia ?",
+        a: "Fiduvia est un service suisse d’assistance à la déclaration fiscale. Nous accompagnons les particuliers dans la préparation de leur déclaration d’impôts, entièrement en ligne, sans rendez-vous.",
+      },
+      {
+        q: "Dans quels cantons Fiduvia est-il disponible ?",
+        a: "Fiduvia est actuellement disponible pour les contribuables des cantons de Vaud, Fribourg et Valais.",
+      },
+      {
         q: "Comment fonctionne Fiduvia ?",
-        a: "Fiduvia vous permet de gérer votre relation fiduciaire entièrement en ligne. Vous créez votre espace, transmettez vos documents et suivez l'avancement de votre dossier depuis votre espace personnel.",
+        a: "C’est simple : vous créez votre compte, répondez aux questions concernant votre situation fiscale et déposez vos documents directement dans votre espace client. Notre équipe analyse ensuite votre dossier, prépare votre déclaration et la transmet aux autorités fiscales compétentes lorsque cette prestation est comprise dans votre service.",
       },
       {
-        q: "Mes documents sont-ils sécurisés ?",
-        a: "La plateforme est conçue autour de la confidentialité et de la protection des données. Les documents sont transmis via votre espace client sécurisé.",
+        q: "Quels documents dois-je fournir ?",
+        a: "Les documents nécessaires dépendent de votre situation. Il peut notamment s’agir de certificats de salaire, attestations bancaires, documents liés à votre logement, assurances, prévoyance, dettes, frais professionnels, biens immobiliers ou autres justificatifs fiscaux.\\nNotre questionnaire vous indique les documents nécessaires à votre situation.",
       },
       {
-        q: "Puis-je suivre l'avancement de mon dossier ?",
-        a: "Oui. Votre espace client vous permet de suivre l'état de votre dossier et de voir les actions ou documents qui nécessitent votre attention.",
+        q: "Dois-je me déplacer ou prendre rendez-vous ?",
+        a: "Non. Fiduvia fonctionne entièrement en ligne. Vous pouvez transmettre vos informations et vos documents depuis votre espace client, où que vous soyez.",
       },
       {
-        q: "À qui s'adresse Fiduvia ?",
-        a: "Fiduvia accompagne les particuliers, indépendants et entreprises qui souhaitent gérer leurs démarches comptables et fiscales de manière simple et digitale.",
+        q: "Combien de temps faut-il pour traiter ma déclaration ?",
+        a: "Le délai moyen de traitement est d’environ 10 jours ouvrables, à compter de la réception de l’ensemble des informations et documents nécessaires.\\nLes délais peuvent varier selon la complexité du dossier et la période de l’année.",
+      },
+      {
+        q: "Qui traite ma déclaration ?",
+        a: "Votre dossier est traité par un membre de l’équipe Fiduvia. Un gestionnaire peut être attribué à votre dossier afin d’en assurer le suivi pendant son traitement.",
+      },
+      {
+        q: "Fiduvia transmet-elle ma déclaration aux autorités fiscales ?",
+        a: "Oui. Lorsque votre prestation comprend la transmission, Fiduvia prépare et transmet votre déclaration aux autorités fiscales compétentes, conformément aux instructions et à l’autorisation que vous nous donnez dans le cadre de votre commande.",
+      },
+      {
+        q: "Est-ce que Fiduvia garantit que je paierai moins d’impôts ?",
+        a: "Non. Notre objectif est de préparer une déclaration complète et conforme aux informations et justificatifs que vous nous fournissez, en tenant compte des déductions applicables à votre situation.\\nLe montant final de l’impôt relève de la compétence de l’autorité fiscale.",
+      },
+      {
+        q: "Mes données fiscales sont-elles sécurisées ?",
+        a: "Nous accordons une attention particulière à la sécurité des données fiscales et financières que vous nous transmettez.\\nLes données et documents sont traités via notre espace client et notre infrastructure d’hébergement prévue en Suisse. L’accès aux dossiers est limité aux personnes autorisées.\\nVous trouverez davantage d’informations dans notre Politique de confidentialité.",
+      },
+      {
+        q: "Où sont stockés mes documents ?",
+        a: "Fiduvia prévoit de stocker les données et documents clients sur une infrastructure Infomaniak en Suisse, conformément à notre architecture de production.",
+      },
+      {
+        q: "Combien de temps conservez-vous mes documents ?",
+        a: "Nous conservons certaines informations et pièces justificatives pendant la durée nécessaire à la fourniture de nos Services et au respect de nos obligations légales, notamment les obligations de conservation applicables en matière fiscale et comptable.\\nLes modalités précises sont détaillées dans notre Politique de confidentialité.",
+      },
+      {
+        q: "Puis-je supprimer mon compte ?",
+        a: "Oui. Vous pouvez demander la suppression de votre compte. Certaines données peuvent toutefois devoir être conservées lorsque la loi nous impose une obligation de conservation.",
+      },
+      {
+        q: "Combien coûte le service ?",
+        a: "Le prix dépend de votre situation fiscale et de la complexité de votre dossier. Le tarif applicable vous est communiqué avant le paiement, afin que vous connaissiez le prix de la prestation avant de commencer.",
+      },
+      {
+        q: "Comment puis-je payer ?",
+        a: "Le paiement peut être effectué en ligne via les moyens de paiement proposés au moment de la commande, notamment Stripe et, lorsque disponible, TWINT.",
+      },
+      {
+        q: "Puis-je annuler ma commande ?",
+        a: "Vous pouvez demander l’annulation et le remboursement tant que Fiduvia n’a pas commencé le traitement de votre dossier. Une fois le traitement commencé, les conditions de remboursement prévues dans nos CGVU s’appliquent.",
+      },
+      {
+        q: "Fiduvia remplace-t-elle l’administration fiscale ?",
+        a: "Non. Fiduvia est un prestataire d’assistance à la déclaration fiscale. Les autorités fiscales restent compétentes pour examiner, accepter, modifier ou rectifier votre déclaration.",
+      },
+      {
+        q: "Puis-je contacter Fiduvia si j’ai une question ?",
+        a: "Oui. Vous pouvez nous contacter à contact@fiduvia.ch ou utiliser les moyens de contact disponibles sur notre Site.",
       },
     ],
   },
 
-  cta: {
-    eyebrow: "Parlons de votre situation",
-    titleLine1: "Prêt à simplifier",
-    titleLine2: "votre fiduciaire ?",
-    sub: "Une question ou besoin d'un accompagnement personnalisé ? Contactez-nous.",
-    button: "Nous contacter",
+  contact: {
+    title: "Une question ? Écrivez-nous",
+    sub: "Décrivez votre situation, nous revenons vers vous sous 24 heures ouvrées.",
+    emailField: "E-mail",
+    hoursTitle: "Horaires",
+    hoursDays: "Lundi – Vendredi",
+    hoursTime: "08h30 – 12h00 · 13h30 – 17h30",
+    lastName: "Nom",
+    firstName: "Prénom",
+    email: "E-mail",
+    phone: "Téléphone",
+    message: "Votre message",
+    note: "Nous répondons sous 24 heures ouvrées. Merci de ne pas transmettre de documents fiscaux par ce formulaire.",
+    send: "Envoyer le message",
+    sending: "Envoi en cours...",
+    sent: "Message envoyé. Nous vous répondrons rapidement.",
   },
+
 
   footer: {
     tagline:
-      "Votre fiduciaire suisse, entièrement en ligne. Simple, transparente et proche de vous.",
-    navigation: "Navigation",
-    contact: "Contact",
-    clientArea: "Espace client",
+      "Service d'aide à la taxation, pour le canton de Vaud, Valais et Fribourg",
+    socialTitle: "Suivez-nous",
+    contactTitle: "Comment nous contacter",
+    addressLine1: "Rue de Bourg 12",
+    addressLine2: "1003 Lausanne",
+    phone: "+41 21 000 00 00",
+    email: "contact@fiduvia.ch",
+    hours: "Lundi – vendredi, 8h30 – 17h30",
+    reply: "Réponse sous 24 heures ouvrées",
+    legalTitle: "Légal",
     privacy: "Politique de confidentialité",
-    legal: "Mentions légales",
-    rights: "Tous droits réservés.",
+    legal: "Mentions légales / Impressum",
+    terms: "Conditions générales de vente et d'utilisation",
+    cookies: "Politique relative aux cookies",
+    rights: "Lausanne",
+    hosted: "Données hébergées en Suisse",
+    clientArea: "Espace client",
   },
+
 
   auth: {
     brand: "fiduvia",
@@ -237,13 +349,15 @@ export const fr = {
     rights: "Votre fiduciaire, entièrement en ligne.",
 
     login: {
-      title: "Bienvenue sur votre espace client",
-      sub: "Connectez-vous pour accéder à vos documents, paiements et démarches.",
+      title: "Connexion à votre espace",
+      sub: "Accédez à vos documents et suivez votre déclaration.",
+      emailPlaceholder: "camille@exemple.ch",
+      passwordPlaceholder: "••••••••",
       submit: "Se connecter",
       loading: "Connexion...",
       forgot: "Mot de passe oublié ?",
-      noAccount: "Vous n'avez pas encore de compte ?",
-      createAccount: "Créer mon compte",
+      noAccount: "Pas encore de compte ?",
+      createAccount: "Créer un compte",
       secureTitle: "Connexion sécurisée",
       secureBody:
         "Une vérification supplémentaire sera demandée après votre connexion.",
@@ -409,14 +523,31 @@ export const fr = {
       simulation: "Simulation d'impôts",
       instalments: "Détermination acomptes",
       review: "Relecture",
+      departure: "Départ à l'étranger",
+      deces: "Décès en cours d'année",
       otherHead: "Divers",
       assistance: "Fiduvia Assistance",
       payments: "Paiements",
       contacts: "Contacts",
     },
+
+    prestation: {
+      newRequest: "Nouvelle demande",
+      yearLabel: "Année fiscale",
+      creating: "Création en cours...",
+      noItems: "Vous n'avez encore aucune demande pour cette prestation.",
+      noPeriod:
+        "Aucune période fiscale n'est ouverte actuellement. Revenez prochainement ou contactez-nous.",
+      itemLabel: "Demande",
+      open: "Ouvrir",
+      backToPortal: "Retour à mon espace",
+      requestFailed:
+        "La demande n'a pas pu être créée. Veuillez réessayer.",
+    },
   },
 
   documents: {
+    fiscalDossier: "Dossier fiscal",
     title: "Documents",
     statusLabel: "Statut",
     addTitle: "Ajouter un document",
@@ -613,6 +744,7 @@ export const fr = {
     errorTitle: "Une erreur est survenue",
     errorBody:
       "Veuillez réessayer ou revenir à l'accueil. Notre équipe a été informée.",
+    close: "Fermer",
   },
 };
 

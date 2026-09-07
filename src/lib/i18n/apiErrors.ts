@@ -14,6 +14,8 @@ const ERRORS = {
   fr: {
     badCredentials: "Adresse e-mail ou mot de passe incorrect.",
     tooManyLogins: "Trop de tentatives. Réessayez dans quelques minutes.",
+    tooManyRequests:
+      "Trop de messages envoyés. Réessayez dans un moment ou écrivez-nous directement.",
     badCode: "Code incorrect ou expiré.",
     tooManyCodes: "Trop de tentatives. Demandez un nouveau code.",
     checkInput: "Merci de vérifier les informations saisies.",
@@ -30,6 +32,8 @@ const ERRORS = {
   en: {
     badCredentials: "Incorrect email address or password.",
     tooManyLogins: "Too many attempts. Please try again in a few minutes.",
+    tooManyRequests:
+      "Too many messages sent. Please try again later or email us directly.",
     badCode: "Incorrect or expired code.",
     tooManyCodes: "Too many attempts. Please request a new code.",
     checkInput: "Please check the information you entered.",

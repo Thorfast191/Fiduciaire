@@ -18,7 +18,7 @@ export function MobileMenu({ t }: { t: Messages }) {
     { href: "#steps", label: t.nav.method },
     { href: "#tarifs", label: t.nav.pricing },
     { href: "#faq", label: t.nav.faq },
-    { href: "#contact", label: t.footer.contact },
+    { href: "#contact", label: t.footer.contactTitle },
   ];
 
   return (

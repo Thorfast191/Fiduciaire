@@ -567,6 +567,250 @@ summary::-webkit-details-marker {
 }
 
 /* =========================================================
+   AUTH FIELDS + MODAL
+========================================================= */
+
+/* The mockup's form fields: 12px corners, not the 28px --radius-xl that
+   Tailwind's `rounded-xl` resolves to under this theme. */
+.fx-field-label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+
+  text-transform: uppercase;
+
+  color: var(--text-muted);
+}
+
+.fx-field-input {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  background: var(--surface-card);
+
+  font-family: var(--font-text);
+  font-size: 15px;
+
+  color: var(--text-strong);
+
+  outline: none;
+
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+
+.fx-field-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(27, 110, 126, 0.12);
+}
+
+/* Buttons need real rules too: the unlayered `button { font: inherit }` above
+   outranks Tailwind's layered font utilities. */
+.fx-btn-submit {
+  margin-top: 4px;
+
+  padding: 14px;
+
+  border: none;
+  border-radius: var(--radius-md);
+
+  background: var(--brand);
+
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #fff;
+
+  transition: background var(--dur-fast);
+}
+
+.fx-btn-submit:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+.fx-btn-submit:disabled {
+  opacity: 0.6;
+}
+
+/* Mockup's outline "Choisir" button (Fiduvia.dc.html:373). Rendered as a link
+   here, so it needs display/alignment the mockup's <button> got for free. */
+.fx-btn-outline {
+  display: block;
+
+  width: 100%;
+  padding: 12px;
+
+  border: 1.5px solid var(--brand);
+  border-radius: 10px;
+
+  background: transparent;
+
+  font-family: var(--font-text);
+  font-size: 14.5px;
+  font-weight: 600;
+
+  text-align: center;
+
+  color: var(--brand);
+
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+
+.fx-btn-outline:hover {
+  background: var(--teal-100);
+}
+
+/* Mockup's contact "Envoyer le message" button (Fiduvia.dc.html:447) and the
+   FAQ's ghost "Afficher toutes les questions" link (:400). */
+.fx-btn-send {
+  padding: 13px 24px;
+
+  border: none;
+  border-radius: var(--radius-md);
+
+  background: var(--brand);
+
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+
+  color: #fff;
+
+  transition: background var(--dur-fast);
+}
+
+.fx-btn-send:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+.fx-btn-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fx-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 13px 24px;
+
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  background: none;
+
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+
+  color: var(--brand);
+
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+
+.fx-btn-ghost:hover {
+  border-color: var(--brand);
+  background: var(--teal-100);
+}
+
+/* Footer, on the petrol ground (Fiduvia.dc.html:453). These are real rules
+   rather than utilities because the unlayered `a { color: inherit }` reset
+   above outranks any layered text-colour class. */
+.fx-onDark-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+
+  color: var(--neutral-500);
+}
+
+.fx-onDark-link {
+  font-size: 14px;
+
+  color: var(--text-on-dark);
+
+  transition: color var(--dur-fast);
+}
+
+.fx-onDark-link:hover {
+  color: #fff;
+}
+
+.fx-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border: 1px solid var(--border-ondark);
+  border-radius: 10px;
+
+  color: var(--text-on-dark);
+
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+
+.fx-social:hover {
+  background: var(--teal-500);
+  color: #fff;
+}
+
+.fx-modal-close {
+  padding: 4px;
+
+  border: none;
+
+  background: none;
+
+  font-size: 22px;
+  line-height: 1;
+
+  color: var(--text-subtle);
+
+  transition: color var(--dur-fast);
+}
+
+.fx-modal-close:hover {
+  color: var(--text-strong);
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeBg {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================================================
    REDUCED MOTION
 ========================================================= */
 

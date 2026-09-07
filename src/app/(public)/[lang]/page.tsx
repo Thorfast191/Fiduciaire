@@ -6,6 +6,8 @@ import { LocaleSwitch, localeHref } from "@/components/LocaleSwitch";
 import { StructuredData } from "@/components/StructuredData";
 import { MobileMenu } from "@/components/MobileMenu";
 import { PriceSimulator } from "@/components/PriceSimulator";
+import { ContactForm } from "@/components/ContactForm";
+import { LoginTrigger } from "@/components/auth/LoginTrigger";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES, isLocale } from "@/lib/i18n/config";
 
@@ -172,13 +174,10 @@ export default async function HomePage({
           <LocaleSwitch current={lang} />
 
           {/* LOGIN */}
-          <Link
-            href="/login"
-            className="flex shrink-0 items-center whitespace-nowrap rounded-[9px] bg-[var(--brand)] px-[18px] py-[10px] text-[14px] font-semibold text-white transition-colors duration-150 hover:bg-[var(--brand-hover)]"
-          >
+          <LoginTrigger className="flex shrink-0 items-center whitespace-nowrap rounded-[9px] bg-[var(--brand)] px-[18px] py-[10px] text-[14px] font-semibold text-white transition-colors duration-150 hover:bg-[var(--brand-hover)]">
             <span className="hidden sm:inline">{t.nav.login}</span>
             <span className="sm:hidden">{t.nav.loginShort}</span>
-          </Link>
+          </LoginTrigger>
 
           {/* MOBILE BURGER */}
           <MobileMenu t={t} />
@@ -288,7 +287,7 @@ export default async function HomePage({
 
             <div className="mt-[30px] flex flex-wrap items-center gap-[18px]">
               <Link
-                href="/login"
+                href="/signup"
                 className="inline-flex items-center gap-[9px] rounded-[12px] bg-[var(--brand)] px-[26px] py-[15px] text-[16px] font-semibold text-white transition hover:bg-[var(--brand-hover)]"
               >
                 {t.hero.cta}
@@ -300,12 +299,9 @@ export default async function HomePage({
                 style={{ color: "var(--text-muted)" }}
               >
                 {t.hero.already}{" "}
-                <Link
-                  href="/login"
-                  className="font-semibold text-[var(--brand)]"
-                >
+                <LoginTrigger className="font-semibold text-[var(--brand)]">
                   {t.nav.login}
-                </Link>
+                </LoginTrigger>
               </span>
             </div>
           </div>
@@ -373,13 +369,13 @@ export default async function HomePage({
         <h2
           className="
             disp
-            mt-[6px]
             w-full
             text-center
             text-[clamp(30px,4.4vw,50px)]
             font-extrabold
             leading-[1.05]
           "
+          style={{ marginTop: "6px" }}
         >
           {t.about.title}
         </h2>
@@ -387,7 +383,10 @@ export default async function HomePage({
         {/* STATS */}
         <div className="mt-[34px] grid w-full grid-cols-1 gap-[32px] sm:grid-cols-3">
           <div className="flex flex-col items-center gap-[3px] text-center">
-            <span className="disp fx-figure text-[34px] font-extrabold leading-none text-[var(--brand)]">
+            <span
+              className="disp fx-figure text-[34px] font-extrabold leading-none"
+              style={{ color: "var(--brand)" }}
+            >
               {t.about.stats[0].value}
             </span>
 
@@ -397,7 +396,10 @@ export default async function HomePage({
           </div>
 
           <div className="flex flex-col items-center gap-[3px] text-center">
-            <span className="disp fx-figure text-[34px] font-extrabold leading-none text-[var(--brand)]">
+            <span
+              className="disp fx-figure text-[34px] font-extrabold leading-none"
+              style={{ color: "var(--brand)" }}
+            >
               {t.about.stats[1].value}
             </span>
 
@@ -407,7 +409,10 @@ export default async function HomePage({
           </div>
 
           <div className="flex flex-col items-center gap-[3px] text-center">
-            <span className="disp fx-figure text-[34px] font-extrabold leading-none text-[var(--brand)]">
+            <span
+              className="disp fx-figure text-[34px] font-extrabold leading-none"
+              style={{ color: "var(--brand)" }}
+            >
               {t.about.stats[2].value}
             </span>
 
@@ -562,6 +567,7 @@ export default async function HomePage({
       {/* =========================================================
           SERVICES — CLIENT VERSION
       ========================================================= */}
+      <div className="border-y border-[var(--border-subtle)] bg-[var(--surface-cream)]">
       <section
         id="services"
         className="mx-auto max-w-[1120px] px-[34px] pb-[56px] pt-[64px] max-[700px]:px-5"
@@ -572,7 +578,10 @@ export default async function HomePage({
             {t.services.eyebrow}
           </span>
 
-          <h2 className="disp mt-[6px] text-[clamp(28px,3.4vw,36px)] font-extrabold leading-[1.05]">
+          <h2
+            className="disp text-[clamp(28px,3.4vw,36px)] font-extrabold leading-[1.05]"
+            style={{ marginTop: "6px" }}
+          >
             {t.services.title}
           </h2>
         </div>
@@ -747,405 +756,364 @@ export default async function HomePage({
           </div>
         </div>
       </section>
+      </div>
 
       {/* =========================================================
           METHOD
       ========================================================= */}
       <section
         id="steps"
-        className="bg-[var(--petrol-900)] py-28 text-white sm:py-32"
+        className="mx-auto max-w-[1120px] px-[34px] py-[56px] max-[700px]:px-5"
       >
-        <div className="mx-auto w-full max-w-[1380px] px-6 sm:px-8 lg:px-14">
-          <div className="grid gap-16 lg:grid-cols-[.8fr_1.2fr] lg:gap-28">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--teal-300)]">
-                {t.steps.eyebrow}
-              </p>
+        <div className="text-center">
+          <span className="fx-eyebrow text-[var(--text-muted)]">
+            {t.steps.eyebrow}
+          </span>
 
-              <h2 className="mt-5 max-w-[500px] text-[42px] font-bold leading-[1] tracking-[-0.045em] text-white sm:text-[55px]">
-                {t.steps.titleLine1}
-                <br />
-                <span className="text-[var(--teal-300)]">
-                  {t.steps.titleLine2}
-                </span>
-              </h2>
+          <h2
+            className="disp text-[clamp(28px,3.4vw,36px)] font-extrabold leading-[1.05]"
+            style={{ marginTop: "6px" }}
+          >
+            {t.steps.title}
+          </h2>
+        </div>
 
-              <p className="mt-7 max-w-[430px] text-[14px] leading-7 text-white/55">
-                {t.steps.sub}
+        <div className="mt-[36px] flex flex-wrap gap-[20px]">
+          {t.steps.items.map((step) => (
+            <div
+              key={step.number}
+              className="flex min-w-[220px] flex-1 flex-col gap-[12px]"
+            >
+              <div
+                className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[var(--petrol-800)] text-[20px] text-white"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 800,
+                }}
+              >
+                {step.number}
+              </div>
+
+              <h3 className="disp m-0 text-[21px] font-bold">{step.title}</h3>
+
+              <p className="m-0 text-[14px] leading-[1.55] text-[var(--text-muted)]">
+                {step.desc}
               </p>
             </div>
-
-            <div>
-              {t.steps.items.map((step) => (
-                <div
-                  key={step.number}
-                  className="grid gap-5 border-t border-white/15 py-8 sm:grid-cols-[70px_1fr]"
-                >
-                  <span className="fx-figure text-[11px] text-[var(--teal-300)]">
-                    {step.number}
-                  </span>
-
-                  <div>
-                    <h3 className="text-[22px] font-bold text-white">
-                      {step.title}
-                    </h3>
-
-                    <p className="mt-3 max-w-[560px] text-[13px] leading-6 text-white/50">
-                      {step.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              <div className="border-t border-white/15" />
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* =========================================================
           PRICING
       ========================================================= */}
-      <section id="tarifs" className="bg-[var(--surface-page)] py-28 sm:py-32">
-        <div className="mx-auto w-full max-w-[1100px] px-6">
+      <div className="border-y border-[var(--border-subtle)] bg-[var(--surface-cream)]">
+        <section
+          id="tarifs"
+          className="mx-auto max-w-[1120px] px-[34px] py-[64px] max-[700px]:px-5"
+        >
           <div className="text-center">
-            <p className="fx-eyebrow">{t.nav.pricing}</p>
+            <span className="fx-eyebrow text-[var(--text-muted)]">
+              {t.pricing.eyebrow}
+            </span>
 
-            <h2 className="mt-5 text-[42px] font-bold tracking-[-0.045em] sm:text-[54px]">
+            <h2
+              className="disp text-[clamp(28px,3.4vw,36px)] font-extrabold leading-[1.05]"
+              style={{ marginTop: "6px" }}
+            >
               {t.pricing.title}
             </h2>
 
-            <p className="mx-auto mt-5 max-w-[600px] text-[15px] leading-7 text-[var(--text-muted)]">
+            <p
+              className="text-[15px] text-[var(--text-muted)]"
+              style={{ marginTop: "8px" }}
+            >
               {t.pricing.sub}
             </p>
           </div>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-3">
-            {/* PARTICULIER */}
-            <div className="rounded-[18px] border border-[var(--border-subtle)] bg-white p-7">
-              <p className="fx-eyebrow text-[10px]">
-                {t.pricing.plans[0].name}
-              </p>
+          <div className="mt-[36px] grid grid-cols-1 items-stretch gap-[16px] sm:grid-cols-2 lg:grid-cols-3">
+            {t.pricing.plans.map((plan) => (
+              <div
+                key={plan.name}
+                className="flex flex-col gap-[16px] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] px-[24px] py-[28px] shadow-[var(--shadow-sm)]"
+              >
+                <h3 className="disp m-0 text-[21px] font-bold">{plan.name}</h3>
 
-              <p className="fx-figure mt-5 text-[32px] font-semibold text-[var(--petrol-900)]">
-                CHF 250.–
-              </p>
+                <div className="flex items-baseline gap-[7px]">
+                  <span className="fx-eyebrow text-[var(--text-muted)]">
+                    {t.pricing.from}
+                  </span>
 
-              <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-                {t.pricing.fromPerReturn}
-              </p>
+                  <span
+                    className="disp fx-figure text-[38px] font-extrabold leading-none"
+                    style={{ color: "var(--brand)" }}
+                  >
+                    {plan.price}
+                  </span>
+                </div>
 
-              <div className="my-7 h-px bg-[var(--border-subtle)]" />
+                <div className="h-px bg-[var(--border-subtle)]" />
 
-              <ul className="space-y-3 text-[12px] text-[var(--petrol-800)]">
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[0].features[0]}
-                </li>
+                <div className="flex flex-col gap-[10px]">
+                  {plan.features.map((feature) => (
+                    <div key={feature} className="flex items-start gap-[9px]">
+                      <span className="text-[14px] font-bold leading-[1.4] text-[var(--brand)]">
+                        ✓
+                      </span>
 
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[0].features[1]}
-                </li>
+                      <span className="text-[13.5px] leading-[1.4] text-[var(--text-body)]">
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
 
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[0].features[2]}
-                </li>
-              </ul>
-            </div>
-
-            {/* INDEPENDANT */}
-            <div className="relative rounded-[18px] border-2 border-[var(--brand)] bg-white p-7">
-              <span className="absolute right-5 top-5 rounded-full bg-[var(--teal-100)] px-3 py-1 font-[var(--font-mono)] text-[9px] uppercase tracking-[0.08em] text-[var(--brand)]">
-                {t.pricing.popular}
-              </span>
-
-              <p className="fx-eyebrow text-[10px]">
-                {t.pricing.plans[1].name}
-              </p>
-
-              <p className="mt-5 text-[32px] font-bold tracking-[-0.03em] text-[var(--petrol-900)]">
-                {t.pricing.custom}
-              </p>
-
-              <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-                {t.pricing.perActivity}
-              </p>
-
-              <div className="my-7 h-px bg-[var(--border-subtle)]" />
-
-              <ul className="space-y-3 text-[12px] text-[var(--petrol-800)]">
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[1].features[0]}
-                </li>
-
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[1].features[1]}
-                </li>
-
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[1].features[2]}
-                </li>
-
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[1].features[3]}
-                </li>
-              </ul>
-            </div>
-
-            {/* ENTREPRISE */}
-            <div className="rounded-[18px] border border-[var(--border-subtle)] bg-white p-7">
-              <p className="fx-eyebrow text-[10px]">
-                {t.pricing.plans[2].name}
-              </p>
-
-              <p className="mt-5 text-[32px] font-bold tracking-[-0.03em] text-[var(--petrol-900)]">
-                {t.pricing.custom}
-              </p>
-
-              <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-                {t.pricing.perNeeds}
-              </p>
-
-              <div className="my-7 h-px bg-[var(--border-subtle)]" />
-
-              <ul className="space-y-3 text-[12px] text-[var(--petrol-800)]">
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[2].features[0]}
-                </li>
-
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[2].features[2]}
-                </li>
-
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[2].features[1]}
-                </li>
-
-                <li className="flex items-center gap-2">
-                  <Check />
-                  {t.pricing.plans[2].features[3]}
-                </li>
-              </ul>
-            </div>
+                <Link
+                  href="/signup"
+                  className="fx-btn-outline mt-auto"
+                >
+                  {t.pricing.choose}
+                </Link>
+              </div>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* =========================================================
           FAQ
       ========================================================= */}
-      <section id="faq" className="bg-white py-28 sm:py-32">
-        <div className="mx-auto w-full max-w-[900px] px-6">
-          <div className="text-center">
-            <p className="fx-eyebrow">FAQ</p>
+      <section
+        id="faq"
+        className="mx-auto max-w-[780px] px-[34px] py-[64px] max-[700px]:px-5"
+      >
+        <div className="text-center">
+          <span className="fx-eyebrow text-[var(--text-muted)]">
+            {t.faq.eyebrow}
+          </span>
 
-            <h2 className="mt-5 text-[42px] font-bold tracking-[-0.045em] sm:text-[54px]">
-              {t.faq.title}
-            </h2>
-          </div>
+          <h2
+            className="disp text-[clamp(28px,3.4vw,36px)] font-extrabold leading-[1.05]"
+            style={{ marginTop: "6px" }}
+          >
+            {t.faq.title}
+          </h2>
+        </div>
 
-          <div className="mt-14 divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">
-            {t.faq.items.map((faq) => (
-              <details key={faq.q} className="group py-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[15px] font-semibold text-[var(--petrol-900)]">
-                  {faq.q}
+        <div className="mt-[28px] flex flex-col">
+          {t.faq.items.slice(0, 4).map((faq) => (
+            <details
+              key={faq.q}
+              className="group border-t border-[var(--border-subtle)] py-[18px]"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-[16px]">
+                <h3 className="disp m-0 text-[19px] font-bold">{faq.q}</h3>
 
-                  <span className="text-[var(--brand)] transition-transform group-open:rotate-45">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                    >
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
-                  </span>
-                </summary>
+                <span className="shrink-0 text-[22px] font-bold text-[var(--brand)]">
+                  <span className="group-open:hidden">+</span>
+                  <span className="hidden group-open:inline">−</span>
+                </span>
+              </summary>
 
-                <p className="mt-4 max-w-[700px] text-[13px] leading-6 text-[var(--text-muted)]">
-                  {faq.a}
-                </p>
-              </details>
-            ))}
-          </div>
+              <p
+                className="max-w-[640px] whitespace-pre-line text-[14.5px] leading-[1.6] text-[var(--text-muted)]"
+                style={{ marginTop: "10px" }}
+              >
+                {faq.a}
+              </p>
+            </details>
+          ))}
+        </div>
+
+        <div className="mt-[30px] flex justify-center">
+          <Link
+            href={`${localeHref(lang)}faq`.replace("//", "/")}
+            className="fx-btn-ghost"
+          >
+            {t.faq.allButton} <span className="text-[17px]">→</span>
+          </Link>
         </div>
       </section>
 
       {/* =========================================================
           CONTACT
       ========================================================= */}
-      <section className="bg-[var(--surface-page)] px-6 py-28">
-        <div className="mx-auto max-w-[900px] rounded-[28px] bg-[var(--petrol-900)] px-7 py-16 text-center sm:px-12 sm:py-20">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--teal-300)]">
-            {t.cta.eyebrow}
-          </p>
+      <section
+        id="contact"
+        className="mx-auto mb-[64px] max-w-[1120px] px-[34px] max-[700px]:px-5"
+      >
+        <div className="flex flex-wrap items-start gap-[48px] rounded-[var(--radius-xl)] border border-[var(--border-subtle)] bg-[var(--surface-card)] p-[40px] shadow-[var(--shadow-md)] max-[700px]:p-6">
+          <div className="flex min-w-[260px] max-w-[360px] flex-1 flex-col gap-[14px]">
+            <h2 className="disp m-0 text-[clamp(26px,3vw,34px)] font-extrabold leading-[1.08]">
+              {t.contact.title}
+            </h2>
 
-          <h2 className="mt-5 text-[42px] font-bold leading-[1] tracking-[-0.045em] text-white sm:text-[56px]">
-            {t.cta.titleLine1}
-            <br />
-            {t.cta.titleLine2}
-          </h2>
-
-          <p className="mx-auto mt-6 max-w-[520px] text-[14px] leading-7 text-white/55">
-            {t.cta.sub}
-          </p>
-
-          <a
-            href="mailto:contact@fiduvia.ch"
-            className="mt-8 inline-flex h-[50px] items-center justify-center gap-3 rounded-full bg-white px-7 text-[13px] font-semibold text-[var(--petrol-900)] transition hover:bg-[var(--surface-page)]"
-          >
-            {t.cta.button}
-            <Arrow />
-          </a>
-
-          {/* The mockup's "Nous joindre" block, so the footer's Contact link
-              and the mobile menu have a real destination on this page. */}
-          <div
-            id="contact"
-            className="mx-auto mt-12 grid max-w-[760px] gap-4 border-t border-white/10 pt-10 text-left sm:grid-cols-3"
-          >
-            {[
-              {
-                label: t.portal.contactsEmail,
-                value: "contact@fiduvia.ch",
-                href: "mailto:contact@fiduvia.ch",
-              },
-              {
-                label: t.portal.contactsPhone,
-                value: "+41 21 000 00 00",
-                href: "tel:+41210000000",
-              },
-              {
-                label: t.portal.contactsAddress,
-                value: "Rue de Bourg 12, 1003 Lausanne",
-              },
-            ].map((c) => (
-              <div key={c.label}>
-                <p className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-white/45">
-                  {c.label}
-                </p>
-
-                {c.href ? (
-                  <a
-                    href={c.href}
-                    className="mt-1.5 block text-[15px] font-semibold text-white transition hover:text-white/70"
-                  >
-                    {c.value}
-                  </a>
-                ) : (
-                  <p className="mt-1.5 text-[15px] font-semibold text-white">
-                    {c.value}
-                  </p>
-                )}
-              </div>
-            ))}
-
-            <p className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-white/45 sm:col-span-3">
-              {t.portal.contactsHours} · {t.portal.contactsHoursDays} ·{" "}
-              {t.portal.contactsHoursTime}
+            <p className="m-0 text-[15px] leading-[1.6] text-[var(--text-muted)]">
+              {t.contact.sub}
             </p>
+
+            <div className="my-[6px] h-px bg-[var(--border-subtle)]" />
+
+            <div className="flex flex-col gap-[4px]">
+              <span className="fx-field-label m-0">{t.contact.emailField}</span>
+
+              <a
+                href="mailto:contact@fiduvia.ch"
+                className="text-[15px] text-[var(--brand)]"
+              >
+                contact@fiduvia.ch
+              </a>
+            </div>
+
+            <div className="flex flex-col gap-[4px]">
+              <span className="fx-field-label m-0">{t.contact.hoursTitle}</span>
+
+              <span className="text-[14px] leading-[1.5] text-[var(--text-muted)]">
+                {t.contact.hoursDays}
+                <br />
+                {t.contact.hoursTime}
+              </span>
+            </div>
           </div>
+
+          <ContactForm t={t} />
         </div>
       </section>
 
       {/* =========================================================
           FOOTER
       ========================================================= */}
-      <footer className="bg-[var(--petrol-900)] text-white">
-        <div className="mx-auto w-full max-w-[1380px] px-6 py-14 sm:px-8 lg:px-14">
-          <div className="grid gap-12 md:grid-cols-[1.5fr_.7fr_.7fr]">
-            {/* BRAND */}
-            <div>
-              <Link
-                href="/"
-                className="font-[var(--font-mark)] text-[30px] font-medium tracking-[-0.04em]"
+      <footer className="bg-[var(--petrol-900)]">
+        <div className="mx-auto flex max-w-[1120px] flex-wrap items-start justify-between gap-[30px] px-[34px] py-[44px] max-[700px]:px-5">
+          <div className="max-w-[280px]">
+            <span className="flex items-center gap-[14px] leading-none">
+              <span className="h-[30px] w-[2px] shrink-0 rounded-[1px] bg-[var(--gold)]" />
+
+              <span
+                className="whitespace-nowrap text-[26px] font-medium tracking-[0.1em] text-white"
+                style={{ fontFamily: "var(--font-mark)" }}
               >
-                fiduvia
-              </Link>
+                F<span className="text-[0.76em] tracking-[0.13em]">IDUVIA</span>
+              </span>
+            </span>
 
-              <p className="mt-5 max-w-[350px] text-[13px] leading-6 text-white/45">
-                {t.footer.tagline}
-              </p>
-            </div>
+            <p className="mt-2 text-[13px] leading-[1.55] text-[var(--neutral-400)]">
+              {t.footer.tagline}
+            </p>
 
-            {/* NAVIGATION */}
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/30">
-                {t.footer.navigation}
-              </p>
+            <div className="mt-5 flex flex-col gap-[9px]">
+              <span className="fx-onDark-label">{t.footer.socialTitle}</span>
 
-              <div className="mt-5 space-y-3 text-[12px] text-white/55">
-                <a href="#about" className="block hover:text-white">
-                  {t.about.eyebrow}
-                </a>
-
-                <a href="#services" className="block hover:text-white">
-                  {t.nav.services}
-                </a>
-
-                <a href="#steps" className="block hover:text-white">
-                  {t.nav.method}
-                </a>
-
-                <a href="#tarifs" className="block hover:text-white">
-                  {t.nav.pricing}
-                </a>
-              </div>
-            </div>
-
-            {/* CONTACT */}
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/30">
-                {t.footer.contact}
-              </p>
-
-              <div className="mt-5 space-y-3 text-[12px] text-white/55">
+              <div className="flex gap-[10px]">
                 <a
-                  href="mailto:contact@fiduvia.ch"
-                  className="block hover:text-white"
+                  href="https://www.instagram.com/fiduvia.ch/"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Instagram"
+                  className="fx-social"
                 >
-                  contact@fiduvia.ch
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none" />
+                  </svg>
                 </a>
 
-                <Link href="/login" className="block hover:text-white">
-                  {t.footer.clientArea}
-                </Link>
+                <a
+                  href="https://www.facebook.com/profile.php?id=61592110525594"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Facebook"
+                  className="fx-social"
+                >
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M14.5 8.5h2.2V5.6h-2.4c-2.3 0-3.7 1.5-3.7 3.8v1.9H8.3v2.9h2.3V21h3v-6.8h2.3l.4-2.9h-2.7V9.7c0-.8.3-1.2.9-1.2Z" />
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
 
-          {/* FOOTER BOTTOM */}
-          <div className="mt-12 flex flex-col justify-between gap-4 border-t border-white/10 pt-6 text-[10px] text-white/30 sm:flex-row">
-            <p>
-              © {new Date().getFullYear()} Fiduvia. {t.footer.rights}
-            </p>
+          <div className="flex flex-wrap gap-[44px]">
+            <div className="flex max-w-[230px] flex-col gap-[8px]">
+              <span className="fx-onDark-label">{t.footer.contactTitle}</span>
 
-            <div className="flex gap-6">
+              <span className="text-[14px] leading-[1.5] text-[var(--text-on-dark)]">
+                {t.footer.addressLine1}
+              </span>
+
+              <span className="text-[14px] leading-[1.5] text-[var(--text-on-dark)]">
+                {t.footer.addressLine2}
+              </span>
+
+              <a href="tel:+41210000000" className="fx-onDark-link">
+                {t.footer.phone}
+              </a>
+
+              <a href="mailto:contact@fiduvia.ch" className="fx-onDark-link">
+                {t.footer.email}
+              </a>
+
+              <span className="mt-1.5 text-[12.5px] leading-[1.5] text-[var(--neutral-400)]">
+                {t.footer.hours}
+              </span>
+
+              <span className="text-[12.5px] leading-[1.5] text-[var(--neutral-400)]">
+                {t.footer.reply}
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-[11px]">
+              <span className="fx-onDark-label">{t.footer.legalTitle}</span>
+
               <Link
                 href={`${localeHref(lang)}confidentialite`.replace("//", "/")}
-                className="hover:text-white/60"
+                className="fx-onDark-link"
               >
                 {t.footer.privacy}
               </Link>
 
               <Link
                 href={`${localeHref(lang)}mentions-legales`.replace("//", "/")}
-                className="hover:text-white/60"
+                className="fx-onDark-link"
               >
                 {t.footer.legal}
               </Link>
+
+              <LoginTrigger className="fx-onDark-link">
+                {t.footer.clientArea}
+              </LoginTrigger>
             </div>
+          </div>
+        </div>
+
+        <div className="border-t border-[var(--border-ondark)]">
+          <div className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-[12px] px-[34px] py-[16px] max-[700px]:px-5">
+            <span className="fx-onDark-label tracking-[0.1em]">
+              © {new Date().getFullYear()} Fiduvia · {t.footer.rights}
+            </span>
+
+            <span className="fx-onDark-label tracking-[0.1em]">
+              {t.footer.hosted}
+            </span>
           </div>
         </div>
       </footer>

@@ -128,98 +128,224 @@ export const en: Messages = {
         desc: "Calculation and adjustment of your provisional tax instalments.",
       },
     ],
+    /**
+     * The same prestations keyed by service type, for the portal and admin
+     * where a dossier's type has to be named. `items` above stays an array
+     * because the marketing grid renders it in the mockup's order.
+     */
+    types: {
+      declaration: {
+        name: "Tax return",
+        desc: "The complete annual return, for employees, pensioners and the self-employed.",
+      },
+      capital: {
+        name: "Capital benefit",
+        desc: "Pension, 3rd pillar or death-benefit capital taxed separately.",
+      },
+      departure: {
+        name: "Moving abroad",
+        desc: "For a departure abroad during the year, which results in a limited tax period.",
+      },
+      deces: {
+        name: "Death during the year",
+        desc: "For the death of a single person or a spouse during the year.",
+      },
+      simulation: {
+        name: "Tax simulation",
+        desc: "Estimate your tax burden and the options available to optimise it.",
+      },
+      acompte: {
+        name: "Advance payments",
+        desc: "Calculation and adjustment of your provisional instalments.",
+      },
+      relecture: {
+        name: "Review",
+        desc: "A review of a tax return you have already prepared.",
+      },
+    },
   },
 
   steps: {
     eyebrow: "How it works",
-    titleLine1: "An experience",
-    titleLine2: "without friction.",
-    sub: "From creating your account through to finalising your file, every step is designed to be simple, clear and transparent.",
+    title: "Your tax return in 3 steps, fully online.",
     items: [
       {
         number: "01",
         title: "Create your account",
-        desc: "Sign up online and provide the information your file requires.",
+        desc: "Create your Fiduvia account in a few clicks and access your secure client area. You can then choose the service that fits your situation.",
       },
       {
         number: "02",
-        title: "Upload your documents",
-        desc: "Send your documents directly from your secure client area.",
+        title: "Upload your information and documents",
+        desc: "Answer the questions about your tax situation and upload your documents directly from your client area, so our team has everything needed to process your file.",
       },
       {
         number: "03",
-        title: "We process your file",
-        desc: "Our team reviews your situation and supports you through to completion.",
+        title: "We prepare and file your return",
+        desc: "A member of our team reviews your file, prepares your tax return and checks the information provided. Once finalised, we file your return with the competent tax authorities where this is included in your service.",
       },
     ],
   },
 
+
   pricing: {
     eyebrow: "Pricing",
-    title: "Clear pricing.",
-    sub: "Transparent pricing, matched to your situation, with no unpleasant surprises.",
-    popular: "Popular",
-    fromPerReturn: "from / return",
-    perActivity: "depending on your activity",
-    perNeeds: "depending on your needs",
-    custom: "Tailored",
+    title: "Clear prices, no surprises",
+    sub: "A fixed price agreed before we start. No hidden fees.",
+    from: "From",
+    choose: "Choose",
     plans: [
       {
-        name: "Individual",
-        features: ["Tax return", "Review of your situation", "Online tracking"],
+        name: "Single",
+        price: "CHF 80",
+        features: [
+          "Complete tax return",
+          "Reviewed by an accountant",
+          "Filed with the authorities",
+        ],
+      },
+      {
+        name: "Married / couple",
+        price: "CHF 120",
+        features: [
+          "Joint return",
+          "Deduction optimisation",
+          "Follow-up through assessment",
+        ],
       },
       {
         name: "Self-employed",
-        features: ["Bookkeeping", "Tax", "Tax return", "Ongoing support"],
-      },
-      {
-        name: "Company",
-        features: ["Full bookkeeping", "Payroll & HR", "Tax", "Advisory"],
+        price: "CHF 250",
+        features: [
+          "Self-employment income",
+          "Accounts and depreciation",
+          "Personalised tax advice",
+        ],
       },
     ],
   },
+
 
   faq: {
     eyebrow: "FAQ",
     title: "Frequently asked questions",
+    allButton: "Show all questions",
     items: [
       {
+        q: "What is Fiduvia?",
+        a: "Fiduvia is a Swiss tax return assistance service. We support individuals in preparing their tax return, fully online, with no appointment.",
+      },
+      {
+        q: "Which cantons is Fiduvia available in?",
+        a: "Fiduvia is currently available to taxpayers in the cantons of Vaud, Fribourg and Valais.",
+      },
+      {
         q: "How does Fiduvia work?",
-        a: "Fiduvia lets you manage your relationship with your accounting firm entirely online. You create your account, send your documents and follow your file's progress from your personal area.",
+        a: "It is simple: you create your account, answer the questions about your tax situation and upload your documents directly to your client area. Our team then reviews your file, prepares your return and files it with the competent tax authorities where this is included in your service.",
       },
       {
-        q: "Are my documents secure?",
-        a: "The platform is built around confidentiality and data protection. Documents are sent through your secure client area.",
+        q: "What documents do I need to provide?",
+        a: "The documents required depend on your situation. They may include salary certificates, bank statements, housing documents, insurance, pension, debts, professional expenses, property or other tax records.\\nOur questionnaire tells you which documents your situation requires.",
       },
       {
-        q: "Can I follow my file's progress?",
-        a: "Yes. Your client area lets you follow your file's status and see the actions or documents that need your attention.",
+        q: "Do I need to travel or book an appointment?",
+        a: "No. Fiduvia works entirely online. You can send your information and documents from your client area, wherever you are.",
       },
       {
-        q: "Who is Fiduvia for?",
-        a: "Fiduvia supports individuals, the self-employed and companies who want to handle their accounting and tax matters simply and digitally.",
+        q: "How long does it take to process my return?",
+        a: "The average processing time is around 10 working days from receipt of all the required information and documents.\\nTimes may vary depending on the complexity of the file and the time of year.",
+      },
+      {
+        q: "Who handles my return?",
+        a: "Your file is handled by a member of the Fiduvia team. A manager may be assigned to your file to follow it during processing.",
+      },
+      {
+        q: "Does Fiduvia file my return with the tax authorities?",
+        a: "Yes. Where your service includes filing, Fiduvia prepares and files your return with the competent tax authorities, in line with the instructions and authorisation you give us when ordering.",
+      },
+      {
+        q: "Does Fiduvia guarantee that I will pay less tax?",
+        a: "No. Our aim is to prepare a complete return consistent with the information and supporting documents you provide, taking into account the deductions applicable to your situation.\\nThe final tax amount is determined by the tax authority.",
+      },
+      {
+        q: "Is my tax data secure?",
+        a: "We pay particular attention to the security of the tax and financial data you send us.\\nData and documents are processed through our client area and our hosting infrastructure planned in Switzerland. Access to files is limited to authorised persons.\\nYou will find more information in our Privacy policy.",
+      },
+      {
+        q: "Where are my documents stored?",
+        a: "Fiduvia plans to store client data and documents on Infomaniak infrastructure in Switzerland, in line with our production architecture.",
+      },
+      {
+        q: "How long do you keep my documents?",
+        a: "We keep certain information and supporting documents for as long as necessary to provide our Services and to comply with our legal obligations, in particular the applicable tax and accounting retention obligations.\\nThe details are set out in our Privacy policy.",
+      },
+      {
+        q: "Can I delete my account?",
+        a: "Yes. You can request the deletion of your account. Some data may nevertheless have to be kept where the law imposes a retention obligation on us.",
+      },
+      {
+        q: "How much does the service cost?",
+        a: "The price depends on your tax situation and the complexity of your file. The applicable price is communicated to you before payment, so you know the cost before starting.",
+      },
+      {
+        q: "How can I pay?",
+        a: "Payment can be made online using the payment methods offered at the time of ordering, in particular Stripe and, where available, TWINT.",
+      },
+      {
+        q: "Can I cancel my order?",
+        a: "You can request cancellation and a refund as long as Fiduvia has not started processing your file. Once processing has started, the refund conditions set out in our terms apply.",
+      },
+      {
+        q: "Does Fiduvia replace the tax administration?",
+        a: "No. Fiduvia is a tax return assistance provider. The tax authorities remain competent to review, accept, amend or correct your return.",
+      },
+      {
+        q: "Can I contact Fiduvia if I have a question?",
+        a: "Yes. You can contact us at contact@fiduvia.ch or use the contact options available on our Site.",
       },
     ],
   },
 
-  cta: {
-    eyebrow: "Let's talk about your situation",
-    titleLine1: "Ready to simplify",
-    titleLine2: "your accounting?",
-    sub: "A question, or need tailored support? Get in touch.",
-    button: "Contact us",
+  contact: {
+    title: "A question? Write to us",
+    sub: "Describe your situation and we will get back to you within 24 working hours.",
+    emailField: "Email",
+    hoursTitle: "Opening hours",
+    hoursDays: "Monday – Friday",
+    hoursTime: "08:30 – 12:00 · 13:30 – 17:30",
+    lastName: "Last name",
+    firstName: "First name",
+    email: "Email",
+    phone: "Phone",
+    message: "Your message",
+    note: "We reply within 24 working hours. Please do not send tax documents through this form.",
+    send: "Send message",
+    sending: "Sending...",
+    sent: "Message sent. We will reply shortly.",
   },
+
 
   footer: {
     tagline:
-      "Your Swiss accounting firm, entirely online. Simple, transparent and close to you.",
-    navigation: "Navigation",
-    contact: "Contact",
-    clientArea: "Client area",
+      "Tax return assistance for the cantons of Vaud, Valais and Fribourg",
+    socialTitle: "Follow us",
+    contactTitle: "How to reach us",
+    addressLine1: "Rue de Bourg 12",
+    addressLine2: "1003 Lausanne",
+    phone: "+41 21 000 00 00",
+    email: "contact@fiduvia.ch",
+    hours: "Monday – Friday, 8:30 – 17:30",
+    reply: "We reply within 24 working hours",
+    legalTitle: "Legal",
     privacy: "Privacy policy",
-    legal: "Legal notice",
-    rights: "All rights reserved.",
+    legal: "Legal notice / Impressum",
+    terms: "Terms of sale and use",
+    cookies: "Cookie policy",
+    rights: "Lausanne",
+    hosted: "Data hosted in Switzerland",
+    clientArea: "Client area",
   },
+
 
   auth: {
     brand: "fiduvia",
@@ -227,13 +353,15 @@ export const en: Messages = {
     rights: "Your accounting firm, entirely online.",
 
     login: {
-      title: "Welcome to your client area",
-      sub: "Log in to access your documents, payments and filings.",
+      title: "Log in to your space",
+      sub: "Access your documents and track your tax return.",
+      emailPlaceholder: "camille@example.ch",
+      passwordPlaceholder: "••••••••",
       submit: "Log in",
       loading: "Logging in...",
       forgot: "Forgot your password?",
-      noAccount: "Don't have an account yet?",
-      createAccount: "Create my account",
+      noAccount: "No account yet?",
+      createAccount: "Create an account",
       secureTitle: "Secure login",
       secureBody:
         "An additional verification will be required after you log in.",
@@ -394,14 +522,30 @@ export const en: Messages = {
       simulation: "Tax simulation",
       instalments: "Advance payments",
       review: "Review",
+      departure: "Moving abroad",
+      deces: "Death during the year",
       otherHead: "Other",
       assistance: "Fiduvia Assistance",
       payments: "Payments",
       contacts: "Contacts",
     },
+
+    prestation: {
+      newRequest: "New request",
+      yearLabel: "Tax year",
+      creating: "Creating...",
+      noItems: "You have no requests for this service yet.",
+      noPeriod:
+        "No tax period is open at the moment. Please check back soon or contact us.",
+      itemLabel: "Request",
+      open: "Open",
+      backToPortal: "Back to my area",
+      requestFailed: "The request could not be created. Please try again.",
+    },
   },
 
   documents: {
+    fiscalDossier: "Tax file",
     title: "Documents",
     statusLabel: "Status",
     addTitle: "Add a document",
@@ -596,5 +740,6 @@ export const en: Messages = {
     errorTitle: "Something went wrong",
     errorBody:
       "Please try again or return to the home page. Our team has been notified.",
+    close: "Close",
   },
 };
