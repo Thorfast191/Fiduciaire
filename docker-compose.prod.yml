@@ -56,6 +56,35 @@ services:
       timeout: 5s
       retries: 10
 
+  # Storage for a staging/testing deployment, where there is no Infomaniak
+  # bucket yet. Opt in with `--profile bundled-storage`, and point STORAGE_*
+  # at http://minio:9000 with the root credentials below. A production
+  # deployment leaves this profile off and points STORAGE_* at Infomaniak,
+  # which is why it is not in the default set of services.
+  minio:
+    image: minio/minio:latest
+    profiles: ["bundled-storage"]
+    restart: unless-stopped
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_ACCESS_KEY}
+    volumes:
+      - minio-data:/data
+    expose:
+      - "9000"
+
+  minio-init:
+    image: minio/mc:latest
+    profiles: ["bundled-storage"]
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 ${STORAGE_ACCESS_KEY_ID} ${STORAGE_SECRET_ACCESS_KEY}; do sleep 1; done;
+      mc mb --ignore-existing local/${STORAGE_BUCKET};
+      "
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
@@ -71,5 +100,6 @@ services:
 
 volumes:
   pgdata:
+  minio-data:
   caddy-data:
   caddy-config:
