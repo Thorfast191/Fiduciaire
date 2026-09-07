@@ -86,10 +86,15 @@ export function AppShell({
   return (
     <div className="flex min-h-screen bg-surface text-body">
       {/* Sidebar — desktop */}
-      <aside className="sticky top-0 hidden h-screen w-[244px] shrink-0 flex-col self-start overflow-y-auto bg-petrol-900 px-4 py-[22px] text-on-dark lg:flex">
-        <Brand isAdmin={isAdmin} />
+      <aside className="sticky top-0 hidden h-screen w-[244px] shrink-0 flex-col self-start overflow-hidden bg-petrol-900 px-4 py-[22px] text-on-dark lg:flex">
+        <div className="shrink-0">
+          <Brand isAdmin={isAdmin} />
+        </div>
 
-        <nav className="flex flex-col gap-[3px]">
+        {/* Only the nav scrolls: the wordmark and the account block stay put,
+            so on a short window the profile and logout are always reachable.
+            `min-h-0` lets this flex child shrink below its content height. */}
+        <nav className="flex min-h-0 flex-1 flex-col gap-[3px] overflow-y-auto">
           {nav.map((entry, i) => (
             <NavRow
               key={`${entry.kind}-${entry.label}`}
@@ -319,7 +324,7 @@ function AccountBlock({
   }, [open, onToggle]);
 
   return (
-    <div ref={ref} className="relative mt-auto">
+    <div ref={ref} className="relative mt-auto shrink-0 pt-4">
       <button
         type="button"
         onClick={onToggle}

@@ -265,7 +265,14 @@ body {
   width: 100%;
   max-width: 100%;
   min-height: 100%;
-  overflow-x: hidden;
+
+  /* `clip`, not `hidden`. `overflow-x: hidden` makes the element a scroll
+     container, and a scroll container between the viewport and a
+     `position: sticky` descendant is what that descendant then sticks to — so
+     the portal and admin sidebars scrolled away with the page instead of
+     staying put. `clip` prevents the same horizontal overflow without creating
+     a scroll container, leaving sticky positioned against the viewport. */
+  overflow-x: clip;
 }
 
 body {
