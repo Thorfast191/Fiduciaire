@@ -15,6 +15,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # NEXT_PUBLIC_* is inlined into the client bundle at build time, so the
+        # canonical/site URL has to be a build arg, not just a runtime variable.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -33,6 +37,13 @@ services:
       STORAGE_SECRET_ACCESS_KEY: ${STORAGE_SECRET_ACCESS_KEY}
       STORAGE_REGION: ${STORAGE_REGION}
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      # Payments (server-only) and the marketing analytics ids (loaded after
+      # consent). All read at runtime, so no rebuild is needed to change them.
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      ANALYTICS_GA_ID: ${ANALYTICS_GA_ID}
+      ANALYTICS_META_PIXEL_ID: ${ANALYTICS_META_PIXEL_ID}
+      ANALYTICS_GOOGLE_ADS_ID: ${ANALYTICS_GOOGLE_ADS_ID}
     depends_on:
       postgres:
         condition: service_healthy
