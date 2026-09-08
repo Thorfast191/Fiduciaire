@@ -102,6 +102,11 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    # The Caddyfile reads {$SITE_ADDRESS} from the container's own environment at
+    # runtime (it is the site Caddy answers on and gets a certificate for), so it
+    # must be passed in here — compose's --env-file only feeds interpolation.
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS}
     volumes:
       - ./Caddyfile.prod:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
