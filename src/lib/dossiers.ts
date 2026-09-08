@@ -102,10 +102,13 @@ export async function listAllDossiersWithClient({
   limit = 200,
   taxYear,
   serviceType,
+  clientId,
 }: {
   limit?: number;
   taxYear?: number;
   serviceType?: ServiceType;
+  /** Narrow to one client, for a per-client admin view. */
+  clientId?: string;
 } = {}): Promise<AdminDossierRow[]> {
   return db
     .select({
@@ -125,6 +128,7 @@ export async function listAllDossiersWithClient({
       and(
         taxYear ? eq(dossiers.taxYear, taxYear) : undefined,
         serviceType ? eq(dossiers.serviceType, serviceType) : undefined,
+        clientId ? eq(dossiers.clientId, clientId) : undefined,
       ),
     )
     .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))

@@ -570,6 +570,7 @@ export const en: Messages = {
     requiredNote: "* Required questions",
     saving: "Saving...",
     saved: "Saved",
+    saveFailed: "Not saved — check your connection",
     next: "Continue",
     previous: "Back",
     remark: "Additional remark",

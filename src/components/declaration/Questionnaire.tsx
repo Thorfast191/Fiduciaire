@@ -57,6 +57,7 @@ export function Questionnaire({
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [step, setStep] = useState(initialStep);
   const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   const [reused, setReused] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readOnly = status !== "not_started";
@@ -66,11 +67,19 @@ export function Questionnaire({
       if (readOnly) return;
       setSaving(true);
       try {
-        await fetch(`/api/dossiers/${dossierId}/answers`, {
+        // The response has to be checked. Reporting "Enregistré" for a save
+        // that in fact failed is worse than reporting nothing: the client
+        // keeps filling the form believing their answers are safe, and loses
+        // the lot on reload.
+        const res = await fetch(`/api/dossiers/${dossierId}/answers`, {
           method: "PATCH",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ answers: next, currentStep: nextStep }),
         });
+        const body = await res.json().catch(() => null);
+        setSaveFailed(!res.ok || !body?.ok);
+      } catch {
+        setSaveFailed(true);
       } finally {
         setSaving(false);
       }
@@ -672,8 +681,13 @@ export function Questionnaire({
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
-              {saving ? d.saving : d.saved}
+            <span
+              className={`font-mono text-[10px] uppercase tracking-[0.1em] ${
+                saveFailed ? "text-[#A2443A]" : "text-muted"
+              }`}
+              role={saveFailed ? "alert" : undefined}
+            >
+              {saving ? d.saving : saveFailed ? d.saveFailed : d.saved}
             </span>
 
             <div className="flex gap-2.5">

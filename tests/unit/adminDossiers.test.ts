@@ -50,8 +50,10 @@ describe("listAllDossiersWithClient", () => {
       { clientId, taxYear: base + 1 },
     ]);
 
-    const years = (await listAllDossiersWithClient({ limit: 1000 }))
-      .filter((r) => r.taxYear >= base && r.taxYear <= base + 2)
+    // Scoped to this client rather than filtered out of a global page: the
+    // test database only ever grows, and it now holds more dossiers than any
+    // reasonable limit, so rows from a fresh run fall outside the window.
+    const years = (await listAllDossiersWithClient({ clientId, limit: 1000 }))
       .map((r) => r.taxYear);
 
     expect(years).toEqual([base + 2, base + 1, base]);

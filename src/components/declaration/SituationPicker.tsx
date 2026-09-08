@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Messages } from "@/lib/i18n/messages/fr";
 import { SITUATIONS, type Situation } from "@/lib/declaration";
@@ -33,6 +33,22 @@ export function SituationPicker({
   const router = useRouter();
   const s = t.declaration.situations;
   const [saving, setSaving] = useState(false);
+  const firstChoice = useRef<HTMLButtonElement>(null);
+
+  // Matches the other dialogs: focus lands inside, Escape closes.
+  useEffect(() => {
+    firstChoice.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") close();
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+    // `close` only navigates; it does not need to re-bind the listener.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function choose(situation: Situation) {
     setSaving(true);
@@ -89,11 +105,12 @@ export function SituationPicker({
         <p className="mt-2 text-[14.5px] leading-[1.5] text-muted">{s.sub}</p>
 
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {choices.map((key) => {
+          {choices.map((key, i) => {
             const active = current === key;
             return (
               <button
                 key={key}
+                ref={i === 0 ? firstChoice : undefined}
                 type="button"
                 disabled={saving}
                 onClick={() => choose(key)}

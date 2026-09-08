@@ -572,6 +572,7 @@ export const fr = {
     requiredNote: "* Questions obligatoires",
     saving: "Enregistrement...",
     saved: "Enregistré",
+    saveFailed: "Non enregistré — vérifiez votre connexion",
     next: "Continuer",
     previous: "Retour",
     remark: "Remarque complémentaire",
