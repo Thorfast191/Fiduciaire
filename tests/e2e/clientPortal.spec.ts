@@ -124,6 +124,12 @@ test("admin creates a dossier, client uploads and submits, admin reviews and com
 
   await expect(submit).toBeEnabled();
   await submit.click();
+
+  // Submitting is irreversible, so it asks first.
+  const confirm = page.getByRole("dialog");
+  await expect(confirm).toBeVisible();
+  await confirm.getByRole("button", { name: "Oui, transmettre" }).click();
+
   await expect(page.getByText(/transmise à notre équipe/)).toBeVisible({
     timeout: 10_000,
   });

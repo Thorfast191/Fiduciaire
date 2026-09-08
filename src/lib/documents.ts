@@ -15,51 +15,9 @@ export const ALLOWED_MIME_TYPES = [
   "image/png",
 ] as const;
 export const MAX_SIZE_BYTES = 20 * 1024 * 1024;
-/**
- * What a document can be filed under.
- *
- * The first six are the original fixed categories, kept because existing rows
- * and the non-declaration prestations still use them. The rest mirror
- * `DOCUMENT_CATALOGUE` in `src/lib/declaration.ts`: the questionnaire asks for
- * a specific piece per answer, and the transmission step matches an upload to
- * its requirement by this key.
- */
-export const DOCUMENT_CATEGORIES = [
-  "salaire",
-  "releves_bancaires",
-  "assurance",
-  "pilier3",
-  "justificatifs",
-  "autre",
-  "certSalaire",
-  "compta",
-  "tva",
-  "renteAVS",
-  "rente2p",
-  "chomage",
-  "pilier3a",
-  "rachatLpp",
-  "releveEpargne",
-  "comptesTitres",
-  "releveCompteImmeuble",
-  "attestAssuranceVie",
-  "pacteSuccessoral",
-  "acteAchatVente",
-  "bailLoyerImmeuble",
-  "plansSurface",
-  "bailLoyerLocataire",
-  "primesMaladie",
-  "fraisMedicaux",
-  "fraisGarde",
-  "pensionAlim",
-  "jugementDivorce",
-  "decisionTaxationOffice",
-  "attestationDettes",
-  "detteHypothecaire",
-  "ficheTransmission",
-  "copiePrecedente",
-  "divers",
-] as const;
+export { DOCUMENT_CATEGORIES } from "@/lib/documentCategories";
+import { DOCUMENT_CATEGORIES } from "@/lib/documentCategories";
+
 
 function sanitizeFilename(filename: string): string {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "_");

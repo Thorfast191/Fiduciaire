@@ -313,3 +313,121 @@ export const STEPS = [
 ] as const;
 
 export type Step = (typeof STEPS)[number];
+
+// ------------------------------------------------------------- admin summary
+
+export interface SummaryRow {
+  /** i18n key under `t.declaration.summary`. */
+  key: string;
+  value: string;
+}
+
+export interface SummarySection {
+  /** One of `STEPS`, so the admin sees the same grouping the client filled in. */
+  step: Step;
+  rows: SummaryRow[];
+  /** The client's free-text remark for that page, if they left one. */
+  remark?: string;
+}
+
+/**
+ * The answers, flattened for reading rather than editing.
+ *
+ * Values are already-resolved strings so the caller does no lookups: an
+ * administrator reading a submitted declaration wants the same words the
+ * client saw, not enum keys. `labels` supplies those words for the closed
+ * vocabularies — it is the caller's `t.declaration` subtree.
+ */
+export function summariseAnswers(
+  a: Answers,
+  labels: {
+    yes: string;
+    no: string;
+    none: string;
+    situations: Record<string, string>;
+    marital: Record<string, string>;
+    income: Record<string, string>;
+    wealth: Record<string, string>;
+  },
+): SummarySection[] {
+  const bool = (v: string) => (v === "oui" ? labels.yes : v === "non" ? labels.no : labels.none);
+  const list = (
+    map: Partial<Record<string, boolean>>,
+    dict: Record<string, string>,
+  ) => {
+    const on = Object.keys(map).filter((k) => map[k]);
+    return on.length ? on.map((k) => dict[k] ?? k).join(", ") : labels.none;
+  };
+
+  const remark = (i: number) => a.comments?.[`p${i}`] || undefined;
+
+  return [
+    {
+      step: "accueil",
+      remark: remark(0),
+      rows: [
+        { key: "situation", value: labels.situations[a.situation] ?? a.situation },
+        { key: "canton", value: a.canton || labels.none },
+        ...(a.situation === "depart"
+          ? [{ key: "departureDate", value: a.departureDate || labels.none }]
+          : []),
+        { key: "express", value: a.express ? labels.yes : labels.no },
+        { key: "taxationOffice", value: bool(a.taxationOffice) },
+      ],
+    },
+    {
+      step: "famille",
+      remark: remark(1),
+      rows: [
+        {
+          key: "etatCivil",
+          value: a.etatCivil ? (labels.marital[a.etatCivil] ?? a.etatCivil) : labels.none,
+        },
+        { key: "children", value: String((a.children ?? []).length) },
+        ...(a.children ?? []).map((c, i) => ({
+          key: "child",
+          value:
+            `${i + 1}. ${[c.firstName, c.lastName].filter(Boolean).join(" ") || labels.none}` +
+            (c.birthDate ? ` · ${c.birthDate}` : "") +
+            (c.avs ? ` · ${c.avs}` : ""),
+        })),
+      ],
+    },
+    {
+      step: "revenus",
+      remark: remark(2),
+      rows: [{ key: "revenus", value: list(a.revenus ?? {}, labels.income) }],
+    },
+    {
+      step: "fortune",
+      remark: remark(3),
+      rows: [
+        { key: "fortuneTypes", value: list(a.fortuneTypes ?? {}, labels.wealth) },
+        { key: "dettes", value: bool(a.dettes) },
+        { key: "heritage", value: bool(a.heritageEnCours) },
+      ],
+    },
+    {
+      step: "immeubles",
+      remark: remark(4),
+      rows: [
+        { key: "proprietaire", value: bool(a.proprietaireImmeuble) },
+        ...(a.immeubles ?? []).map((p, i) => ({
+          key: "property",
+          value:
+            `${i + 1}. ${[p.street, p.postcode, p.country].filter(Boolean).join(", ") || labels.none}` +
+            (p.share ? ` · ${p.share}%` : ""),
+        })),
+        { key: "loyersPayes", value: bool(a.loyersPayes) },
+      ],
+    },
+    {
+      step: "deductions",
+      remark: remark(5),
+      rows: [
+        { key: "pilier3", value: a.pilier3 ? labels.yes : labels.no },
+        { key: "rachat2", value: a.rachat2 ? labels.yes : labels.no },
+      ],
+    },
+  ];
+}

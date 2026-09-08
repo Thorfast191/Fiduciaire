@@ -154,7 +154,7 @@ export function Questionnaire({
 
       <div className="mt-6 flex flex-wrap items-start gap-6">
         {/* Step rail */}
-        <nav className="flex w-full min-w-[210px] shrink-0 flex-col gap-1.5 lg:w-[230px]">
+        <nav className="-mx-1 flex w-full shrink-0 snap-x gap-1.5 overflow-x-auto px-1 pb-1 lg:mx-0 lg:w-[230px] lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
           {STEPS.map((key, i) => {
             const active = i === step;
             const complete = i < step;
@@ -163,10 +163,10 @@ export function Questionnaire({
                 key={key}
                 type="button"
                 onClick={() => goTo(i)}
-                className={`flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 text-left transition-colors ${
+                className={`flex shrink-0 snap-start items-center gap-2.5 rounded-[var(--radius-md)] px-3 py-2.5 text-left transition-colors lg:w-full lg:shrink lg:gap-3 lg:px-4 lg:py-3 ${
                   active
                     ? "border border-line bg-card shadow-[var(--shadow-sm)]"
-                    : "hover:bg-sunken"
+                    : "border border-transparent hover:bg-sunken"
                 }`}
               >
                 <span
@@ -183,8 +183,10 @@ export function Questionnaire({
                 </span>
 
                 <span
-                  className={`text-[14.5px] leading-[1.25] ${
-                    active ? "font-bold text-strong" : "text-muted"
+                  className={`whitespace-nowrap text-[13.5px] leading-[1.25] lg:whitespace-normal lg:text-[14.5px] ${
+                    active
+                      ? "font-bold text-strong"
+                      : "hidden text-muted lg:inline"
                   }`}
                 >
                   {d.steps[key]}
@@ -193,7 +195,9 @@ export function Questionnaire({
             );
           })}
 
-          <p className="mt-2 px-4 text-[12px] text-muted">{d.requiredNote}</p>
+          <p className="mt-2 hidden px-4 text-[12px] text-muted lg:block">
+            {d.requiredNote}
+          </p>
         </nav>
 
         {/* Step body */}
@@ -886,7 +890,7 @@ function DocumentRow({
             type="button"
             disabled={busy}
             onClick={() => input.current?.click()}
-            className="fx-btn-outline w-auto shrink-0 px-4 py-2.5"
+            className="fx-btn-outline w-full shrink-0 px-4 py-2.5 sm:w-auto"
           >
             {busy ? d.saving : d.transmission.upload}
           </button>
@@ -920,6 +924,7 @@ function TransmissionStep({
 }) {
   const d = t.declaration;
   const [submitting, setSubmitting] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const complete = doneCount >= docs.length;
 
   async function submit() {
@@ -937,7 +942,7 @@ function TransmissionStep({
   }
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-line bg-card p-7 shadow-[var(--shadow-xs)]">
+    <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-7">
       <h2 className="disp m-0 text-[20px] font-extrabold">
         {d.transmission.title}
       </h2>
@@ -1032,7 +1037,7 @@ function TransmissionStep({
 
           <button
             type="button"
-            onClick={submit}
+            onClick={() => setConfirming(true)}
             disabled={submitting || !complete}
             className="fx-btn-send"
           >
@@ -1040,6 +1045,58 @@ function TransmissionStep({
           </button>
         </div>
       )}
+
+      {/* Submitting locks the answers for good — the API refuses edits once the
+          dossier leaves `not_started` — so it is worth one deliberate step. */}
+      {confirming ? (
+        <div
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setConfirming(false);
+          }}
+          className="fixed inset-0 z-[95] flex animate-[fadeBg_.18s_ease] items-start justify-center overflow-y-auto bg-[rgba(13,21,38,.55)] p-6 backdrop-blur-[3px]"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-submit-title"
+            className="my-auto w-full max-w-[460px] animate-[popIn_.22s_ease] rounded-[var(--radius-xl)] bg-card px-8 py-[30px] shadow-[0_40px_90px_-30px_rgba(11,32,48,.6)]"
+          >
+            <h2
+              id="confirm-submit-title"
+              className="disp m-0 text-[21px] font-extrabold leading-[1.2]"
+            >
+              {d.transmission.confirmTitle}
+            </h2>
+
+            <p className="mt-2.5 text-[14.5px] leading-[1.55] text-muted">
+              {d.transmission.confirmBody}
+            </p>
+
+            <div className="mt-6 flex flex-wrap justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setConfirming(false)}
+                className="rounded-[var(--radius-md)] border border-line-default px-5 py-3 text-[15px] font-semibold text-body transition-colors hover:border-teal-300"
+              >
+                {d.transmission.confirmCancel}
+              </button>
+
+              <button
+                type="button"
+                autoFocus
+                disabled={submitting}
+                onClick={() => {
+                  setConfirming(false);
+                  submit();
+                }}
+                className="fx-btn-send"
+              >
+                {d.transmission.confirmSubmit}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -47,6 +47,7 @@ export function adminNav(t: Messages): NavEntry[] {
     { kind: "link", label: n.dossiers, href: "/admin/dossiers" },
     { kind: "link", label: n.stats, href: "/admin/stats" },
     { kind: "link", label: n.periods, href: "/admin/periodes" },
+    { kind: "link", label: t.admin.payments.navLabel, href: "/admin/paiements" },
     { kind: "link", label: n.users, href: "/admin/utilisateurs" },
   ];
 }

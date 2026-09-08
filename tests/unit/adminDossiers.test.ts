@@ -29,9 +29,10 @@ describe("listAllDossiersWithClient", () => {
       .insert(dossiers)
       .values({ clientId, taxYear: year, status: "in_review" });
 
-    const rows = (await listAllDossiersWithClient({ limit: 1000 })).filter(
-      (r) => r.taxYear === year,
-    );
+    // Scoped to this client: the shared test database holds thousands of
+    // dossiers, so filtering a global page finds nothing once the newest rows
+    // no longer fit inside it.
+    const rows = await listAllDossiersWithClient({ clientId, limit: 1000 });
 
     expect(rows).toHaveLength(1);
     expect(rows[0].firstName).toBe("Camille");

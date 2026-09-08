@@ -1,6 +1,6 @@
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/db/client";
-import { assistanceSubscriptions, payments } from "@/db/schema";
+import { assistanceSubscriptions, payments, users } from "@/db/schema";
 import type { AssistanceSubscription, Payment } from "@/db/schema";
 import { assistanceTotal, type AssistanceKey } from "@/lib/declaration";
 
@@ -91,4 +91,86 @@ export function paymentTotals(rows: Payment[]): PaymentTotals {
       .reduce((sum, r) => sum + r.amountChf, 0),
     periods: new Set(rows.map((r) => r.taxYear)).size,
   };
+}
+
+export interface AdminPaymentRow extends Payment {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+/** Every payment with its client, newest first, for the admin ledger. */
+export async function listAllPayments(limit = 200): Promise<AdminPaymentRow[]> {
+  return db
+    .select({
+      id: payments.id,
+      clientId: payments.clientId,
+      taxYear: payments.taxYear,
+      label: payments.label,
+      method: payments.method,
+      amountChf: payments.amountChf,
+      status: payments.status,
+      paidAt: payments.paidAt,
+      createdAt: payments.createdAt,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
+    })
+    .from(payments)
+    .innerJoin(users, eq(users.id, payments.clientId))
+    .orderBy(desc(payments.paidAt))
+    .limit(limit);
+}
+
+export async function recordPayment(params: {
+  clientId: string;
+  taxYear: number;
+  label: string;
+  method: Payment["method"];
+  amountChf: number;
+  status: Payment["status"];
+}): Promise<Payment> {
+  const [row] = await db.insert(payments).values(params).returning();
+  return row;
+}
+
+export async function setPaymentStatus(
+  id: string,
+  status: Payment["status"],
+): Promise<Payment | undefined> {
+  const [row] = await db
+    .update(payments)
+    .set({ status, ...(status === "paid" ? { paidAt: new Date() } : {}) })
+    .where(eq(payments.id, id))
+    .returning();
+  return row;
+}
+
+export interface AdminSubscriptionRow extends AssistanceSubscription {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+/** Every assistance subscription with its client, for the admin view. */
+export async function listAllSubscriptions(
+  limit = 200,
+): Promise<AdminSubscriptionRow[]> {
+  return db
+    .select({
+      id: assistanceSubscriptions.id,
+      clientId: assistanceSubscriptions.clientId,
+      taxYear: assistanceSubscriptions.taxYear,
+      services: assistanceSubscriptions.services,
+      totalChf: assistanceSubscriptions.totalChf,
+      createdAt: assistanceSubscriptions.createdAt,
+      updatedAt: assistanceSubscriptions.updatedAt,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
+    })
+    .from(assistanceSubscriptions)
+    .innerJoin(users, eq(users.id, assistanceSubscriptions.clientId))
+    .orderBy(desc(assistanceSubscriptions.taxYear))
+    .limit(limit);
 }

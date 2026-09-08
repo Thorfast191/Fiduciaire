@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { STATUS_CLASS, STATUS_ORDER } from "@/lib/dossierStatus";
 import { useI18n } from "@/lib/i18n/I18nProvider";
@@ -27,7 +28,14 @@ export interface TableRow {
  * Search and filtering are client-side: the server already bounds the result
  * set to one tax period, which is small enough to hold in the page.
  */
-export default function DossiersTable({ rows }: { rows: TableRow[] }) {
+export default function DossiersTable({
+  rows,
+  slug,
+}: {
+  rows: TableRow[];
+  /** Prestation segment, so a row can link to its own detail page. */
+  slug: string;
+}) {
   const { locale, t } = useI18n();
   const router = useRouter();
 
@@ -205,7 +213,14 @@ export default function DossiersTable({ rows }: { rows: TableRow[] }) {
                   </span>
                 </div>
 
-                <div className="mt-2.5 flex">
+                <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/admin/dossiers/${slug}/${r.id}`}
+                    className="rounded-lg border border-line-default px-3 py-1.5 text-[12.5px] font-medium text-brand transition hover:border-line-strong hover:bg-sunken"
+                  >
+                    {t.declaration.summary.open} →
+                  </Link>
+
                   <NotifyClient
                     dossierId={r.id}
                     clientName={`${r.firstName} ${r.lastName}`}

@@ -11,7 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { SERVICE_TYPES } from "@/lib/serviceTypes";
-import { DOCUMENT_CATEGORIES } from "@/lib/documents";
+import { DOCUMENT_CATEGORIES } from "@/lib/documentCategories";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -140,7 +140,18 @@ export const dossiers = pgTable(
       .notNull()
       .default("declaration"),
     status: text("status", {
-      enum: ["not_started", "submitted", "in_review", "completed"],
+      // `documents_requested` / `documents_received` are the mockup's
+      // `demande_piece` / `pieces_recues`: a file waiting on the client is a
+      // different state from one the firm is actively working, and the
+      // distinction drives what the client is shown.
+      enum: [
+        "not_started",
+        "submitted",
+        "in_review",
+        "documents_requested",
+        "documents_received",
+        "completed",
+      ],
     })
       .notNull()
       .default("not_started"),
@@ -233,16 +244,16 @@ export type Session = typeof sessions.$inferSelect;
 export type OtpCode = typeof otpCodes.$inferSelect;
 export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type Document = typeof documents.$inferSelect;
-export type DossierStatus =
-  "not_started" | "submitted" | "in_review" | "completed";
-export type DocumentCategory =
-  | "salaire"
-  | "releves_bancaires"
-  | "assurance"
-  | "pilier3"
-  | "justificatifs"
-  | "autre";
 export type Dossier = typeof dossiers.$inferSelect;
+/**
+ * Derived from the columns rather than restated.
+ *
+ * Both were hand-written unions that had to be kept in step with the table
+ * definitions by hand — and had already fallen out of step once the status
+ * vocabulary grew. Deriving them means adding a value in one place.
+ */
+export type DossierStatus = Dossier["status"];
+export type DocumentCategory = Document["category"];
 
 /**
  * Messages an administrator sends to a client about one dossier — the brief's

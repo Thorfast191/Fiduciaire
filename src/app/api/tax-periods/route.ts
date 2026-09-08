@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
+import { requireAdmin } from "@/lib/auth/apiGuards";
 import {
   createTaxPeriod,
   listTaxPeriods,
@@ -18,16 +18,6 @@ const patchSchema = z.object({
   year: z.number().int().min(2000).max(2100),
   isActive: z.boolean(),
 });
-
-async function requireAdmin(request: NextRequest) {
-  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-  const user = token ? await getSessionUserByToken(token) : null;
-  if (!user) return { error: "unauthorized" as const, status: 401 };
-  if (user.role !== "admin" && user.role !== "super_admin") {
-    return { error: "forbidden" as const, status: 403 };
-  }
-  return { user };
-}
 
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);

@@ -12,6 +12,9 @@ const STATUS_BAR: Record<DossierStatus, string> = {
   not_started: "bg-status-not-started",
   submitted: "bg-status-submitted",
   in_review: "bg-status-in-review",
+  // Waiting on the client is a hold, not progress, so it takes the amber bar.
+  documents_requested: "bg-[#B26A00]",
+  documents_received: "bg-status-submitted",
   completed: "bg-status-completed",
 };
 

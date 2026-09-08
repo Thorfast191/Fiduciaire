@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES, isLocale } from "@/lib/i18n/config";
 import { localeHref } from "@/components/LocaleSwitch";
-
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fiduvia.ch";
+import { StructuredData } from "@/components/StructuredData";
+import { localeAlternates, socialMeta, SITE as SEO_SITE } from "@/lib/seo";
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
@@ -20,12 +20,14 @@ export async function generateMetadata({
   if (!isLocale(lang)) return {};
 
   const t = getMessages(lang);
-  const path = lang === "fr" ? "/faq" : `/${lang}/faq`;
+  const title = `${t.faq.title} · Fiduvia`;
+  const description = t.faq.items[0]?.a ?? t.faq.title;
 
   return {
-    title: t.faq.title,
-    description: t.faq.items[0]?.a,
-    alternates: { canonical: `${SITE}${path}` },
+    title,
+    description,
+    alternates: localeAlternates(lang, "/faq"),
+    ...socialMeta(lang, "/faq", title, description),
   };
 }
 
@@ -50,6 +52,12 @@ export default async function Page({
       lang={lang}
       className="min-h-screen bg-[var(--surface-page)] text-[var(--text-body)]"
     >
+      <StructuredData
+        locale={lang}
+        t={t}
+        faqItems={t.faq.items}
+        pageUrl={lang === "fr" ? `${SEO_SITE}/faq` : `${SEO_SITE}/en/faq`}
+      />
       <section className="mx-auto max-w-[780px] px-[34px] py-[64px] max-[700px]:px-5">
         <div className="text-center">
           <span className="fx-eyebrow text-[var(--text-muted)]">

@@ -69,6 +69,7 @@ export default async function AdminPrestationPage({
       </div>
 
       <DossiersTable
+        slug={slug}
         rows={rows.map((r) => ({
           id: r.id,
           taxYear: r.taxYear,

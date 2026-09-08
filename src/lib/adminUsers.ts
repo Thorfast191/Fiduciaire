@@ -56,3 +56,11 @@ export async function demoteAdmin(id: string): Promise<AccountRow | null> {
 
   return row ?? null;
 }
+
+/** One account by id, for an admin screen that already holds a client's id. */
+export async function getClientById(
+  id: string,
+): Promise<AccountRow | undefined> {
+  const [row] = await db.select(COLUMNS).from(users).where(eq(users.id, id));
+  return row;
+}

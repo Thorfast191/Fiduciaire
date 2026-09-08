@@ -15,7 +15,7 @@ export function Question({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-line bg-card p-6 shadow-[var(--shadow-xs)]">
+    <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-6">
       <p className="disp m-0 text-[17px] font-bold">
         {label}
         {required ? <span className="ml-1 text-[#C0392B]">*</span> : null}

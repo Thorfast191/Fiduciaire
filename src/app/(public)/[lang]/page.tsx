@@ -10,8 +10,7 @@ import { ContactForm } from "@/components/ContactForm";
 import { LoginTrigger } from "@/components/auth/LoginTrigger";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES, isLocale } from "@/lib/i18n/config";
-
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fiduvia.ch";
+import { localeAlternates, socialMeta } from "@/lib/seo";
 
 /** Both locales are prerendered; "/" is a proxy rewrite onto /fr. */
 export function generateStaticParams() {
@@ -27,27 +26,14 @@ export async function generateMetadata({
   if (!isLocale(lang)) return {};
 
   const t = getMessages(lang);
-  const path = lang === "fr" ? "/" : "/en";
+
+  const title = `Fiduvia — ${t.hero.title}`;
 
   return {
-    title: `Fiduvia — ${t.hero.title}`,
+    title,
     description: t.hero.p1,
-    alternates: {
-      canonical: `${SITE}${path}`,
-      languages: {
-        "fr-CH": `${SITE}/`,
-        en: `${SITE}/en`,
-        "x-default": `${SITE}/`,
-      },
-    },
-    openGraph: {
-      type: "website",
-      siteName: "Fiduvia",
-      locale: lang === "fr" ? "fr_CH" : "en",
-      url: `${SITE}${path}`,
-      title: `Fiduvia — ${t.hero.title}`,
-      description: t.hero.p1,
-    },
+    alternates: localeAlternates(lang, ""),
+    ...socialMeta(lang, "", title, t.hero.p1),
   };
 }
 
