@@ -104,9 +104,12 @@ describe("service types on dossiers", () => {
   });
 
   it("counts per prestation for the admin hub", async () => {
-    // `countDossiersByService` is global, not per client, and the test database
-    // is never reset — so this needs a year no earlier run has touched.
+    // `countDossiersByService` counts every client, and the test database is
+    // never reset — so a run cannot claim a year to itself, however wide the
+    // random range. Assert what this run added instead of an absolute total.
     const year = 2200 + Math.floor(Math.random() * 800);
+    const before = await countDossiersByService(year);
+
     const client = await makeUser();
     await createDossier({
       clientId: client.id,
@@ -114,9 +117,9 @@ describe("service types on dossiers", () => {
       serviceType: "acompte",
     });
 
-    const counts = await countDossiersByService(year);
-    expect(counts.acompte).toBe(1);
-    expect(counts.capital ?? 0).toBe(0);
+    const after = await countDossiersByService(year);
+    expect((after.acompte ?? 0) - (before.acompte ?? 0)).toBe(1);
+    expect(after.capital ?? 0).toBe(before.capital ?? 0);
   });
 });
 
