@@ -78,6 +78,7 @@ export default async function AdminPrestationPage({
           firstName: r.firstName,
           lastName: r.lastName,
           email: r.email,
+          documentCount: r.documentCount,
         }))}
       />
 

@@ -2,6 +2,7 @@ import { and, eq, desc, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   dossiers,
+  documents,
   users,
   type Dossier,
   type DossierStatus,
@@ -90,6 +91,8 @@ export interface AdminDossierRow {
   firstName: string;
   lastName: string;
   email: string;
+  /** Uploaded, non-deleted documents on this dossier — the files an admin can download. */
+  documentCount: number;
 }
 
 /**
@@ -121,6 +124,15 @@ export async function listAllDossiersWithClient({
       firstName: users.firstName,
       lastName: users.lastName,
       email: users.email,
+      // Counted in the same query so the table can flag which dossiers carry
+      // files without a follow-up round trip per row. Mirrors the filter in
+      // listDocumentsForDossier: uploaded and not soft-deleted.
+      documentCount: sql<number>`(
+        select count(*)::int from ${documents}
+        where ${documents.dossierId} = ${dossiers.id}
+          and ${documents.uploadedAt} is not null
+          and ${documents.deletedAt} is null
+      )`,
     })
     .from(dossiers)
     .innerJoin(users, eq(users.id, dossiers.clientId))
@@ -205,6 +217,27 @@ export async function getAccessibleDossier(
 export type SetStatusResult =
   | { ok: true; previousStatus: DossierStatus }
   | { ok: false; error: "not_found" | "invalid_transition" };
+
+/**
+ * Submits a dossier as a system action, after payment.
+ *
+ * The webhook that confirms a Stripe payment is not an authenticated user, so
+ * it cannot go through `setDossierStatus`'s owner/admin check. This moves a
+ * dossier from `not_started` to `submitted` and nothing else: an already
+ * submitted (or further along) dossier is left untouched, so a replayed or
+ * duplicate payment event cannot rewind its status. Returns whether this call
+ * was the one that submitted it.
+ */
+export async function markDossierSubmitted(
+  dossierId: string,
+): Promise<{ submitted: boolean }> {
+  const result = await db
+    .update(dossiers)
+    .set({ status: "submitted", updatedAt: new Date() })
+    .where(and(eq(dossiers.id, dossierId), eq(dossiers.status, "not_started")))
+    .returning({ id: dossiers.id });
+  return { submitted: result.length > 0 };
+}
 
 export async function setDossierStatus(
   dossierId: string,

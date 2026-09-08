@@ -15,6 +15,22 @@ const schema = z.object({
   STORAGE_ACCESS_KEY_ID: z.string().min(1),
   STORAGE_SECRET_ACCESS_KEY: z.string().min(1),
   STORAGE_REGION: z.string().min(1),
+
+  // Public analytics identifiers, loaded on the marketing pages only after the
+  // visitor consents. Optional so dev and preview run without any tracking; a
+  // blank id simply means that tag is not installed. Not secrets — they end up
+  // in client-side HTML — but kept server-side and passed down so the ids can
+  // change without a rebuild.
+  ANALYTICS_GA_ID: z.string().optional().default(""),
+  ANALYTICS_META_PIXEL_ID: z.string().optional().default(""),
+  // Google Ads conversion id (AW-…), distinct from the GA4 measurement id.
+  ANALYTICS_GOOGLE_ADS_ID: z.string().optional().default(""),
+
+  // Stripe. Optional so dev and the test suite run without payments configured;
+  // the checkout route refuses clearly when the secret key is absent. Both are
+  // server-only secrets.
+  STRIPE_SECRET_KEY: z.string().optional().default(""),
+  STRIPE_WEBHOOK_SECRET: z.string().optional().default(""),
 });
 
 export const env = schema.parse(process.env);

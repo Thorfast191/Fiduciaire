@@ -350,6 +350,14 @@ export const payments = pgTable(
     status: text("status", { enum: ["paid", "pending"] })
       .notNull()
       .default("paid"),
+    // Set when the payment is for a specific dossier the client is submitting —
+    // an online Stripe payment, as opposed to a payment the firm records by hand
+    // (those leave these null).
+    dossierId: uuid("dossier_id").references(() => dossiers.id),
+    /** Stripe Checkout Session id; unique so a webhook cannot be replayed into a
+     *  second payment row for the same session. */
+    stripeSessionId: text("stripe_session_id").unique(),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
     paidAt: timestamp("paid_at", { withTimezone: true })
       .notNull()
       .default(sql`now()`),
@@ -360,6 +368,7 @@ export const payments = pgTable(
   (t) => [
     index("payments_client_idx").on(t.clientId),
     index("payments_year_idx").on(t.taxYear),
+    index("payments_dossier_idx").on(t.dossierId),
   ],
 );
 

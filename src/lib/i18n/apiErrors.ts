@@ -21,6 +21,8 @@ const ERRORS = {
     checkInput: "Merci de vérifier les informations saisies.",
     emailExists: "Un compte existe déjà avec cette adresse e-mail.",
     invalidTransition: "Transition de statut non autorisée.",
+    paymentRequired:
+      "Le paiement est requis pour transmettre cette déclaration.",
     dossierNotFound: "Dossier introuvable.",
     periodExists: "Cette période fiscale existe déjà.",
     documentNotFound: "Document introuvable.",
@@ -39,6 +41,7 @@ const ERRORS = {
     checkInput: "Please check the information you entered.",
     emailExists: "An account already exists with this email address.",
     invalidTransition: "That status change is not allowed.",
+    paymentRequired: "Payment is required to submit this tax return.",
     dossierNotFound: "File not found.",
     periodExists: "That tax period already exists.",
     documentNotFound: "Document not found.",

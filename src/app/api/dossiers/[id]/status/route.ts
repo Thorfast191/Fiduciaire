@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
-import { setDossierStatus } from "@/lib/dossiers";
+import { getAccessibleDossier, setDossierStatus } from "@/lib/dossiers";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp, readJsonBody } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
@@ -38,6 +38,29 @@ export async function PATCH(
       { ok: false, error: "invalid_request" },
       { status: 400 },
     );
+  }
+
+  // A client no longer submits a declaration directly: submission is what a
+  // successful payment does, via the checkout flow. Non-declaration prestations
+  // (priced by the firm) keep the direct path, and admins are unaffected.
+  const isAdmin = user.role === "admin" || user.role === "super_admin";
+  if (!isAdmin && parsed.data.status === "submitted") {
+    const access = await getAccessibleDossier(id, {
+      id: user.id,
+      role: user.role,
+    });
+    if (!access.ok) {
+      return NextResponse.json(
+        { ok: false, error: e.dossierNotFound },
+        { status: 404 },
+      );
+    }
+    if (access.dossier.serviceType === "declaration") {
+      return NextResponse.json(
+        { ok: false, error: e.paymentRequired },
+        { status: 402 },
+      );
+    }
   }
 
   const result = await setDossierStatus(id, parsed.data.status, {

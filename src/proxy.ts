@@ -38,13 +38,40 @@ function storageOrigin(): string | null {
   }
 }
 
+// Analytics tags load on the marketing pages only after the visitor consents,
+// but the CSP is fixed per request, so the hosts they reach are allowlisted
+// here up front — the consent gate, not the policy, is what withholds them.
+// gtag.js (Google) and fbevents.js (Meta) are fetched as scripts; both then
+// beacon back over fetch/XHR and 1×1 images, which is why the same origins
+// appear under connect-src and img-src.
+const ANALYTICS_SCRIPT = [
+  "https://www.googletagmanager.com",
+  "https://connect.facebook.net",
+];
+const ANALYTICS_CONNECT = [
+  "https://www.google-analytics.com",
+  "https://*.google-analytics.com",
+  "https://*.analytics.google.com",
+  "https://www.googletagmanager.com",
+  "https://connect.facebook.net",
+  "https://www.facebook.com",
+];
+const ANALYTICS_IMG = [
+  "https://www.google-analytics.com",
+  "https://*.google-analytics.com",
+  "https://www.googletagmanager.com",
+  "https://www.facebook.com",
+];
+
 function buildCspHeader(nonce: string, isDev: boolean): string {
-  const connectSrc = ["'self'", storageOrigin()].filter(Boolean).join(" ");
+  const connectSrc = ["'self'", storageOrigin(), ...ANALYTICS_CONNECT]
+    .filter(Boolean)
+    .join(" ");
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'nonce-${nonce}' ${ANALYTICS_SCRIPT.join(" ")}${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
+    `img-src 'self' data: ${ANALYTICS_IMG.join(" ")}`,
     `connect-src ${connectSrc}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",

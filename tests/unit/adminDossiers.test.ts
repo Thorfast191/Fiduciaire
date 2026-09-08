@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { randomUUID } from "node:crypto";
 import { db } from "@/db/client";
-import { users, dossiers } from "@/db/schema";
+import { users, dossiers, documents } from "@/db/schema";
 import { listAllDossiersWithClient, listTaxYears } from "@/lib/dossiers";
 
 async function makeClient(first: string, last: string): Promise<string> {
@@ -107,5 +107,53 @@ describe("listTaxYears", () => {
 
     expect(mine).toEqual([base + 1, base]);
     expect(years).toEqual([...years].sort((a, b) => b - a));
+  });
+
+  it("counts only uploaded, non-deleted documents per dossier", async () => {
+    const year = 810000 + Math.floor(Math.random() * 80000);
+    const clientId = await makeClient("Docs", "Count");
+    const [dossier] = await db
+      .insert(dossiers)
+      .values({ clientId, taxYear: year, status: "submitted" })
+      .returning();
+
+    const doc = (over: Record<string, unknown>) => ({
+      ownerId: clientId,
+      uploadedBy: clientId,
+      dossierId: dossier.id,
+      filename: "x.pdf",
+      category: "salaire" as const,
+      storageKey: `clients/${clientId}/${randomUUID()}-x.pdf`,
+      mimeType: "application/pdf",
+      sizeBytes: 100,
+      ...over,
+    });
+
+    await db.insert(documents).values([
+      // Two visible: uploaded and not deleted.
+      doc({ uploadedAt: new Date() }),
+      doc({ uploadedAt: new Date() }),
+      // Excluded: pending (never confirmed).
+      doc({ uploadedAt: null }),
+      // Excluded: uploaded but soft-deleted.
+      doc({ uploadedAt: new Date(), deletedAt: new Date() }),
+    ]);
+
+    const [row] = await listAllDossiersWithClient({ clientId, limit: 1000 });
+
+    expect(row.documentCount).toBe(2);
+    // The bigint from count(*) is cast to int so it arrives as a number, not
+    // a string the UI would have to coerce.
+    expect(typeof row.documentCount).toBe("number");
+  });
+
+  it("reports zero documents for a dossier with none", async () => {
+    const year = 730000 + Math.floor(Math.random() * 70000);
+    const clientId = await makeClient("Empty", "Docs");
+    await db.insert(dossiers).values({ clientId, taxYear: year });
+
+    const [row] = await listAllDossiersWithClient({ clientId, limit: 1000 });
+
+    expect(row.documentCount).toBe(0);
   });
 });

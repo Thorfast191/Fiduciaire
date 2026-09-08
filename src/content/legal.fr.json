@@ -1,0 +1,1743 @@
+{
+ "cookies": {
+  "title": "Politique relative aux cookies",
+  "updated": "25 août 2026",
+  "intro": [],
+  "sections": [
+   {
+    "heading": "1. Objet",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "La présente politique relative aux cookies explique comment Fiduvia, raison individuelle (« Fiduvia », « nous », « notre ») utilise les cookies et technologies similaires sur son site internet et son espace client (le « Site »)."
+     },
+     {
+      "type": "p",
+      "text": "Elle complète notre Politique de confidentialité, qui décrit de manière générale comment Fiduvia collecte, utilise, conserve et protège les données personnelles des utilisateurs."
+     }
+    ]
+   },
+   {
+    "heading": "2. Qu’est-ce qu’un cookie ?",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Un cookie est un petit fichier texte enregistré sur votre appareil lorsque vous consultez un site internet."
+     },
+     {
+      "type": "p",
+      "text": "Les cookies permettent notamment à un site de fonctionner correctement, de maintenir une session utilisateur, de sécuriser un compte ou de mémoriser certaines préférences."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia peut également utiliser des technologies similaires aux cookies lorsque celles-ci sont nécessaires au fonctionnement du Site ou de l’espace client."
+     }
+    ]
+   },
+   {
+    "heading": "3. Cookies utilisés par Fiduvia",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "À la date de dernière révision de la présente politique, Fiduvia utilise principalement des cookies strictement nécessaires au fonctionnement et à la sécurité du Site et de l’espace client."
+     },
+     {
+      "type": "p",
+      "text": "Ils peuvent notamment permettre :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "la connexion et l’authentification à votre compte ;",
+       "le maintien de votre session ;",
+       "le fonctionnement de l’espace client ;",
+       "la sécurisation de votre compte ;",
+       "la prévention des accès non autorisés ou des activités frauduleuses ;",
+       "le fonctionnement technique des fonctionnalités du Site ;",
+       "la mémorisation de certaines préférences nécessaires au fonctionnement du Site."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Ces cookies sont nécessaires pour permettre à Fiduvia de fournir les fonctionnalités que vous avez demandées."
+     }
+    ]
+   },
+   {
+    "heading": "4. Cookies analytiques et publicitaires",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "À la date de dernière révision de cette politique, Fiduvia n’utilise pas de cookies analytiques ou publicitaires tels que Google Analytics ou Meta Pixel."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia pourra à l’avenir utiliser des outils permettant notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "de mesurer la fréquentation du Site ;",
+       "de comprendre comment les utilisateurs utilisent le Site ;",
+       "d’améliorer les Services ;",
+       "de mesurer l’efficacité de campagnes publicitaires ;",
+       "de proposer des communications ou contenus adaptés."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Lorsque l’utilisation de tels cookies ou technologies nécessite votre consentement, Fiduvia recueillera ce consentement avant leur activation, conformément à la législation applicable."
+     },
+     {
+      "type": "p",
+      "text": "La présente politique sera alors mise à jour afin de refléter les technologies effectivement utilisées."
+     }
+    ]
+   },
+   {
+    "heading": "5. Cookies de l’espace client",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "L’espace client Fiduvia peut utiliser des cookies strictement nécessaires à l’authentification, à la gestion des sessions et à la sécurité."
+     },
+     {
+      "type": "p",
+      "text": "Ils permettent notamment de maintenir votre connexion et de contribuer à protéger votre compte contre les accès non autorisés."
+     },
+     {
+      "type": "p",
+      "text": "La désactivation de ces cookies peut empêcher certaines fonctionnalités de l’espace client de fonctionner correctement."
+     }
+    ]
+   },
+   {
+    "heading": "6. Cookies et services de tiers",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia peut faire appel à des prestataires techniques nécessaires au fonctionnement du Site et de ses Services."
+     },
+     {
+      "type": "p",
+      "text": "Ces prestataires peuvent, selon les services effectivement utilisés, traiter certaines informations techniques ou utiliser des technologies similaires aux cookies."
+     },
+     {
+      "type": "p",
+      "text": "À la date de dernière révision, les principaux services techniques utilisés par Fiduvia sont notamment liés à l’hébergement et au fonctionnement du Site et de l’espace client."
+     },
+     {
+      "type": "p",
+      "text": "Lorsqu’un nouveau service tiers susceptible d’utiliser des cookies ou de traiter des données personnelles est ajouté, Fiduvia peut mettre à jour la présente politique et, lorsque nécessaire, recueillir le consentement de l’utilisateur."
+     }
+    ]
+   },
+   {
+    "heading": "7. Gestion des cookies",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Vous pouvez gérer, bloquer ou supprimer les cookies depuis les paramètres de votre navigateur."
+     },
+     {
+      "type": "p",
+      "text": "La désactivation des cookies strictement nécessaires peut toutefois affecter le fonctionnement du Site et notamment empêcher l’utilisation correcte de certaines fonctionnalités de l’espace client."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque la législation applicable exige le consentement de l’utilisateur pour certains cookies ou technologies similaires, Fiduvia met en place un mécanisme approprié permettant de recueillir et de gérer ce consentement."
+     }
+    ]
+   },
+   {
+    "heading": "8. Durée de conservation",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "La durée de conservation des cookies dépend de leur fonction."
+     },
+     {
+      "type": "p",
+      "text": "Certains cookies sont supprimés automatiquement lorsque vous fermez votre navigateur, tandis que d’autres peuvent rester enregistrés pendant une durée limitée nécessaire à leur fonction."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia veille à ce que les cookies et technologies similaires soient conservés pendant une durée appropriée à leur finalité."
+     }
+    ]
+   },
+   {
+    "heading": "9. Protection des données",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Lorsque l’utilisation de cookies implique le traitement de données personnelles, ce traitement est également soumis à la Politique de confidentialité de Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Vous pouvez notamment y trouver des informations concernant :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "les données personnelles collectées ;",
+       "les finalités du traitement ;",
+       "les destinataires des données ;",
+       "les éventuels transferts de données ;",
+       "les durées de conservation ;",
+       "vos droits."
+      ]
+     }
+    ]
+   },
+   {
+    "heading": "10. Modification de la présente politique",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia peut modifier la présente politique afin de tenir compte :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "de l’évolution du Site ;",
+       "de l’ajout ou de la suppression de technologies ;",
+       "de l’utilisation de nouveaux prestataires ;",
+       "de l’évolution de la législation applicable."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "La version la plus récente est disponible sur le Site et indique sa date de dernière révision."
+     }
+    ]
+   },
+   {
+    "heading": "11. Contact",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Pour toute question concernant l’utilisation des cookies ou des technologies similaires, vous pouvez contacter :"
+     },
+     {
+      "type": "card",
+      "lines": [
+       "Fiduvia",
+       "Raison individuelle",
+       "Route de la Pontille 28",
+       "1618 Châtel-St-Denis",
+       "Suisse",
+       "Responsable : Rathana Leas",
+       "E-mail : contact@fiduvia.ch"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "mentions": {
+  "title": "Mentions légales",
+  "updated": "25.08.2026",
+  "intro": [],
+  "sections": [
+   {
+    "heading": "1. Éditeur du Site",
+    "blocks": [
+     {
+      "type": "card",
+      "lines": [
+       "Fiduvia",
+       "Raison individuelle",
+       "Route de la Pontille 28",
+       "1618 Châtel-St-Denis",
+       "Suisse",
+       "Responsable : Rathana Leas",
+       "E-mail : contact@fiduvia.ch"
+      ]
+     }
+    ]
+   },
+   {
+    "heading": "2. Activité",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia propose des prestations d’assistance à la préparation, à la saisie et, lorsque le Service souscrit le prévoit, à la transmission de déclarations fiscales suisses."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia agit en qualité de prestataire d’assistance à la déclaration fiscale et ne constitue pas une autorité fiscale."
+     },
+     {
+      "type": "p",
+      "text": "Les modalités des Services sont définies dans les Conditions générales de vente et d’utilisation disponibles sur le Site."
+     }
+    ]
+   },
+   {
+    "heading": "3. Hébergement du Site",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le Site et les services techniques associés sont actuellement hébergés auprès de :"
+     },
+     {
+      "type": "card",
+      "lines": [
+       "Infomaniak Network SA",
+       "Rue Eugène-Marziano 25",
+       "1227 Les Acacias",
+       "Genève",
+       "Suisse"
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Les informations relatives au traitement des données personnelles sont détaillées dans la Politique de confidentialité de Fiduvia."
+     }
+    ]
+   },
+   {
+    "heading": "4. Responsable de la publication",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le responsable de la publication du Site est :"
+     },
+     {
+      "type": "card",
+      "lines": [
+       "Rathana Leas",
+       "Fiduvia"
+      ]
+     }
+    ]
+   },
+   {
+    "heading": "5. Propriété intellectuelle",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Sauf indication contraire, les contenus présents sur le Site, notamment les textes, éléments graphiques, logos, éléments visuels, interfaces et contenus développés pour Fiduvia, sont protégés par les droits de propriété intellectuelle applicables."
+     },
+     {
+      "type": "p",
+      "text": "Toute reproduction, modification, distribution ou exploitation non autorisée de ces contenus est interdite dans la mesure permise par la loi."
+     }
+    ]
+   },
+   {
+    "heading": "6. Responsabilité relative aux informations",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia s’efforce de fournir des informations exactes et actualisées sur le Site."
+     },
+     {
+      "type": "p",
+      "text": "Les informations générales présentées sur le Site ne constituent pas nécessairement un conseil fiscal personnalisé et ne remplacent pas une décision ou une information officielle émanant des autorités fiscales compétentes."
+     },
+     {
+      "type": "p",
+      "text": "Les modalités et limites des prestations proposées par Fiduvia sont définies dans les Conditions générales de vente et d’utilisation."
+     }
+    ]
+   },
+   {
+    "heading": "7. Liens externes",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le Site peut, lorsque cela est nécessaire au fonctionnement des Services, contenir des liens vers des sites ou services exploités par des tiers."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia n’est pas responsable du contenu, de la disponibilité ou des pratiques de protection des données de ces sites tiers."
+     }
+    ]
+   },
+   {
+    "heading": "8. Protection des données",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le traitement des données personnelles effectué dans le cadre de l’utilisation du Site et des Services est décrit dans la Politique de confidentialité de Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Pour toute question relative à vos données personnelles, vous pouvez contacter : contact@fiduvia.ch"
+     }
+    ]
+   },
+   {
+    "heading": "9. Droit applicable",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "L’utilisation du Site et les relations contractuelles avec Fiduvia sont soumises au droit suisse, sous réserve des dispositions impératives applicables."
+     }
+    ]
+   }
+  ]
+ },
+ "privacy": {
+  "title": "Politique de confidentialité",
+  "updated": "25 août 2026",
+  "intro": [
+   {
+    "type": "p",
+    "text": "Fiduvia, raison individuelle (« Fiduvia », « nous », « notre »), accorde une grande importance à la protection de la vie privée et des données personnelles de ses utilisateurs (« vous », « votre »)."
+   },
+   {
+    "type": "p",
+    "text": "La présente politique de confidentialité explique quelles données personnelles nous collectons, pourquoi nous les collectons, comment nous les utilisons, où elles sont stockées, combien de temps nous les conservons et quels sont vos droits."
+   },
+   {
+    "type": "p",
+    "text": "Elle s’applique à l’utilisation du site internet Fiduvia et de son espace client (ensemble, le « Site »), ainsi qu’aux services d’assistance à la déclaration fiscale proposés par Fiduvia (les « Services »)."
+   },
+   {
+    "type": "p",
+    "text": "Fiduvia s’adresse principalement aux personnes physiques majeures ayant des obligations fiscales en Suisse."
+   },
+   {
+    "type": "p",
+    "text": "La présente politique est établie conformément à la législation suisse applicable en matière de protection des données, notamment la loi fédérale sur la protection des données (LPD)."
+   }
+  ],
+  "sections": [
+   {
+    "heading": "1. Responsable du traitement",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le responsable du traitement des données personnelles est :"
+     },
+     {
+      "type": "card",
+      "lines": [
+       "Fiduvia",
+       "Raison individuelle",
+       "Canton de Fribourg, Suisse",
+       "Responsable : Rathana Leas",
+       "E-mail : contact@fiduvia.ch"
+      ]
+     },
+     {
+      "type": "p",
+      "text": "L’adresse postale complète de Fiduvia sera indiquée sur le Site dès qu’elle sera officiellement établie."
+     },
+     {
+      "type": "p",
+      "text": "Pour toute question relative à la protection de vos données personnelles, vous pouvez nous contacter à l’adresse e-mail ci-dessus."
+     }
+    ]
+   },
+   {
+    "heading": "2. Quelles données personnelles collectons-nous ?",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Selon les Services que vous utilisez et les informations que vous nous transmettez, nous pouvons collecter les catégories de données suivantes."
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons collecter notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "nom et prénom ;",
+       "date de naissance ;",
+       "adresse postale ;",
+       "adresse e-mail ;",
+       "numéro de téléphone ;",
+       "état civil ;",
+       "informations relatives à la situation familiale ;",
+       "numéro AVS ;",
+       "numéro de contribuable ou identifiant fiscal ;",
+       "autres informations nécessaires à l’identification du contribuable."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Dans le cadre de l’établissement de votre déclaration fiscale, nous pouvons traiter des informations particulièrement sensibles, notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "revenus et certificats de salaire ;",
+       "revenus provenant d’une activité indépendante ;",
+       "pensions et autres revenus ;",
+       "comptes bancaires et avoirs financiers ;",
+       "titres et placements ;",
+       "biens immobiliers ;",
+       "dettes et intérêts de dettes ;",
+       "assurances sociales ;",
+       "prévoyance professionnelle et 3e pilier ;",
+       "assurances ;",
+       "frais professionnels ;",
+       "frais médicaux ;",
+       "donations ;",
+       "pensions alimentaires ;",
+       "charges familiales ;",
+       "déductions fiscales ;",
+       "informations relatives à votre patrimoine ;",
+       "justificatifs et documents nécessaires à l’établissement de votre déclaration fiscale ;",
+       "toute autre information nécessaire à l’exécution du Service."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Ces données peuvent révéler des informations relatives à votre situation financière, familiale ou patrimoniale et font donc l’objet de mesures de protection appropriées."
+     },
+     {
+      "type": "p",
+      "text": "Vous pouvez être amené à déposer dans votre espace client des documents tels que des certificats de salaire, relevés bancaires, attestations d’assurance, documents immobiliers, justificatifs de frais, documents de prévoyance ou tout autre document nécessaire à votre déclaration."
+     },
+     {
+      "type": "p",
+      "text": "Ces documents sont transmis directement via l’espace client Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Dans le cadre de l’exécution du Service, vous pouvez être amené à nous transmettre, directement via votre espace client, certaines informations permettant l’accès à votre espace fiscal cantonal, notamment vos identifiants, numéro de contribuable ou autres informations d’authentification nécessaires à l’établissement et à la transmission de votre déclaration."
+     },
+     {
+      "type": "p",
+      "text": "Ces informations sont utilisées exclusivement pour l’exécution du Service pour lequel vous avez mandaté Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Elles ne sont pas utilisées à des fins commerciales ou pour accéder à d’autres informations que celles nécessaires à l’exécution de la prestation."
+     },
+     {
+      "type": "p",
+      "text": "L’accès à ces informations est limité aux personnes autorisées chez Fiduvia qui en ont besoin dans le cadre de leurs fonctions."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque vous utilisez le Site, certaines données techniques peuvent être collectées automatiquement, notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "adresse IP ;",
+       "type d’appareil ;",
+       "système d’exploitation ;",
+       "navigateur ;",
+       "date et heure de connexion ;",
+       "pages consultées ;",
+       "données relatives à la sécurité et au fonctionnement du Site."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Ces données peuvent notamment être utilisées afin d’assurer la sécurité, la stabilité et le bon fonctionnement du Site."
+     },
+     {
+      "type": "p",
+      "text": "Les paiements effectués sur le Site peuvent être traités par des prestataires de paiement tels que Stripe et, lorsque cette option est disponible, TWINT."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne conserve pas les données complètes de carte bancaire."
+     },
+     {
+      "type": "p",
+      "text": "Les données de paiement sont traitées directement par les prestataires concernés conformément à leurs propres mesures de sécurité et obligations applicables."
+     }
+    ]
+   },
+   {
+    "heading": "3. Comment collectons-nous vos données ?",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Nous collectons vos données notamment lorsque :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "vous créez un compte sur le Site ;",
+       "vous utilisez votre espace client ;",
+       "vous remplissez un formulaire ;",
+       "vous déposez des documents ;",
+       "vous nous transmettez des informations nécessaires à votre déclaration ;",
+       "vous nous contactez par e-mail ou par tout autre moyen de communication proposé ;",
+       "vous commandez ou payez un Service ;",
+       "vous utilisez notre Site et certaines données techniques sont automatiquement collectées."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons également recevoir certaines informations lorsque cela est nécessaire à l’exécution du Service que vous avez demandé."
+     }
+    ]
+   },
+   {
+    "heading": "4. Pourquoi utilisons-nous vos données ?",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Nous utilisons vos données personnelles pour les finalités suivantes :"
+     },
+     {
+      "type": "p",
+      "text": "Nous traitons vos données afin de :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "analyser votre situation fiscale ;",
+       "préparer votre déclaration fiscale ;",
+       "saisir les informations nécessaires dans les plateformes fiscales concernées ;",
+       "vérifier la cohérence des informations fournies ;",
+       "préparer et transmettre votre déclaration lorsque cela fait partie du Service souscrit ;",
+       "répondre à vos questions concernant votre dossier ;",
+       "assurer le suivi de votre dossier."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Vos données sont utilisées pour :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "créer et gérer votre compte ;",
+       "vous permettre d’accéder à votre espace client ;",
+       "sécuriser votre compte ;",
+       "gérer vos documents ;",
+       "vous permettre de retrouver les informations nécessaires lors des années fiscales suivantes."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Nous traitons les informations nécessaires pour :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "enregistrer votre commande ;",
+       "traiter votre paiement ;",
+       "établir les factures ;",
+       "assurer le suivi comptable de nos Services."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons traiter certaines données afin de :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "protéger les comptes utilisateurs ;",
+       "détecter et prévenir les accès non autorisés ;",
+       "prévenir la fraude ;",
+       "protéger nos systèmes informatiques ;",
+       "assurer la sécurité de notre Site."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons traiter et conserver certaines données afin de respecter nos obligations légales, fiscales, comptables ou réglementaires."
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons utiliser vos coordonnées afin de vous transmettre les informations nécessaires à l’exécution de votre Service, notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "confirmation de commande ;",
+       "informations relatives à votre dossier ;",
+       "demandes de documents complémentaires ;",
+       "informations concernant votre déclaration ;",
+       "informations relatives à votre compte ;",
+       "informations importantes concernant nos Services."
+      ]
+     }
+    ]
+   },
+   {
+    "heading": "5. Base juridique des traitements",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Selon la finalité du traitement, Fiduvia traite vos données sur la base :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "de l’exécution du contrat conclu avec vous ;",
+       "du respect de ses obligations légales ;",
+       "de son intérêt légitime, notamment pour assurer la sécurité et le bon fonctionnement de ses Services ;",
+       "de votre consentement lorsque celui-ci est requis, notamment pour certains cookies, outils publicitaires ou communications marketing."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Le fait d’accepter les Conditions générales de vente et de procéder au paiement du Service permet notamment de formaliser la relation contractuelle entre vous et Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Le traitement des données nécessaires à l’établissement et à la transmission de votre déclaration fiscale est effectué dans le cadre de cette relation contractuelle et des obligations applicables."
+     }
+    ]
+   },
+   {
+    "heading": "6. Établissement et transmission de votre déclaration fiscale",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia fournit un service d’assistance à l’établissement de déclarations fiscales."
+     },
+     {
+      "type": "p",
+      "text": "Dans le cadre du Service souscrit, Fiduvia peut utiliser les informations et documents que vous lui fournissez afin de préparer votre déclaration fiscale et, lorsque le Service le prévoit et que vous avez accepté les conditions applicables, la transmettre aux autorités fiscales compétentes en votre nom."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia n’agit pas comme une autorité fiscale et ne se substitue pas à l’administration fiscale."
+     },
+     {
+      "type": "p",
+      "text": "Les informations communiquées par le client restent sous sa responsabilité quant à leur exactitude et leur exhaustivité."
+     },
+     {
+      "type": "p",
+      "text": "Les modalités précises de la prestation, notamment l’étendue de l’autorisation donnée à Fiduvia pour préparer et transmettre la déclaration, sont définies dans les Conditions générales de vente."
+     }
+    ]
+   },
+   {
+    "heading": "7. Conservation des documents et informations",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Nous conservons vos données pendant la durée nécessaire aux finalités pour lesquelles elles ont été collectées, ainsi que pendant les périodes nécessaires au respect de nos obligations légales et contractuelles."
+     },
+     {
+      "type": "p",
+      "text": "Dans le cadre de notre Service, certains documents peuvent être conservés afin de faciliter l’établissement de vos déclarations fiscales lors des années suivantes et d’assurer le suivi de votre dossier."
+     },
+     {
+      "type": "p",
+      "text": "Certaines données et certains documents peuvent également devoir être conservés pendant la durée imposée par la législation applicable, notamment en matière comptable, fiscale ou de preuve."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque les données ne sont plus nécessaires et qu’aucune obligation légale ou contractuelle ne justifie leur conservation, elles sont supprimées ou anonymisées."
+     }
+    ]
+   },
+   {
+    "heading": "8. Suppression du compte",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Vous pouvez demander la suppression de votre compte conformément aux fonctionnalités proposées sur le Site."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque vous supprimez votre compte, Fiduvia supprime les données personnelles et documents qui peuvent légalement être supprimés."
+     },
+     {
+      "type": "p",
+      "text": "Certaines données peuvent toutefois être conservées lorsque leur conservation est imposée par la loi, nécessaire à la constatation, à l’exercice ou à la défense de droits en justice, ou nécessaire au respect d’autres obligations légales."
+     },
+     {
+      "type": "p",
+      "text": "Les données conservées pour ces raisons ne sont pas utilisées à d’autres fins incompatibles avec leur conservation légale."
+     }
+    ]
+   },
+   {
+    "heading": "9. Stockage des données",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Les données et documents collectés via le Site sont actuellement hébergés et stockés auprès de notre prestataire d’hébergement Infomaniak, en Suisse, dans la mesure où les services utilisés permettent ce stockage."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia cherche à limiter le recours à des prestataires externes et, au moment de la présente révision, les données fiscales et documents déposés dans l’espace client sont principalement traités dans l’environnement Fiduvia hébergé par Infomaniak."
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons à l’avenir utiliser d’autres prestataires techniques lorsque cela est nécessaire au fonctionnement ou au développement de nos Services."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque nous faisons appel à des sous-traitants, nous prenons les mesures appropriées afin de protéger les données personnelles qui leur sont confiées."
+     }
+    ]
+   },
+   {
+    "heading": "10. Accès aux données",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "L’accès aux données personnelles est limité aux personnes qui en ont besoin pour l’exécution de leurs fonctions."
+     },
+     {
+      "type": "p",
+      "text": "Les accès sont organisés selon les responsabilités des utilisateurs."
+     },
+     {
+      "type": "p",
+      "text": "Le responsable ou manager autorisé peut avoir accès à l’ensemble des dossiers nécessaires à la gestion de Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Les administrateurs disposent uniquement des accès nécessaires aux dossiers qui leur sont attribués."
+     },
+     {
+      "type": "p",
+      "text": "Les prestataires techniques externes, notamment les développeurs, ne disposent pas d’un accès aux dossiers fiscaux des clients dans le cadre normal de leur intervention."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia applique le principe de limitation des accès afin de réduire les risques d’accès non autorisé."
+     }
+    ]
+   },
+   {
+    "heading": "11. Sécurité des données",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia met en œuvre des mesures techniques et organisationnelles raisonnables et appropriées pour protéger les données personnelles contre les accès non autorisés, la perte, la destruction, l’altération ou la divulgation non autorisée."
+     },
+     {
+      "type": "p",
+      "text": "Le Site utilise des connexions sécurisées lorsque cela est applicable."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia prévoit également l’utilisation de l’authentification à deux facteurs (2FA) pour sécuriser les comptes utilisateurs et les accès administratifs."
+     },
+     {
+      "type": "p",
+      "text": "Les mesures de sécurité sont régulièrement adaptées en fonction de l’évolution des risques, des technologies utilisées et de l’organisation de Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Nous ne pouvons toutefois garantir une sécurité absolue d’aucun système informatique ou service en ligne."
+     }
+    ]
+   },
+   {
+    "heading": "12. Prestataires de paiement",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Les paiements peuvent être traités par des prestataires spécialisés, notamment Stripe et TWINT."
+     },
+     {
+      "type": "p",
+      "text": "Ces prestataires peuvent traiter certaines données personnelles nécessaires au traitement du paiement conformément à leurs propres politiques de confidentialité et conditions applicables."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne demande pas et ne conserve pas directement les données complètes de carte bancaire lorsque celles-ci sont traitées par le prestataire de paiement."
+     }
+    ]
+   },
+   {
+    "heading": "13. Transferts de données à l’étranger",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia privilégie le traitement et le stockage des données en Suisse."
+     },
+     {
+      "type": "p",
+      "text": "Certains prestataires techniques ou services utilisés à l’avenir peuvent toutefois traiter certaines données en dehors de Suisse."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque des données personnelles sont transférées vers un autre pays, Fiduvia prend les mesures requises par la législation suisse applicable en matière de protection des données afin de garantir un niveau de protection approprié."
+     },
+     {
+      "type": "p",
+      "text": "La présente politique pourra être mise à jour lorsque de nouveaux prestataires ou services impliquant des transferts internationaux seront introduits."
+     }
+    ]
+   },
+   {
+    "heading": "14. Cookies et technologies similaires",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le Site peut utiliser des cookies et technologies similaires nécessaires à son fonctionnement."
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons également utiliser, à l’avenir, des outils permettant de mesurer l’utilisation du Site, d’améliorer nos Services ou de mesurer l’efficacité de nos communications et campagnes publicitaires."
+     },
+     {
+      "type": "p",
+      "text": "Ces outils peuvent notamment inclure des solutions d’analyse d’audience ou de publicité telles que Google Analytics ou le Meta Pixel."
+     },
+     {
+      "type": "p",
+      "text": "Lorsqu’un consentement est nécessaire, ces technologies non essentielles ne sont activées qu’après obtention du consentement requis."
+     },
+     {
+      "type": "p",
+      "text": "Vous pouvez gérer vos préférences en matière de cookies au moyen du mécanisme de gestion des cookies disponible sur le Site ou, dans certains cas, via les paramètres de votre navigateur."
+     }
+    ]
+   },
+   {
+    "heading": "15. Communications marketing",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia peut à l’avenir proposer des communications commerciales ou marketing, notamment par e-mail."
+     },
+     {
+      "type": "p",
+      "text": "Les communications strictement nécessaires à l’exécution du Service ne constituent pas des communications marketing."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque le consentement est requis pour l’envoi de communications commerciales, Fiduvia recueillera ce consentement conformément aux règles applicables."
+     },
+     {
+      "type": "p",
+      "text": "Vous pourrez vous désinscrire des communications marketing au moyen du mécanisme prévu à cet effet."
+     }
+    ]
+   },
+   {
+    "heading": "16. Statistiques et données anonymisées",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia peut utiliser certaines informations à des fins statistiques afin d’analyser et d’améliorer ses Services."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque nous souhaitons communiquer publiquement des statistiques, celles-ci sont agrégées et anonymisées de manière à ne pas permettre l’identification directe ou raisonnablement possible d’un client."
+     },
+     {
+      "type": "p",
+      "text": "Nous pouvons notamment communiquer des statistiques générales telles que :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "le nombre de déclarations traitées ;",
+       "le montant moyen des économies réalisées ;",
+       "le pourcentage de dossiers comportant certaines possibilités de déduction ;",
+       "d’autres indicateurs généraux relatifs à notre activité."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Nous ne communiquons pas publiquement les informations fiscales individuelles d’un client ni les documents permettant de l’identifier."
+     }
+    ]
+   },
+   {
+    "heading": "17. Confidentialité des données fiscales",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia accorde une attention particulière à la confidentialité des informations fiscales, financières, patrimoniales et familiales qui lui sont confiées."
+     },
+     {
+      "type": "p",
+      "text": "Ces informations sont utilisées uniquement dans le cadre des finalités décrites dans la présente politique, notamment pour l’exécution des Services, la gestion du dossier, le respect des obligations légales et, lorsqu’elles ont été correctement anonymisées, l’établissement de statistiques générales."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne vend pas les données fiscales ou personnelles de ses clients à des tiers."
+     }
+    ]
+   },
+   {
+    "heading": "18. Vos droits",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Sous réserve des conditions et limites prévues par la législation applicable, vous disposez notamment du droit :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "d’obtenir des informations sur le traitement de vos données ;",
+       "d’accéder à vos données personnelles ;",
+       "de demander la rectification de données inexactes ou incomplètes ;",
+       "de demander la suppression de certaines données ;",
+       "de demander la limitation de certains traitements ;",
+       "de vous opposer à certains traitements lorsque les conditions légales sont remplies ;",
+       "de retirer un consentement lorsque le traitement repose sur celui-ci."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Ces droits peuvent être limités lorsque Fiduvia est légalement tenue de conserver certaines informations ou lorsque d’autres motifs légaux s’y opposent."
+     },
+     {
+      "type": "p",
+      "text": "Vous pouvez exercer vos droits en nous contactant à : contact@fiduvia.ch"
+     },
+     {
+      "type": "p",
+      "text": "Vous pouvez également déposer une réclamation auprès de l’autorité suisse compétente en matière de protection des données, le Préposé fédéral à la protection des données et à la transparence (PFPDT), lorsque vous estimez que vos droits ont été violés."
+     }
+    ]
+   },
+   {
+    "heading": "19. Mineurs",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Les Services Fiduvia sont destinés aux personnes majeures."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne collecte pas sciemment de données personnelles auprès de personnes mineures dans le cadre de ses Services."
+     },
+     {
+      "type": "p",
+      "text": "Si vous êtes mineur, vous ne devez pas utiliser les Services Fiduvia sans l’autorisation requise de votre représentant légal."
+     }
+    ]
+   },
+   {
+    "heading": "20. Modifications de la présente politique",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia peut modifier la présente politique de confidentialité afin de tenir compte de l’évolution de ses Services, de ses pratiques, de ses prestataires ou de la législation applicable."
+     },
+     {
+      "type": "p",
+      "text": "La version la plus récente est publiée sur le Site avec sa date de dernière révision."
+     },
+     {
+      "type": "p",
+      "text": "En cas de modification importante affectant vos droits ou la manière dont vos données sont traitées, Fiduvia pourra vous en informer par un moyen approprié lorsque cela est nécessaire."
+     }
+    ]
+   },
+   {
+    "heading": "21. Contact",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Pour toute question concernant la présente politique de confidentialité, vos données personnelles ou l’exercice de vos droits, vous pouvez contacter :"
+     },
+     {
+      "type": "card",
+      "lines": [
+       "Fiduvia",
+       "Raison individuelle",
+       "Canton de Fribourg, Suisse",
+       "Responsable : Rathana Leas",
+       "E-mail : contact@fiduvia.ch"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "cgvu": {
+  "title": "Conditions générales de vente et d’utilisation",
+  "updated": "25 août 2026",
+  "intro": [
+   {
+    "type": "p",
+    "text": "Les présentes Conditions générales de vente et d’utilisation (« CGVU ») régissent l’accès et l’utilisation du site internet et de l’espace client de Fiduvia, raison individuelle (« Fiduvia », « nous », « notre »), ainsi que la fourniture de nos prestations d’assistance à la déclaration fiscale (les « Services ») aux utilisateurs et clients (« vous », « le Client »)."
+   },
+   {
+    "type": "p",
+    "text": "En utilisant le Site ou en souscrivant à un Service, vous acceptez les présentes CGVU."
+   }
+  ],
+  "sections": [
+   {
+    "heading": "1. Identification de Fiduvia",
+    "blocks": [
+     {
+      "type": "card",
+      "lines": [
+       "Fiduvia",
+       "Raison individuelle",
+       "Canton de Fribourg, Suisse",
+       "Responsable : Rathana Leas",
+       "E-mail : contact@fiduvia.ch"
+      ]
+     },
+     {
+      "type": "p",
+      "text": "L’adresse officielle complète de Fiduvia sera indiquée sur le Site dès qu’elle sera définitivement établie."
+     }
+    ]
+   },
+   {
+    "heading": "2. Objet des Services",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia propose un service d’assistance en ligne destiné à aider les particuliers dans la préparation, la saisie et, lorsque le Service souscrit le prévoit, la transmission de leurs déclarations fiscales cantonales et fédérales."
+     },
+     {
+      "type": "p",
+      "text": "Les Services sont actuellement proposés notamment pour les contribuables relevant des cantons de Fribourg, Vaud et Valais, sous réserve des conditions et possibilités techniques applicables au dossier concerné."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia établit la déclaration sur la base des informations, documents et instructions transmis par le Client."
+     },
+     {
+      "type": "p",
+      "text": "L’objectif du Service est de préparer une déclaration aussi complète et correcte que possible sur la base des informations communiquées par le Client et des règles fiscales applicables au moment du traitement."
+     }
+    ]
+   },
+   {
+    "heading": "3. Statut de Fiduvia",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia agit en qualité de prestataire d’assistance à la déclaration fiscale."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia n’est pas une autorité fiscale et ne se substitue pas aux autorités fiscales cantonales ou fédérales."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne garantit pas l’acceptation de la déclaration, le montant final de l’impôt, ni l’absence de demande de renseignements ou de rectification par l’autorité fiscale compétente."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque le Service comprend la transmission de la déclaration, Fiduvia peut saisir et transmettre la déclaration au moyen des plateformes fiscales concernées, sur la base de l’autorisation donnée par le Client et des informations qu’il a fournies."
+     },
+     {
+      "type": "p",
+      "text": "La déclaration demeure celle du contribuable et le Client reste responsable de l’exactitude et de l’exhaustivité des informations communiquées."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne représente pas automatiquement le Client dans ses échanges ultérieurs avec l’administration fiscale. Toute prestation de représentation ou d’assistance après transmission doit faire l’objet d’un accord distinct lorsqu’elle est proposée."
+     }
+    ]
+   },
+   {
+    "heading": "4. Personnes pouvant souscrire aux Services",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Les Services sont destinés aux personnes physiques :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "majeures ;",
+       "capables de contracter selon le droit applicable ;",
+       "ayant une obligation fiscale en Suisse."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Le fait d’être fiscalement domicilié à l’étranger n’exclut pas nécessairement l’accès au Service lorsqu’une obligation fiscale suisse existe, notamment dans certaines situations transfrontalières."
+     },
+     {
+      "type": "p",
+      "text": "Toutefois, Fiduvia peut refuser un dossier lorsque sa situation fiscale ou sa complexité dépasse le périmètre des Services proposés."
+     }
+    ]
+   },
+   {
+    "heading": "5. Création du compte",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Certaines fonctionnalités du Site nécessitent la création d’un compte personnel."
+     },
+     {
+      "type": "p",
+      "text": "Le Client s’engage à fournir des informations exactes et à maintenir ses informations à jour."
+     },
+     {
+      "type": "p",
+      "text": "Le Client est responsable de la confidentialité de ses moyens d’accès à son compte."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque l’authentification à deux facteurs (« 2FA ») est proposée ou rendue obligatoire, le Client s’engage à utiliser cette fonctionnalité conformément aux instructions de Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Le Client doit informer Fiduvia dans les meilleurs délais de toute utilisation non autorisée ou suspicion de compromission de son compte."
+     }
+    ]
+   },
+   {
+    "heading": "6. Formation du contrat",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le contrat de Service est conclu lorsque le Client :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "1.sélectionne le Service concerné ;",
+       "2.prend connaissance des informations relatives au prix ;",
+       "3.accepte les présentes CGVU ;",
+       "4.prend connaissance de la Politique de confidentialité ;",
+       "5.procède au paiement lorsque celui-ci est requis."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "L’acceptation électronique des CGVU et le paiement constituent la preuve de l’accord du Client sur les présentes conditions, sous réserve des dispositions légales impératives applicables."
+     },
+     {
+      "type": "p",
+      "text": "Aucune signature manuscrite n’est nécessaire."
+     }
+    ]
+   },
+   {
+    "heading": "7. Autorisation donnée à Fiduvia",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Lorsque le Service souscrit comprend la préparation et la transmission de la déclaration fiscale, le Client autorise expressément Fiduvia, dans le cadre de l’exécution du Service, à :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "utiliser les informations et documents fournis ;",
+       "préparer et saisir les informations nécessaires à sa déclaration ;",
+       "utiliser les informations d’accès aux plateformes fiscales fournies par le Client lorsque celles-ci sont nécessaires à l’exécution du Service ;",
+       "accéder à son espace fiscal dans la mesure nécessaire à l’exécution du Service ;",
+       "transmettre la déclaration fiscale aux autorités compétentes lorsque cette transmission fait partie du Service commandé."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Cette autorisation est limitée à l’exécution du Service."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne peut utiliser les identifiants ou informations d’accès fournis par le Client pour accéder à d’autres services ou pour d’autres finalités étrangères à l’exécution du contrat."
+     },
+     {
+      "type": "p",
+      "text": "Le Client peut demander des informations sur l’utilisation de ses données conformément à la Politique de confidentialité."
+     }
+    ]
+   },
+   {
+    "heading": "8. Identifiants et accès aux plateformes fiscales",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Lorsque l’exécution du Service nécessite l’utilisation d’identifiants fiscaux, le Client les transmet exclusivement par les moyens sécurisés prévus sur le Site."
+     },
+     {
+      "type": "p",
+      "text": "Le Client ne doit pas transmettre ses mots de passe ou autres identifiants sensibles par e-mail, messagerie instantanée ou tout autre moyen non prévu par Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Les identifiants fournis sont utilisés uniquement dans le cadre du Service."
+     },
+     {
+      "type": "p",
+      "text": "Le Client doit informer Fiduvia immédiatement s’il constate ou suspecte une utilisation non autorisée de ses identifiants."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia prend des mesures raisonnables afin de limiter l’accès à ces informations aux personnes autorisées et ayant besoin d’y accéder dans le cadre de leurs fonctions."
+     },
+     {
+      "type": "p",
+      "text": "Les modalités de traitement et de conservation des données sont également décrites dans la Politique de confidentialité."
+     }
+    ]
+   },
+   {
+    "heading": "9. Obligations du Client",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le Client s’engage à :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "fournir des informations exactes, complètes et à jour ;",
+       "transmettre tous les documents nécessaires à l’établissement de sa déclaration ;",
+       "fournir les justificatifs demandés dans les délais raisonnables ;",
+       "informer Fiduvia de toute modification de sa situation pouvant avoir une incidence fiscale ;",
+       "vérifier les informations communiquées à Fiduvia ;",
+       "ne pas transmettre de documents falsifiés ou volontairement inexacts ;",
+       "protéger ses moyens d’accès à son compte ;",
+       "informer Fiduvia de toute suspicion de compromission de son compte ou de ses identifiants."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Le Client reste responsable de l’exactitude et de l’exhaustivité des informations qu’il communique."
+     }
+    ]
+   },
+   {
+    "heading": "10. Documents transmis par le Client",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le Client doit transmettre uniquement les documents nécessaires à l’exécution du Service."
+     },
+     {
+      "type": "p",
+      "text": "Les documents sont déposés via l’espace client Fiduvia."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia peut conserver les documents nécessaires au suivi du dossier et à la préparation des déclarations des années suivantes, conformément à sa Politique de confidentialité et aux obligations légales applicables."
+     },
+     {
+      "type": "p",
+      "text": "Le Client ne doit pas déposer dans son espace des documents ou informations qui ne sont pas nécessaires au Service."
+     }
+    ]
+   },
+   {
+    "heading": "11. Vérification et traitement du dossier",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia traite les informations fournies par le Client avec diligence et selon les informations disponibles au moment du traitement."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque certaines informations sont manquantes, incohérentes ou nécessitent des précisions, Fiduvia peut demander au Client des informations ou documents complémentaires."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia peut suspendre le traitement du dossier tant que les informations nécessaires n’ont pas été fournies."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque les informations communiquées demeurent insuffisantes, Fiduvia peut être dans l’impossibilité de finaliser la déclaration."
+     }
+    ]
+   },
+   {
+    "heading": "12. Validation et transmission de la déclaration",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Sauf indication contraire dans le Service souscrit, Fiduvia prépare la déclaration sur la base des informations fournies par le Client."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque la transmission par Fiduvia est comprise dans le Service, Fiduvia peut procéder à la transmission de la déclaration conformément à l’autorisation donnée lors de la souscription du Service."
+     },
+     {
+      "type": "p",
+      "text": "Le Client demeure responsable de fournir des informations exactes et complètes."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne peut garantir qu’une autorité fiscale acceptera les montants ou déductions indiqués dans la déclaration."
+     },
+     {
+      "type": "p",
+      "text": "Toute décision de taxation, demande de renseignements, rectification ou contrôle relève exclusivement de l’autorité fiscale compétente."
+     }
+    ]
+   },
+   {
+    "heading": "13. Délais",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Les délais de traitement dépendent notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "de la période de l’année ;",
+       "du volume de dossiers reçus ;",
+       "de la complexité du dossier ;",
+       "de la rapidité avec laquelle le Client fournit les documents demandés ;",
+       "de la disponibilité des plateformes fiscales ;",
+       "de tout événement indépendant de la volonté de Fiduvia."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia s’efforce de traiter les dossiers dans un délai raisonnable."
+     },
+     {
+      "type": "p",
+      "text": "Sauf engagement écrit contraire, les délais communiqués par Fiduvia sont indicatifs et ne constituent pas une garantie de résultat."
+     }
+    ]
+   },
+   {
+    "heading": "14. Prix et paiement",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le prix applicable au Service est communiqué au Client avant la validation de sa commande."
+     },
+     {
+      "type": "p",
+      "text": "Le prix peut varier notamment selon la complexité du dossier, le canton concerné et les éléments fiscaux à traiter."
+     },
+     {
+      "type": "p",
+      "text": "Le paiement est exigible selon les modalités indiquées lors de la commande."
+     },
+     {
+      "type": "p",
+      "text": "Les paiements peuvent être effectués au moyen des prestataires proposés sur le Site, notamment Stripe et, lorsqu’il est disponible, TWINT."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia peut commencer le traitement du dossier après confirmation du paiement."
+     }
+    ]
+   },
+   {
+    "heading": "15. Annulation et remboursement",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le Client peut demander l’annulation de sa commande avant le début du traitement de son dossier."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque Fiduvia n’a pas encore commencé à traiter le dossier, le Client peut demander le remboursement du montant payé, sous réserve des dispositions légales applicables."
+     },
+     {
+      "type": "p",
+      "text": "Une fois le traitement commencé, les conditions de remboursement dépendent de l’état d’avancement du Service et des règles impératives applicables."
+     },
+     {
+      "type": "p",
+      "text": "Lorsqu’une prestation a déjà été substantiellement exécutée, Fiduvia peut refuser un remboursement correspondant à la partie du Service déjà exécutée, sous réserve des droits légaux du Client."
+     }
+    ]
+   },
+   {
+    "heading": "16. Droit de rétractation et exécution du Service",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Lorsque le droit de la consommation applicable prévoit un droit de rétractation ou une autre protection similaire, celui-ci s’applique dans les limites et conditions prévues par la loi."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque le Client demande expressément que Fiduvia commence l’exécution du Service avant l’expiration d’un éventuel délai de rétractation, le Client reconnaît que les conséquences juridiques d’une exécution anticipée peuvent s’appliquer conformément au droit applicable."
+     },
+     {
+      "type": "p",
+      "text": "Les modalités spécifiques seront, si nécessaire, précisées lors de la commande."
+     }
+    ]
+   },
+   {
+    "heading": "17. Responsabilité de Fiduvia",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia s’engage à fournir ses Services avec diligence et professionnalisme."
+     },
+     {
+      "type": "p",
+      "text": "Toutefois, Fiduvia ne garantit pas :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "l’absence de rectification par l’autorité fiscale ;",
+       "l’acceptation de toutes les déductions proposées ;",
+       "un montant d’impôt déterminé ;",
+       "l’absence de demande de renseignements ;",
+       "l’absence de contrôle fiscal ;",
+       "la disponibilité permanente des plateformes fiscales."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia ne peut être tenue responsable des conséquences résultant :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "d’informations incorrectes ou incomplètes fournies par le Client ;",
+       "de documents manquants ;",
+       "d’informations transmises tardivement ;",
+       "d’une modification de la législation ou de la pratique fiscale après le traitement du dossier ;",
+       "d’une décision prise par une autorité fiscale ;",
+       "d’une panne ou indisponibilité d’une plateforme fiscale ;",
+       "d’un dysfonctionnement d’un prestataire externe échappant raisonnablement au contrôle de Fiduvia ;",
+       "d’un cas de force majeure."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Toute limitation de responsabilité prévue par les présentes CGVU s’applique dans la mesure permise par le droit suisse et ne limite pas une responsabilité qui ne peut légalement être exclue ou limitée."
+     }
+    ]
+   },
+   {
+    "heading": "18. Limitation de responsabilité",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Dans la mesure permise par le droit suisse, et sous réserve des cas dans lesquels une limitation de responsabilité est légalement interdite, la responsabilité de Fiduvia pour un Service donné est limitée au montant effectivement payé par le Client pour le Service concerné."
+     },
+     {
+      "type": "p",
+      "text": "Cette limitation ne s’applique pas lorsqu’elle serait contraire à une disposition légale impérative."
+     }
+    ]
+   },
+   {
+    "heading": "19. Conservation des dossiers",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia peut conserver les documents et informations nécessaires au suivi du dossier et à la préparation des déclarations fiscales des années suivantes."
+     },
+     {
+      "type": "p",
+      "text": "Certaines données peuvent également être conservées pendant les durées imposées par la législation applicable."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque le Client supprime son compte, Fiduvia supprime les données pouvant légalement être supprimées."
+     },
+     {
+      "type": "p",
+      "text": "Les données dont la conservation est imposée par la loi ou nécessaire à l’exercice ou à la défense de droits peuvent être conservées pendant la durée nécessaire."
+     },
+     {
+      "type": "p",
+      "text": "Les modalités détaillées de conservation et de suppression sont définies dans la Politique de confidentialité."
+     }
+    ]
+   },
+   {
+    "heading": "20. Protection des données",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le traitement des données personnelles du Client est régi par la Politique de confidentialité de Fiduvia, qui fait partie intégrante des présentes CGVU."
+     },
+     {
+      "type": "p",
+      "text": "La Politique de confidentialité décrit notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "les données collectées ;",
+       "les finalités des traitements ;",
+       "le stockage des documents ;",
+       "le traitement des données fiscales ;",
+       "le traitement des identifiants fiscaux ;",
+       "les mesures de sécurité ;",
+       "les durées de conservation ;",
+       "les droits du Client."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "En cas de contradiction entre les présentes CGVU et la Politique de confidentialité concernant une question exclusivement relative à la protection des données, la Politique de confidentialité prévaut pour cette question."
+     }
+    ]
+   },
+   {
+    "heading": "21. Propriété intellectuelle",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le contenu du Site, notamment les textes, éléments graphiques, logos, marques, interfaces, outils et contenus développés par Fiduvia, est protégé par les droits applicables."
+     },
+     {
+      "type": "p",
+      "text": "Sauf autorisation préalable, le Client ne peut reproduire, modifier, distribuer ou exploiter commercialement les éléments protégés du Site."
+     },
+     {
+      "type": "p",
+      "text": "Les documents personnels transmis par le Client restent la propriété du Client ou de leurs ayants droit."
+     }
+    ]
+   },
+   {
+    "heading": "22. Disponibilité du Site",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia s’efforce d’assurer la disponibilité et le bon fonctionnement du Site."
+     },
+     {
+      "type": "p",
+      "text": "Toutefois, Fiduvia ne garantit pas une disponibilité permanente ou sans interruption."
+     },
+     {
+      "type": "p",
+      "text": "Le Site peut être temporairement indisponible notamment pour :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "maintenance ;",
+       "mise à jour ;",
+       "problème technique ;",
+       "panne d’un prestataire ;",
+       "incident de sécurité ;",
+       "force majeure."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia peut suspendre temporairement certaines fonctionnalités lorsque cela est nécessaire pour assurer la sécurité du Site ou des données."
+     }
+    ]
+   },
+   {
+    "heading": "23. Résiliation",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Le contrat de Service prend fin lorsque la prestation commandée a été exécutée ou lorsque le contrat est valablement résilié."
+     },
+     {
+      "type": "p",
+      "text": "Fiduvia peut suspendre ou résilier un Service notamment lorsque :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "le Client fournit volontairement de fausses informations ;",
+       "le Client refuse de fournir les informations indispensables à la prestation ;",
+       "le Client utilise le Site de manière frauduleuse ou abusive ;",
+       "le Client tente d’accéder aux données d’un autre utilisateur ;",
+       "le Client porte atteinte à la sécurité du Site ;",
+       "le maintien du Service devient contraire à la loi."
+      ]
+     },
+     {
+      "type": "p",
+      "text": "Lorsque la résiliation intervient en raison d’un manquement du Client, les conséquences financières sont déterminées en fonction de l’état d’avancement du Service et du droit applicable."
+     }
+    ]
+   },
+   {
+    "heading": "24. Force majeure",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia ne peut être tenue responsable d’un retard ou d’une inexécution résultant d’un événement échappant raisonnablement à son contrôle, notamment :"
+     },
+     {
+      "type": "ul",
+      "items": [
+       "catastrophe naturelle ;",
+       "panne généralisée d’électricité ou d’Internet ;",
+       "cyberattaque ou incident informatique majeur malgré les mesures de sécurité raisonnables ;",
+       "indisponibilité prolongée des plateformes fiscales ;",
+       "grève ;",
+       "décision ou mesure d’une autorité ;",
+       "événement affectant les infrastructures essentielles ;",
+       "tout autre événement imprévisible et indépendant de la volonté de Fiduvia."
+      ]
+     }
+    ]
+   },
+   {
+    "heading": "25. Modifications des CGVU",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Fiduvia peut modifier les présentes CGVU afin de tenir compte notamment de l’évolution de ses Services, de ses conditions commerciales ou de la législation applicable."
+     },
+     {
+      "type": "p",
+      "text": "La version applicable à une commande est celle acceptée par le Client au moment de la conclusion du contrat."
+     },
+     {
+      "type": "p",
+      "text": "Les modifications ne s’appliquent pas rétroactivement aux contrats déjà conclus, sauf lorsqu’une modification est imposée par la loi."
+     }
+    ]
+   },
+   {
+    "heading": "26. Droit applicable",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Les présentes CGVU sont soumises au droit suisse."
+     },
+     {
+      "type": "p",
+      "text": "Les dispositions impératives applicables aux consommateurs demeurent réservées."
+     }
+    ]
+   },
+   {
+    "heading": "27. For juridique",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Sous réserve des règles impératives applicables, tout litige relatif aux présentes CGVU ou aux Services de Fiduvia relève des tribunaux compétents du canton de Fribourg, Suisse."
+     },
+     {
+      "type": "p",
+      "text": "Lorsque la loi impose un autre for, notamment en matière de protection des consommateurs, celui-ci demeure applicable."
+     }
+    ]
+   },
+   {
+    "heading": "28. Nullité partielle",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Si une disposition des présentes CGVU devait être déclarée nulle, invalide ou inapplicable, les autres dispositions resteraient en vigueur."
+     },
+     {
+      "type": "p",
+      "text": "La disposition concernée sera, dans la mesure du possible, interprétée ou remplacée de manière à respecter l’objectif économique et juridique initial tout en restant conforme au droit applicable."
+     }
+    ]
+   },
+   {
+    "heading": "29. Contact",
+    "blocks": [
+     {
+      "type": "p",
+      "text": "Pour toute question concernant les présentes CGVU ou les Services, vous pouvez contacter :"
+     },
+     {
+      "type": "card",
+      "lines": [
+       "Fiduvia",
+       "Raison individuelle",
+       "Canton de Fribourg, Suisse",
+       "Responsable : Rathana Leas",
+       "E-mail : contact@fiduvia.ch"
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

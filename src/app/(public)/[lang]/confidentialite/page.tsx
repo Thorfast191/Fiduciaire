@@ -38,12 +38,5 @@ export default async function Page({
 
   const t = getMessages(lang);
 
-  return (
-    <LegalPage
-      lang={lang}
-      t={t}
-      title={t.legal.privacyTitle}
-      intro={t.legal.privacyIntro}
-    />
-  );
+  return <LegalPage lang={lang} t={t} docKey="privacy" />;
 }

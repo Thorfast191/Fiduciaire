@@ -326,9 +326,8 @@ export const fr = {
       "Service d'aide à la taxation, pour le canton de Vaud, Valais et Fribourg",
     socialTitle: "Suivez-nous",
     contactTitle: "Comment nous contacter",
-    addressLine1: "Rue de Bourg 12",
-    addressLine2: "1003 Lausanne",
-    phone: "+41 21 000 00 00",
+    addressLine1: "Route de la Pontille 28",
+    addressLine2: "1618 Châtel-St-Denis",
     email: "contact@fiduvia.ch",
     hours: "Lundi – vendredi, 8h30 – 17h30",
     reply: "Réponse sous 24 heures ouvrées",
@@ -337,7 +336,7 @@ export const fr = {
     legal: "Mentions légales / Impressum",
     terms: "Conditions générales de vente et d'utilisation",
     cookies: "Politique relative aux cookies",
-    rights: "Lausanne",
+    rights: "Châtel-St-Denis",
     hosted: "Données hébergées en Suisse",
     clientArea: "Espace client",
   },
@@ -693,16 +692,20 @@ export const fr = {
       upload: "Transmettre",
       uploaded: "Transmis",
       toUpload: "À transmettre",
-      submit: "Transmettre ma déclaration",
-      submitting: "Transmission...",
+      submit: "Payer et transmettre ma déclaration",
+      submitting: "Redirection vers le paiement...",
       submitHint:
         "Veuillez fournir tous les documents demandés avant de transmettre votre déclaration.",
-      confirmTitle: "Transmettre votre déclaration ?",
+      confirmTitle: "Payer et transmettre votre déclaration ?",
       confirmBody:
-        "Vos réponses et vos pièces justificatives seront transmises à notre équipe. Vous ne pourrez plus les modifier ensuite — contactez-nous si un changement est nécessaire.",
+        "Vous allez être redirigé vers notre prestataire de paiement sécurisé (Stripe). Après le paiement, vos réponses et vos pièces justificatives seront transmises à notre équipe et ne pourront plus être modifiées.",
       confirmCancel: "Annuler",
-      confirmSubmit: "Oui, transmettre",
-      submitted: "Votre déclaration a été transmise à notre équipe.",
+      confirmSubmit: "Continuer vers le paiement",
+      submitted: "Votre déclaration a été payée et transmise à notre équipe.",
+      paymentError:
+        "Le paiement n'a pas pu être démarré. Merci de réessayer dans un instant.",
+      paymentCancelled:
+        "Paiement annulé. Vous pouvez reprendre quand vous le souhaitez.",
     },
 
     price: {
@@ -971,6 +974,9 @@ export const fr = {
       thClient: "Client",
       searchPlaceholder: "Rechercher un client...",
       thReceived: "Date de réception",
+      docsUnit: "document",
+      docsUnitPlural: "documents",
+      docsNone: "Aucun document",
       allStatuses: "Tous les statuts",
       noMatch: "Aucun dossier ne correspond à cette recherche.",
       statusSaving: "Enregistrement…",
@@ -1010,17 +1016,30 @@ export const fr = {
     completed: "Terminé",
   },
 
+  consent: {
+    message:
+      "Nous utilisons des cookies de mesure d'audience pour améliorer votre expérience. Vous pouvez les accepter ou les refuser.",
+    accept: "Accepter",
+    refuse: "Refuser",
+    learnMore: "En savoir plus",
+  },
+
   legal: {
     backHome: "Retour à l'accueil",
-    pendingTitle: "Document en cours de rédaction",
-    pendingBody:
-      "Ce document est en cours de rédaction avec notre conseil juridique et sera publié avant la mise en service de la plateforme. Pour toute question sur le traitement de vos données dans l'intervalle, écrivez-nous.",
-    controllerTitle: "Responsable du traitement",
+    updated: "Dernière mise à jour :",
+    frOnlyNotice:
+      "Ce document fait foi dans sa version française. La version française est présentée ci-dessous.",
     privacyTitle: "Politique de confidentialité",
     privacyIntro:
       "Comment Fiduvia collecte, utilise et protège vos données personnelles.",
     noticeTitle: "Mentions légales",
     noticeIntro: "Informations légales sur l'éditeur du site.",
+    cookiesTitle: "Politique relative aux cookies",
+    cookiesIntro:
+      "Comment Fiduvia utilise les cookies et technologies similaires.",
+    termsTitle: "Conditions générales de vente et d'utilisation",
+    termsIntro:
+      "Les conditions qui régissent l'accès et l'utilisation des services Fiduvia.",
   },
   notFound: {
     code: "404",

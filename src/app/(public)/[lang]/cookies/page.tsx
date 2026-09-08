@@ -19,12 +19,11 @@ export async function generateMetadata({
   if (!isLocale(lang)) return {};
 
   const t = getMessages(lang);
-  const path =
-    lang === "fr" ? "/mentions-legales" : `/${lang}/mentions-legales`;
+  const path = lang === "fr" ? "/cookies" : `/${lang}/cookies`;
 
   return {
-    title: t.legal.noticeTitle,
-    description: t.legal.noticeIntro,
+    title: t.legal.cookiesTitle,
+    description: t.legal.cookiesIntro,
     alternates: { canonical: `${SITE}${path}` },
   };
 }
@@ -39,5 +38,5 @@ export default async function Page({
 
   const t = getMessages(lang);
 
-  return <LegalPage lang={lang} t={t} docKey="mentions" />;
+  return <LegalPage lang={lang} t={t} docKey="cookies" />;
 }

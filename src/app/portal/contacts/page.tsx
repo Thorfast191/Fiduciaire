@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth/guards";
 import { getT } from "@/lib/i18n";
+import { BUSINESS, addressLine } from "@/lib/business";
 import ContactForm from "./ContactForm";
 
 /**
@@ -9,13 +10,17 @@ import ContactForm from "./ContactForm";
 export default async function PortalContactsPage() {
   const [user, { t }] = await Promise.all([getCurrentUser(), getT()]);
 
+  // Phone is intentionally omitted until a real number exists (BUSINESS.phone);
+  // showing a placeholder number on a live contact card is worse than none.
   const coordinates = [
-    { glyph: "@", label: t.portal.contactsEmail, value: "contact@fiduvia.ch" },
-    { glyph: "☎", label: t.portal.contactsPhone, value: "+41 21 000 00 00" },
+    { glyph: "@", label: t.portal.contactsEmail, value: BUSINESS.email },
+    ...(BUSINESS.phone
+      ? [{ glyph: "☎", label: t.portal.contactsPhone, value: BUSINESS.phone }]
+      : []),
     {
       glyph: "⌂",
       label: t.portal.contactsAddress,
-      value: "Rue de Bourg 12, 1003 Lausanne",
+      value: addressLine(),
     },
   ];
 

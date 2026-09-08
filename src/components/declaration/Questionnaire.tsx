@@ -97,6 +97,31 @@ export function Questionnaire({
     };
   }, [answers, step, persist, readOnly]);
 
+  // Back from Stripe Checkout. On success, confirm the session server-side (a
+  // safety net for the webhook) so the dossier is submitted, then refresh to the
+  // read-only submitted view. Either way the query params are cleared so a
+  // reload does not re-trigger this.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get("checkout");
+    if (!checkout) return;
+    const sessionId = params.get("session_id");
+    const clean = () =>
+      window.history.replaceState({}, "", window.location.pathname);
+
+    if (checkout === "success" && sessionId) {
+      fetch(`/api/dossiers/${dossierId}/confirm-payment`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      })
+        .then(() => router.refresh())
+        .finally(clean);
+    } else {
+      clean();
+    }
+  }, [dossierId, router]);
+
   function patch(update: Partial<Answers>) {
     setAnswers((a) => ({ ...a, ...update }));
   }
@@ -658,7 +683,6 @@ export function Questionnaire({
                 doneCount={doneCount}
                 price={price}
                 readOnly={readOnly}
-                onSubmitted={() => router.refresh()}
                 onUploaded={() => router.refresh()}
               />
             ) : null}
@@ -909,7 +933,6 @@ function TransmissionStep({
   doneCount,
   price,
   readOnly,
-  onSubmitted,
   onUploaded,
 }: {
   t: Messages;
@@ -919,26 +942,35 @@ function TransmissionStep({
   doneCount: number;
   price: ReturnType<typeof computePrice>;
   readOnly: boolean;
-  onSubmitted: () => void;
   onUploaded: () => void;
 }) {
   const d = t.declaration;
   const [submitting, setSubmitting] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const complete = doneCount >= docs.length;
 
+  // Opens a Stripe Checkout session and hands the browser to it. Payment is
+  // what submits the declaration: the return from Stripe finalizes and locks it
+  // (see the effect in Questionnaire). `submitting` stays true on success
+  // because the page is navigating away.
   async function submit() {
     setSubmitting(true);
+    setError(null);
     try {
-      await fetch(`/api/dossiers/${dossierId}/status`, {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ status: "submitted" }),
+      const res = await fetch(`/api/dossiers/${dossierId}/checkout`, {
+        method: "POST",
       });
-      onSubmitted();
-    } finally {
-      setSubmitting(false);
+      const body = await res.json().catch(() => null);
+      if (res.ok && body?.url) {
+        window.location.assign(body.url);
+        return;
+      }
+      setError(d.transmission.paymentError);
+    } catch {
+      setError(d.transmission.paymentError);
     }
+    setSubmitting(false);
   }
 
   return (
@@ -1032,6 +1064,12 @@ function TransmissionStep({
           {!complete ? (
             <p className="text-right text-[13px] text-[#B26A00]">
               {d.transmission.submitHint}
+            </p>
+          ) : null}
+
+          {error ? (
+            <p role="alert" className="text-right text-[13px] text-red-600">
+              {error}
             </p>
           ) : null}
 

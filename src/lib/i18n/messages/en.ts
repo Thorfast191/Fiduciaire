@@ -330,9 +330,8 @@ export const en: Messages = {
       "Tax return assistance for the cantons of Vaud, Valais and Fribourg",
     socialTitle: "Follow us",
     contactTitle: "How to reach us",
-    addressLine1: "Rue de Bourg 12",
-    addressLine2: "1003 Lausanne",
-    phone: "+41 21 000 00 00",
+    addressLine1: "Route de la Pontille 28",
+    addressLine2: "1618 Châtel-St-Denis",
     email: "contact@fiduvia.ch",
     hours: "Monday – Friday, 8:30 – 17:30",
     reply: "We reply within 24 working hours",
@@ -341,7 +340,7 @@ export const en: Messages = {
     legal: "Legal notice / Impressum",
     terms: "Terms of sale and use",
     cookies: "Cookie policy",
-    rights: "Lausanne",
+    rights: "Châtel-St-Denis",
     hosted: "Data hosted in Switzerland",
     clientArea: "Client area",
   },
@@ -691,16 +690,20 @@ export const en: Messages = {
       upload: "Upload",
       uploaded: "Uploaded",
       toUpload: "To upload",
-      submit: "Submit my tax return",
-      submitting: "Submitting...",
+      submit: "Pay and submit my tax return",
+      submitting: "Redirecting to payment...",
       submitHint:
         "Please provide all requested documents before submitting your tax return.",
-      confirmTitle: "Submit your tax return?",
+      confirmTitle: "Pay and submit your tax return?",
       confirmBody:
-        "Your answers and supporting documents will be sent to our team. You will not be able to change them afterwards — contact us if something needs correcting.",
+        "You will be redirected to our secure payment provider (Stripe). After payment, your answers and supporting documents are sent to our team and can no longer be changed.",
       confirmCancel: "Cancel",
-      confirmSubmit: "Yes, submit",
-      submitted: "Your tax return has been submitted to our team.",
+      confirmSubmit: "Continue to payment",
+      submitted: "Your tax return has been paid and submitted to our team.",
+      paymentError:
+        "Payment could not be started. Please try again in a moment.",
+      paymentCancelled:
+        "Payment cancelled. You can pick up where you left off anytime.",
     },
 
     price: {
@@ -969,6 +972,9 @@ export const en: Messages = {
       thClient: "Client",
       searchPlaceholder: "Search for a client...",
       thReceived: "Date received",
+      docsUnit: "document",
+      docsUnitPlural: "documents",
+      docsNone: "No documents",
       allStatuses: "All statuses",
       noMatch: "No file matches this search.",
       statusSaving: "Saving…",
@@ -1008,16 +1014,28 @@ export const en: Messages = {
     completed: "Completed",
   },
 
+  consent: {
+    message:
+      "We use analytics cookies to improve your experience. You can accept or decline them.",
+    accept: "Accept",
+    refuse: "Decline",
+    learnMore: "Learn more",
+  },
+
   legal: {
     backHome: "Back to home",
-    pendingTitle: "Document being prepared",
-    pendingBody:
-      "This document is being drafted with our legal counsel and will be published before the platform goes live. In the meantime, write to us with any question about how your data is handled.",
-    controllerTitle: "Data controller",
+    updated: "Last updated:",
+    frOnlyNotice:
+      "This document is authoritative in its French version, which is shown below.",
     privacyTitle: "Privacy policy",
     privacyIntro: "How Fiduvia collects, uses and protects your personal data.",
     noticeTitle: "Legal notice",
     noticeIntro: "Legal information about the site's publisher.",
+    cookiesTitle: "Cookie policy",
+    cookiesIntro: "How Fiduvia uses cookies and similar technologies.",
+    termsTitle: "Terms of sale and use",
+    termsIntro:
+      "The terms governing access to and use of Fiduvia's services.",
   },
   notFound: {
     code: "404",

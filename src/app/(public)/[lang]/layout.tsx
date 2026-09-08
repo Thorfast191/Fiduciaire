@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { LoginModalProvider } from "@/components/auth/LoginModal";
+import { ConsentAnalytics } from "@/components/analytics/ConsentAnalytics";
 import { getMessages } from "@/lib/i18n";
 import { isLocale } from "@/lib/i18n/config";
+import { env } from "@/lib/env";
 
 /**
  * Rendered per request, not prerendered — which these pages cannot be.
@@ -35,7 +38,22 @@ export default async function PublicLayout({
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
 
+  const t = getMessages(lang);
+  const nonce = (await headers()).get("x-nonce") ?? "";
+  // fr is served unprefixed, en under /en — matches the routes' canonical URLs.
+  const privacyHref = lang === "fr" ? "/confidentialite" : `/${lang}/confidentialite`;
+
   return (
-    <LoginModalProvider t={getMessages(lang)}>{children}</LoginModalProvider>
+    <LoginModalProvider t={t}>
+      {children}
+      <ConsentAnalytics
+        gaId={env.ANALYTICS_GA_ID}
+        adsId={env.ANALYTICS_GOOGLE_ADS_ID}
+        metaId={env.ANALYTICS_META_PIXEL_ID}
+        nonce={nonce}
+        privacyHref={privacyHref}
+        t={t.consent}
+      />
+    </LoginModalProvider>
   );
 }

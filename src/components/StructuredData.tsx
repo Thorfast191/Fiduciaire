@@ -1,5 +1,6 @@
 import type { Messages } from "@/lib/i18n/messages/fr";
 import type { Locale } from "@/lib/i18n/config";
+import { BUSINESS } from "@/lib/business";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fiduvia.ch";
 
@@ -34,16 +35,18 @@ export function StructuredData({
       url,
       description: t.hero.p1,
       inLanguage: locale === "fr" ? "fr-CH" : "en",
-      email: "contact@fiduvia.ch",
-      telephone: "+41 21 000 00 00",
+      email: BUSINESS.email,
+      // No `telephone`: none is published yet, and inventing one would seed a
+      // wrong number into Google's local panel.
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Rue de Bourg 12",
-        postalCode: "1003",
-        addressLocality: "Lausanne",
-        addressCountry: "CH",
+        streetAddress: BUSINESS.street,
+        postalCode: BUSINESS.postalCode,
+        addressLocality: BUSINESS.city,
+        addressRegion: BUSINESS.canton,
+        addressCountry: BUSINESS.countryCode,
       },
-      areaServed: ["Vaud", "Valais", "Fribourg"].map((name) => ({
+      areaServed: BUSINESS.areaServed.map((name) => ({
         "@type": "AdministrativeArea",
         name,
       })),
@@ -52,19 +55,16 @@ export function StructuredData({
       priceRange: "CHF 80–250",
       currenciesAccepted: "CHF",
       paymentAccepted: "Bank transfer, TWINT, credit card",
-      // Lausanne city centre. Coordinates are what tie the listing to a place
-      // for "fiduciaire près de moi" searches, which is most of the local intent.
+      // Châtel-St-Denis. Coordinates are what tie the listing to a place for
+      // "fiduciaire près de moi" searches, which is most of the local intent.
       geo: {
         "@type": "GeoCoordinates",
-        latitude: 46.5197,
-        longitude: 6.6323,
+        latitude: BUSINESS.geo.latitude,
+        longitude: BUSINESS.geo.longitude,
       },
       // The profiles linked in the site footer, so the entity resolves to the
       // same business across them.
-      sameAs: [
-        "https://www.instagram.com/fiduvia.ch/",
-        "https://www.facebook.com/profile.php?id=61592110525594",
-      ],
+      sameAs: [...BUSINESS.social],
       knowsLanguage: ["fr-CH", "en"],
       // The prestations the site sells, named the way a searcher would.
       hasOfferCatalog: {

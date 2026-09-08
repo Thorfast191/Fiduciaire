@@ -16,6 +16,7 @@ export interface TableRow {
   firstName: string;
   lastName: string;
   email: string;
+  documentCount: number;
 }
 
 /**
@@ -220,6 +221,45 @@ export default function DossiersTable({
                   >
                     {t.declaration.summary.open} →
                   </Link>
+
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium ${
+                      r.documentCount > 0
+                        ? "bg-teal-100 text-brand"
+                        : "text-subtle"
+                    }`}
+                    title={
+                      r.documentCount > 0
+                        ? `${r.documentCount} ${
+                            r.documentCount === 1
+                              ? t.admin.dossiers.docsUnit
+                              : t.admin.dossiers.docsUnitPlural
+                          }`
+                        : t.admin.dossiers.docsNone
+                    }
+                  >
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      aria-hidden="true"
+                      className="h-3.5 w-3.5"
+                    >
+                      <path
+                        d="M13.5 6.5 8 12a2 2 0 0 1-2.83-2.83l5.66-5.66a3.5 3.5 0 0 1 4.95 4.95l-5.66 5.66a5 5 0 0 1-7.07-7.07l5.3-5.3"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    {r.documentCount > 0
+                      ? `${r.documentCount} ${
+                          r.documentCount === 1
+                            ? t.admin.dossiers.docsUnit
+                            : t.admin.dossiers.docsUnitPlural
+                        }`
+                      : t.admin.dossiers.docsNone}
+                  </span>
 
                   <NotifyClient
                     dossierId={r.id}

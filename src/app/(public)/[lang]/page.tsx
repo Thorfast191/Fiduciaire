@@ -1050,10 +1050,6 @@ export default async function HomePage({
                 {t.footer.addressLine2}
               </span>
 
-              <a href="tel:+41210000000" className="fx-onDark-link">
-                {t.footer.phone}
-              </a>
-
               <a href="mailto:contact@fiduvia.ch" className="fx-onDark-link">
                 {t.footer.email}
               </a>
@@ -1071,17 +1067,31 @@ export default async function HomePage({
               <span className="fx-onDark-label">{t.footer.legalTitle}</span>
 
               <Link
-                href={`${localeHref(lang)}confidentialite`.replace("//", "/")}
+                href={lang === "fr" ? "/confidentialite" : `/${lang}/confidentialite`}
                 className="fx-onDark-link"
               >
                 {t.footer.privacy}
               </Link>
 
               <Link
-                href={`${localeHref(lang)}mentions-legales`.replace("//", "/")}
+                href={lang === "fr" ? "/mentions-legales" : `/${lang}/mentions-legales`}
                 className="fx-onDark-link"
               >
                 {t.footer.legal}
+              </Link>
+
+              <Link
+                href={lang === "fr" ? "/cgvu" : `/${lang}/cgvu`}
+                className="fx-onDark-link"
+              >
+                {t.footer.terms}
+              </Link>
+
+              <Link
+                href={lang === "fr" ? "/cookies" : `/${lang}/cookies`}
+                className="fx-onDark-link"
+              >
+                {t.footer.cookies}
               </Link>
 
               <LoginTrigger className="fx-onDark-link">

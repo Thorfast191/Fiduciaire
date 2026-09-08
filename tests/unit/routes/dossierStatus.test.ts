@@ -44,9 +44,28 @@ describe("PATCH /api/dossiers/:id/status", () => {
     expect(res.status).toBe(401);
   });
 
-  it("lets the owner submit their not_started dossier", async () => {
+  it("blocks a client submitting a declaration directly — payment is required", async () => {
     const owner = await makeUser();
+    // createDossier defaults to a declaration, which is now pay-to-submit.
     const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });
+
+    const { token } = await createSession(owner.id, {});
+    const request = req({ status: "submitted" });
+    request.cookies.set(SESSION_COOKIE_NAME, token);
+    const res = await setStatus(request, withParams(dossier.id));
+    expect(res.status).toBe(402);
+
+    const [updated] = await db.select().from(dossiers).where(eq(dossiers.id, dossier.id));
+    expect(updated.status).toBe("not_started");
+  });
+
+  it("lets the owner submit a non-declaration prestation directly", async () => {
+    const owner = await makeUser();
+    const dossier = await createDossier({
+      clientId: owner.id,
+      taxYear: 2025,
+      serviceType: "capital",
+    });
 
     const { token } = await createSession(owner.id, {});
     const request = req({ status: "submitted" });
