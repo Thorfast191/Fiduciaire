@@ -42,6 +42,7 @@ export const INCOME_KINDS = [
   "independant",
   "rentier",
   "chomage",
+  "autre",
 ] as const;
 export type IncomeKind = (typeof INCOME_KINDS)[number];
 
@@ -51,8 +52,23 @@ export const WEALTH_KINDS = [
   "crypto",
   "assuranceVie",
   "immeuble",
+  "aucun",
 ] as const;
 export type WealthKind = (typeof WEALTH_KINDS)[number];
+
+/**
+ * One transport/meal-expenses period for a salaried filer — the mockup's
+ * "Frais de transport et de repas" rows. A filer who moved or changed activity
+ * rate in the year adds a line per period.
+ */
+export interface TransportPeriod {
+  from: string;
+  to: string;
+  /** Activity rate for the period, as a percentage string, e.g. "100". */
+  rate: string;
+  homePlace: string;
+  workPlace: string;
+}
 
 export interface Child {
   firstName: string;
@@ -84,9 +100,17 @@ export interface Answers {
   etatCivil: Marital | "";
   children: Child[];
   revenus: Partial<Record<IncomeKind, boolean>>;
+  /** Set when the filer moved during the year — asks for a period per address. */
+  movedDuringYear: boolean;
+  /** Transport/meal-expense periods (salaried filers). */
+  transportPeriods: TransportPeriod[];
   fortuneTypes: Partial<Record<WealthKind, boolean>>;
   dettes: "oui" | "non" | "";
   heritageEnCours: "oui" | "non" | "";
+  /** Whether the filer made a gift during the year. */
+  donationEffectuee: "oui" | "non" | "";
+  /** Whether the filer received a gift during the year. */
+  donationRecue: "oui" | "non" | "";
   proprietaireImmeuble: "oui" | "non" | "";
   immeubles: Property[];
   loyersPayes: "oui" | "non" | "";
@@ -94,6 +118,10 @@ export interface Answers {
   pilier3: boolean;
   rachat2: boolean;
   assistance: Partial<Record<AssistanceKey, boolean>>;
+  /** The client asks us to file without them reviewing it first. */
+  transmitWithoutReview: boolean;
+  /** The client wants to review the prepared return before we file it. */
+  reviewBeforeTransmit: boolean;
   /** Free-text remark per questionnaire page. */
   comments: Record<string, string>;
 }
@@ -108,9 +136,13 @@ export function emptyAnswers(): Answers {
     etatCivil: "",
     children: [],
     revenus: {},
+    movedDuringYear: false,
+    transportPeriods: [],
     fortuneTypes: {},
     dettes: "",
     heritageEnCours: "",
+    donationEffectuee: "",
+    donationRecue: "",
     proprietaireImmeuble: "",
     immeubles: [],
     loyersPayes: "",
@@ -118,6 +150,8 @@ export function emptyAnswers(): Answers {
     pilier3: false,
     rachat2: false,
     assistance: {},
+    transmitWithoutReview: false,
+    reviewBeforeTransmit: false,
     comments: {},
   };
 }
@@ -189,6 +223,10 @@ export function requiredDocuments(a: Answers): string[] {
 
   if (a.dettes === "oui") d.push("attestationDettes");
   if (a.heritageEnCours === "oui") d.push("pacteSuccessoral");
+  // A gift made or received during the year is evidenced the same way as a
+  // succession — the deed / pacte successoral.
+  if (a.donationEffectuee === "oui" || a.donationRecue === "oui")
+    d.push("pacteSuccessoral");
 
   if (a.proprietaireImmeuble === "oui") {
     const ims = a.immeubles ?? [];
@@ -417,6 +455,8 @@ export function summariseAnswers(
         { key: "fortuneTypes", value: list(a.fortuneTypes ?? {}, labels.wealth) },
         { key: "dettes", value: bool(a.dettes) },
         { key: "heritage", value: bool(a.heritageEnCours) },
+        { key: "donationEffectuee", value: bool(a.donationEffectuee) },
+        { key: "donationRecue", value: bool(a.donationRecue) },
       ],
     },
     {

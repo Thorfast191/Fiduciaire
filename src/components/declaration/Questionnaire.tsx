@@ -16,6 +16,7 @@ import {
   type AssistanceKey,
   type Child,
   type Property,
+  type TransportPeriod,
 } from "@/lib/declaration";
 import { Question, RadioRow, CheckRow, TextField, SelectField } from "./Field";
 
@@ -453,22 +454,120 @@ export function Questionnaire({
             ) : null}
 
             {step === 2 ? (
-              <Question label={d.revenus.title} required>
-                <div className="flex flex-col gap-2.5">
-                  {(["salarie", "etudiant", "independant", "rentier", "chomage"] as const).map(
-                    (k) => (
+              <>
+                <Question label={d.revenus.title} required>
+                  <div className="flex flex-col gap-2.5">
+                    {(
+                      [
+                        "salarie",
+                        "etudiant",
+                        "independant",
+                        "rentier",
+                        "chomage",
+                        "autre",
+                      ] as const
+                    ).map((k) => (
                       <CheckRow
                         key={k}
                         checked={!!answers.revenus[k]}
-                        onChange={(on) =>
-                          patch({ revenus: { ...answers.revenus, [k]: on } })
-                        }
+                        onChange={(on) => {
+                          const revenus = { ...answers.revenus, [k]: on };
+                          // Turning salaried on offers a first transport period.
+                          if (k === "salarie" && on && answers.transportPeriods.length === 0)
+                            patch({ revenus, transportPeriods: [emptyTransportPeriod()] });
+                          else patch({ revenus });
+                        }}
                         label={d.revenus[k]}
                       />
-                    ),
-                  )}
-                </div>
-              </Question>
+                    ))}
+                  </div>
+                </Question>
+
+                {answers.revenus.salarie ? (
+                  <Question label={d.transport.title}>
+                    <p className="-mt-1 mb-3 text-[13.5px] text-muted">
+                      {d.transport.sub}
+                    </p>
+
+                    <CheckRow
+                      checked={answers.movedDuringYear}
+                      onChange={(movedDuringYear) => patch({ movedDuringYear })}
+                      label={d.transport.moved}
+                    />
+
+                    <div className="mt-3 flex flex-col gap-3.5">
+                      {answers.transportPeriods.map((p, i) => (
+                        <div
+                          key={i}
+                          className="rounded-[var(--radius-md)] border border-line bg-sunken/40 p-4"
+                        >
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <TextField
+                              label={d.transport.from}
+                              value={p.from}
+                              onChange={(from) => patchTransport(i, { from })}
+                            />
+                            <TextField
+                              label={d.transport.to}
+                              value={p.to}
+                              onChange={(to) => patchTransport(i, { to })}
+                            />
+                          </div>
+                          <div className="mt-3">
+                            <TextField
+                              label={d.transport.rate}
+                              value={p.rate}
+                              onChange={(rate) => patchTransport(i, { rate })}
+                            />
+                          </div>
+                          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <TextField
+                              label={d.transport.home}
+                              value={p.homePlace}
+                              onChange={(homePlace) => patchTransport(i, { homePlace })}
+                            />
+                            <TextField
+                              label={d.transport.work}
+                              value={p.workPlace}
+                              onChange={(workPlace) => patchTransport(i, { workPlace })}
+                            />
+                          </div>
+                          {answers.transportPeriods.length > 1 ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                patch({
+                                  transportPeriods: answers.transportPeriods.filter(
+                                    (_, j) => j !== i,
+                                  ),
+                                })
+                              }
+                              className="mt-3 text-[12.5px] font-medium text-[#A2443A]"
+                            >
+                              {d.transport.remove}
+                            </button>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        patch({
+                          transportPeriods: [
+                            ...answers.transportPeriods,
+                            emptyTransportPeriod(),
+                          ],
+                        })
+                      }
+                      className="mt-3 text-[13px] font-semibold text-brand"
+                    >
+                      {d.transport.addLine}
+                    </button>
+                  </Question>
+                ) : null}
+              </>
             ) : null}
 
             {step === 3 ? (
@@ -476,16 +575,29 @@ export function Questionnaire({
                 <Question label={d.fortune.title}>
                   <div className="flex flex-col gap-2.5">
                     {(
-                      ["epargne", "titres", "crypto", "assuranceVie", "immeuble"] as const
+                      [
+                        "epargne",
+                        "immeuble",
+                        "titres",
+                        "crypto",
+                        "assuranceVie",
+                        "aucun",
+                      ] as const
                     ).map((k) => (
                       <CheckRow
                         key={k}
                         checked={!!answers.fortuneTypes[k]}
-                        onChange={(on) =>
-                          patch({
-                            fortuneTypes: { ...answers.fortuneTypes, [k]: on },
-                          })
-                        }
+                        onChange={(on) => {
+                          // "Aucun" is exclusive: it clears the rest, and any
+                          // other choice clears it.
+                          if (k === "aucun") {
+                            patch({ fortuneTypes: on ? { aucun: true } : {} });
+                          } else {
+                            const next = { ...answers.fortuneTypes, [k]: on };
+                            delete next.aucun;
+                            patch({ fortuneTypes: next });
+                          }
+                        }}
                         label={d.fortune[k]}
                       />
                     ))}
@@ -507,6 +619,28 @@ export function Questionnaire({
                     value={answers.heritageEnCours}
                     onChange={(v) =>
                       patch({ heritageEnCours: v as Answers["heritageEnCours"] })
+                    }
+                    options={yesNo}
+                  />
+                </Question>
+
+                <Question label={d.fortune.donationEffectuee}>
+                  <RadioRow
+                    name="donationEffectuee"
+                    value={answers.donationEffectuee}
+                    onChange={(v) =>
+                      patch({ donationEffectuee: v as Answers["donationEffectuee"] })
+                    }
+                    options={yesNo}
+                  />
+                </Question>
+
+                <Question label={d.fortune.donationRecue}>
+                  <RadioRow
+                    name="donationRecue"
+                    value={answers.donationRecue}
+                    onChange={(v) =>
+                      patch({ donationRecue: v as Answers["donationRecue"] })
                     }
                     options={yesNo}
                   />
@@ -700,6 +834,11 @@ export function Questionnaire({
                 doneCount={doneCount}
                 price={price}
                 readOnly={readOnly}
+                consent={{
+                  transmitWithoutReview: answers.transmitWithoutReview,
+                  reviewBeforeTransmit: answers.reviewBeforeTransmit,
+                }}
+                onConsent={(u) => patch(u)}
                 onUploaded={() => router.refresh()}
               />
             ) : null}
@@ -775,6 +914,13 @@ export function Questionnaire({
     );
     patch({ immeubles: next });
   }
+
+  function patchTransport(index: number, update: Partial<TransportPeriod>) {
+    const next = answers.transportPeriods.map((p, i) =>
+      i === index ? { ...p, ...update } : p,
+    );
+    patch({ transportPeriods: next });
+  }
 }
 
 function emptyChild(): Child {
@@ -799,6 +945,10 @@ function emptyProperty(): Property {
     rented: "",
     hasDebt: "",
   };
+}
+
+function emptyTransportPeriod(): TransportPeriod {
+  return { from: "01.01", to: "31.12", rate: "100", homePlace: "", workPlace: "" };
 }
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
@@ -1007,6 +1157,8 @@ function TransmissionStep({
   doneCount,
   price,
   readOnly,
+  consent,
+  onConsent,
   onUploaded,
 }: {
   t: Messages;
@@ -1016,6 +1168,8 @@ function TransmissionStep({
   doneCount: number;
   price: ReturnType<typeof computePrice>;
   readOnly: boolean;
+  consent: { transmitWithoutReview: boolean; reviewBeforeTransmit: boolean };
+  onConsent: (update: Partial<Answers>) => void;
   onUploaded: () => void;
 }) {
   const d = t.declaration;
@@ -1134,28 +1288,54 @@ function TransmissionStep({
           {d.transmission.submitted}
         </p>
       ) : (
-        <div className="mt-6 flex flex-col items-end gap-2">
-          {!complete ? (
-            <p className="text-right text-[13px] text-[#B26A00]">
-              {d.transmission.submitHint}
-            </p>
-          ) : null}
+        <>
+          {/* How the client wants the return handled before we file it. */}
+          <div className="mt-5 flex flex-col gap-2.5 rounded-[var(--radius-md)] border border-line bg-sunken/40 p-4">
+            <CheckRow
+              checked={consent.transmitWithoutReview}
+              onChange={(on) =>
+                onConsent({
+                  transmitWithoutReview: on,
+                  ...(on ? { reviewBeforeTransmit: false } : {}),
+                })
+              }
+              label={d.transmission.consentNoReview}
+            />
+            <CheckRow
+              checked={consent.reviewBeforeTransmit}
+              onChange={(on) =>
+                onConsent({
+                  reviewBeforeTransmit: on,
+                  ...(on ? { transmitWithoutReview: false } : {}),
+                })
+              }
+              label={d.transmission.consentReview}
+            />
+          </div>
 
-          {error ? (
-            <p role="alert" className="text-right text-[13px] text-red-600">
-              {error}
-            </p>
-          ) : null}
+          <div className="mt-6 flex flex-col items-end gap-2">
+            {!complete ? (
+              <p className="text-right text-[13px] text-[#B26A00]">
+                {d.transmission.submitHint}
+              </p>
+            ) : null}
 
-          <button
-            type="button"
-            onClick={() => setConfirming(true)}
-            disabled={submitting || !complete}
-            className="fx-btn-send"
-          >
-            {submitting ? d.transmission.submitting : d.transmission.submit}
-          </button>
-        </div>
+            {error ? (
+              <p role="alert" className="text-right text-[13px] text-red-600">
+                {error}
+              </p>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={() => setConfirming(true)}
+              disabled={submitting || !complete}
+              className="fx-btn-send"
+            >
+              {submitting ? d.transmission.submitting : d.transmission.submit}
+            </button>
+          </div>
+        </>
       )}
 
       {/* Submitting locks the answers for good — the API refuses edits once the

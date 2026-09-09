@@ -637,6 +637,19 @@ export const en: Messages = {
       independant: "Self-employed",
       rentier: "Pensioner (AVS, AI, LPP)",
       chomage: "Unemployment and/or APG",
+      autre: "Other",
+    },
+    transport: {
+      title: "Travel and meal expenses",
+      sub: "Enter each period and your activity rate.",
+      moved: "I moved during the year",
+      from: "From",
+      to: "to",
+      rate: "Activity rate (%)",
+      home: "Place of residence",
+      work: "Place of work",
+      addLine: "+ Add a line",
+      remove: "Remove this line",
     },
 
     fortune: {
@@ -646,8 +659,11 @@ export const en: Messages = {
       crypto: "Cryptocurrencies",
       assuranceVie: "Life insurance",
       immeuble: "Property-linked account",
+      aucun: "No bank account / wealth",
       dettes: "Do you have debts as at 31.12?",
       heritage: "Is an inheritance or gift in progress?",
+      donationEffectuee: "Did you make a gift during the year?",
+      donationRecue: "Did you receive a gift during the year?",
     },
 
     immeubles: {
@@ -694,6 +710,8 @@ export const en: Messages = {
       confirmTitle: "Pay and submit your tax return?",
       confirmBody:
         "You will be redirected to our secure payment provider (Stripe). After payment, your answers and supporting documents are sent to our team and can no longer be changed.",
+      consentNoReview: "I want you to file my return without me reviewing it.",
+      consentReview: "I want to review my return before you file it.",
       confirmCancel: "Cancel",
       confirmSubmit: "Continue to payment",
       submitted: "Your tax return has been paid and submitted to our team.",
@@ -748,6 +766,8 @@ export const en: Messages = {
         fortuneTypes: "Assets",
         dettes: "Debts as at 31.12",
         heritage: "Inheritance / gift",
+        donationEffectuee: "Gift made",
+        donationRecue: "Gift received",
         proprietaire: "Owns a property",
         property: "Property",
         loyersPayes: "Pays rent",

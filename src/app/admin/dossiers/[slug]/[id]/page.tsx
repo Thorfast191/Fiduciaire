@@ -71,9 +71,11 @@ export default async function AdminDossierDetailPage({
     },
     income: {
       salarie: d.revenus.salarie,
+      etudiant: d.revenus.etudiant,
       independant: d.revenus.independant,
       rentier: d.revenus.rentier,
       chomage: d.revenus.chomage,
+      autre: d.revenus.autre,
     },
     wealth: {
       epargne: d.fortune.epargne,
@@ -81,6 +83,7 @@ export default async function AdminDossierDetailPage({
       crypto: d.fortune.crypto,
       assuranceVie: d.fortune.assuranceVie,
       immeuble: d.fortune.immeuble,
+      aucun: d.fortune.aucun,
     },
   });
 

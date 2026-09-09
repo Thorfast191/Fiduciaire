@@ -639,6 +639,19 @@ export const fr = {
       independant: "Indépendant·e",
       rentier: "Rentier·ère (AVS, AI, LPP)",
       chomage: "Chômage et/ou APG",
+      autre: "Autre",
+    },
+    transport: {
+      title: "Frais de transport et de repas",
+      sub: "Indiquez chaque période et votre taux d'activité.",
+      moved: "J'ai déménagé en cours d'année",
+      from: "Du",
+      to: "au",
+      rate: "Taux de travail (%)",
+      home: "Lieu de domicile",
+      work: "Lieu de travail",
+      addLine: "+ Ajouter une ligne",
+      remove: "Supprimer cette ligne",
     },
 
     fortune: {
@@ -648,8 +661,11 @@ export const fr = {
       crypto: "Cryptomonnaies",
       assuranceVie: "Assurance-vie",
       immeuble: "Compte lié à un immeuble",
+      aucun: "Aucun compte bancaire / fortune",
       dettes: "Avez-vous des dettes au 31.12 ?",
       heritage: "Une succession ou donation est-elle en cours ?",
+      donationEffectuee: "Avez-vous effectué une donation durant l'année ?",
+      donationRecue: "Avez-vous perçu une donation durant l'année ?",
     },
 
     immeubles: {
@@ -696,6 +712,8 @@ export const fr = {
       confirmTitle: "Payer et transmettre votre déclaration ?",
       confirmBody:
         "Vous allez être redirigé vers notre prestataire de paiement sécurisé (Stripe). Après le paiement, vos réponses et vos pièces justificatives seront transmises à notre équipe et ne pourront plus être modifiées.",
+      consentNoReview: "Je souhaite que vous transmettiez ma déclaration sans vérification.",
+      consentReview: "Je souhaite vérifier ma déclaration d'impôt avant que vous la transmettiez.",
       confirmCancel: "Annuler",
       confirmSubmit: "Continuer vers le paiement",
       submitted: "Votre déclaration a été payée et transmise à notre équipe.",
@@ -750,6 +768,8 @@ export const fr = {
         fortuneTypes: "Éléments de fortune",
         dettes: "Dettes au 31.12",
         heritage: "Succession / donation",
+        donationEffectuee: "Donation effectuée",
+        donationRecue: "Donation perçue",
         proprietaire: "Propriétaire d'un immeuble",
         property: "Immeuble",
         loyersPayes: "Loyer payé",

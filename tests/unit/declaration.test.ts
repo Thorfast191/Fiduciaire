@@ -121,6 +121,16 @@ describe("requiredDocuments", () => {
     expect(new Set(docs).size).toBe(docs.length);
   });
 
+  it("asks for the succession deed when a gift was made or received", () => {
+    expect(requiredDocuments(answers({ donationEffectuee: "oui" }))).toContain(
+      "pacteSuccessoral",
+    );
+    expect(requiredDocuments(answers({ donationRecue: "oui" }))).toContain(
+      "pacteSuccessoral",
+    );
+    expect(requiredDocuments(answers({}))).not.toContain("pacteSuccessoral");
+  });
+
   it("only ever names documents the catalogue can describe", () => {
     const docs = requiredDocuments(
       answers({
