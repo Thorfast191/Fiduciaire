@@ -194,6 +194,35 @@ export const en: Messages = {
     sub: "A fixed price agreed before we start. No hidden fees.",
     from: "From",
     choose: "Choose",
+    cards: [
+      {
+        name: "Single",
+        price: "CHF 80",
+        features: [
+          "Complete tax return",
+          "Reviewed by an accountant",
+          "Filed with the authorities",
+        ],
+      },
+      {
+        name: "Married / couple",
+        price: "CHF 120",
+        features: [
+          "Joint return",
+          "Deduction optimisation",
+          "Follow-up through assessment",
+        ],
+      },
+      {
+        name: "Self-employed",
+        price: "CHF 250",
+        features: [
+          "Self-employment income",
+          "Accounts and depreciation",
+          "Personalised tax advice",
+        ],
+      },
+    ],
     groupDeclarations: "Tax returns",
     groupOther: "Other services",
     supplementTag: "Supplement",

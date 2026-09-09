@@ -190,6 +190,35 @@ export const fr = {
     sub: "Un prix fixe annoncé avant de commencer. Pas d'honoraires cachés.",
     from: "Dès",
     choose: "Choisir",
+    cards: [
+      {
+        name: "Personne seule",
+        price: "CHF 80",
+        features: [
+          "Déclaration complète",
+          "Vérification par un·e fiduciaire",
+          "Dépôt auprès de l'administration",
+        ],
+      },
+      {
+        name: "Marié·e / couple",
+        price: "CHF 120",
+        features: [
+          "Déclaration commune",
+          "Optimisation des déductions",
+          "Suivi jusqu'à la taxation",
+        ],
+      },
+      {
+        name: "Indépendant·e",
+        price: "CHF 250",
+        features: [
+          "Revenus d'activité indépendante",
+          "Comptes et amortissements",
+          "Conseil fiscal personnalisé",
+        ],
+      },
+    ],
     groupDeclarations: "Déclarations d'impôts",
     groupOther: "Autres prestations",
     supplementTag: "Supplément",
