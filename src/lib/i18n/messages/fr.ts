@@ -190,34 +190,26 @@ export const fr = {
     sub: "Un prix fixe annoncé avant de commencer. Pas d'honoraires cachés.",
     from: "Dès",
     choose: "Choisir",
-    plans: [
-      {
-        name: "Personne seule",
-        price: "CHF 80",
-        features: [
-          "Déclaration complète",
-          "Vérification par un·e fiduciaire",
-          "Dépôt auprès de l'administration",
-        ],
-      },
-      {
-        name: "Marié·e / couple",
-        price: "CHF 120",
-        features: [
-          "Déclaration commune",
-          "Optimisation des déductions",
-          "Suivi jusqu'à la taxation",
-        ],
-      },
-      {
-        name: "Indépendant·e",
-        price: "CHF 250",
-        features: [
-          "Revenus d'activité indépendante",
-          "Comptes et amortissements",
-          "Conseil fiscal personnalisé",
-        ],
-      },
+    groupDeclarations: "Déclarations d'impôts",
+    groupOther: "Autres prestations",
+    supplementTag: "Supplément",
+    supplementNote: "S'ajoute au tarif de base",
+    base: [
+      { name: "Étudiant / apprenti", price: "CHF 25", desc: "Déclaration d'impôts standard" },
+      { name: "Personne seule", price: "CHF 80", desc: "Déclaration d'impôts standard" },
+      { name: "Marié·e / couple", price: "CHF 120", desc: "Déclaration commune" },
+      { name: "Indépendant", price: "CHF 250", desc: "Déclaration avec activité indépendante" },
+    ],
+    supplements: [
+      { name: "Taxation d'office", price: "+ CHF 75", desc: "Réclamation et démarches" },
+      { name: "Immeuble", price: "+ CHF 75", desc: "Par immeuble détenu" },
+      { name: "Portefeuille de titres", price: "+ CHF 30", desc: "Actions, titres ou cryptomonnaies" },
+      { name: "Héritage", price: "+ CHF 25", desc: "Héritage perçu ou succession en cours durant la période" },
+    ],
+    other: [
+      { name: "Prestation en capital", price: "CHF 50", desc: "Retrait du 2e / 3e pilier", tag: "Forfait" },
+      { name: "Simulation de l'impôt", price: "CHF 100", desc: "Simulation de votre impôt et optimisations possibles", tag: "Forfait" },
+      { name: "Conseil fiscal", price: "Selon devis", desc: "Accompagnement et optimisation sur mesure", tag: "Sur devis" },
     ],
   },
 

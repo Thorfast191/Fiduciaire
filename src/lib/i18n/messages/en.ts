@@ -194,34 +194,26 @@ export const en: Messages = {
     sub: "A fixed price agreed before we start. No hidden fees.",
     from: "From",
     choose: "Choose",
-    plans: [
-      {
-        name: "Single",
-        price: "CHF 80",
-        features: [
-          "Complete tax return",
-          "Reviewed by an accountant",
-          "Filed with the authorities",
-        ],
-      },
-      {
-        name: "Married / couple",
-        price: "CHF 120",
-        features: [
-          "Joint return",
-          "Deduction optimisation",
-          "Follow-up through assessment",
-        ],
-      },
-      {
-        name: "Self-employed",
-        price: "CHF 250",
-        features: [
-          "Self-employment income",
-          "Accounts and depreciation",
-          "Personalised tax advice",
-        ],
-      },
+    groupDeclarations: "Tax returns",
+    groupOther: "Other services",
+    supplementTag: "Supplement",
+    supplementNote: "Added to the base price",
+    base: [
+      { name: "Student / apprentice", price: "CHF 25", desc: "Standard tax return" },
+      { name: "Single person", price: "CHF 80", desc: "Standard tax return" },
+      { name: "Married / couple", price: "CHF 120", desc: "Joint return" },
+      { name: "Self-employed", price: "CHF 250", desc: "Return with self-employed income" },
+    ],
+    supplements: [
+      { name: "Assessment by default", price: "+ CHF 75", desc: "Objection and procedures" },
+      { name: "Property", price: "+ CHF 75", desc: "Per property owned" },
+      { name: "Securities portfolio", price: "+ CHF 30", desc: "Shares, securities or cryptocurrencies" },
+      { name: "Inheritance", price: "+ CHF 25", desc: "Inheritance received or estate in progress during the period" },
+    ],
+    other: [
+      { name: "Capital benefit", price: "CHF 50", desc: "2nd / 3rd pillar withdrawal", tag: "Flat rate" },
+      { name: "Tax simulation", price: "CHF 100", desc: "Simulation of your tax and possible optimisations", tag: "Flat rate" },
+      { name: "Tax advice", price: "By quote", desc: "Tailored support and optimisation", tag: "On quote" },
     ],
   },
 

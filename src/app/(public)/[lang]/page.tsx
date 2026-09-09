@@ -818,47 +818,98 @@ export default async function HomePage({
             </p>
           </div>
 
-          <div className="mt-[36px] grid grid-cols-1 items-stretch gap-[16px] sm:grid-cols-2 lg:grid-cols-3">
-            {t.pricing.plans.map((plan) => (
+          {/* Group 1 — declaration base tariffs */}
+          <h3 className="disp mt-[36px] text-[19px] font-bold">
+            {t.pricing.groupDeclarations}
+          </h3>
+
+          <div className="mt-[16px] grid grid-cols-1 items-stretch gap-[16px] sm:grid-cols-2 lg:grid-cols-4">
+            {t.pricing.base.map((plan) => (
               <div
                 key={plan.name}
-                className="flex flex-col gap-[16px] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] px-[24px] py-[28px] shadow-[var(--shadow-sm)]"
+                className="flex flex-col gap-[12px] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] px-[22px] py-[26px] shadow-[var(--shadow-sm)]"
               >
-                <h3 className="disp m-0 text-[21px] font-bold">{plan.name}</h3>
+                <h4 className="disp m-0 text-[18px] font-bold">{plan.name}</h4>
 
                 <div className="flex items-baseline gap-[7px]">
                   <span className="fx-eyebrow text-[var(--text-muted)]">
                     {t.pricing.from}
                   </span>
-
                   <span
-                    className="disp fx-figure text-[38px] font-extrabold leading-none"
+                    className="disp fx-figure text-[32px] font-extrabold leading-none"
                     style={{ color: "var(--brand)" }}
                   >
                     {plan.price}
                   </span>
                 </div>
 
-                <div className="h-px bg-[var(--border-subtle)]" />
+                <p className="m-0 text-[13px] leading-[1.45] text-[var(--text-muted)]">
+                  {plan.desc}
+                </p>
 
-                <div className="flex flex-col gap-[10px]">
-                  {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-start gap-[9px]">
-                      <span className="text-[14px] font-bold leading-[1.4] text-[var(--brand)]">
-                        ✓
-                      </span>
+                <Link href="/signup" className="fx-btn-outline mt-auto">
+                  {t.pricing.choose}
+                </Link>
+              </div>
+            ))}
+          </div>
 
-                      <span className="text-[13.5px] leading-[1.4] text-[var(--text-body)]">
-                        {feature}
-                      </span>
-                    </div>
-                  ))}
+          {/* Supplements that add to the base tariff */}
+          <div className="mt-[16px] grid grid-cols-1 gap-[12px] sm:grid-cols-2 lg:grid-cols-4">
+            {t.pricing.supplements.map((s) => (
+              <div
+                key={s.name}
+                className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-card)] px-[18px] py-[16px]"
+              >
+                <span className="fx-eyebrow text-[var(--brand)]">
+                  {t.pricing.supplementTag}
+                </span>
+                <div className="mt-[8px] flex items-baseline justify-between gap-[8px]">
+                  <span className="text-[14px] font-semibold text-[var(--text-strong)]">
+                    {s.name}
+                  </span>
+                  <span
+                    className="fx-figure text-[15px] font-bold"
+                    style={{ color: "var(--brand)" }}
+                  >
+                    {s.price}
+                  </span>
                 </div>
+                <p className="mt-[4px] text-[12.5px] leading-[1.4] text-[var(--text-muted)]">
+                  {s.desc}
+                </p>
+                <p className="mt-[4px] text-[11px] text-[var(--text-subtle)]">
+                  {t.pricing.supplementNote}
+                </p>
+              </div>
+            ))}
+          </div>
 
-                <Link
-                  href="/signup"
-                  className="fx-btn-outline mt-auto"
+          {/* Group 2 — other services */}
+          <h3 className="disp mt-[44px] text-[19px] font-bold">
+            {t.pricing.groupOther}
+          </h3>
+
+          <div className="mt-[16px] grid grid-cols-1 items-stretch gap-[16px] sm:grid-cols-3">
+            {t.pricing.other.map((o) => (
+              <div
+                key={o.name}
+                className="flex flex-col gap-[10px] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] px-[22px] py-[26px] shadow-[var(--shadow-sm)]"
+              >
+                <span className="fx-eyebrow text-[var(--text-muted)]">
+                  {o.tag}
+                </span>
+                <h4 className="disp m-0 text-[17px] font-bold">{o.name}</h4>
+                <span
+                  className="disp fx-figure text-[26px] font-extrabold leading-none"
+                  style={{ color: "var(--brand)" }}
                 >
+                  {o.price}
+                </span>
+                <p className="m-0 text-[13px] leading-[1.45] text-[var(--text-muted)]">
+                  {o.desc}
+                </p>
+                <Link href="/signup" className="fx-btn-outline mt-auto">
                   {t.pricing.choose}
                 </Link>
               </div>
