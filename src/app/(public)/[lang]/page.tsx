@@ -319,28 +319,6 @@ export default async function HomePage({
       {/* =========================================================
           TRUST BAR
       ========================================================= */}
-      <section className="bg-[var(--teal-600)]">
-        <div
-          className="mx-auto flex flex-wrap items-center justify-center gap-x-[44px] gap-y-4 px-[34px] py-[22px]"
-          style={{ maxWidth: "1120px" }}
-        >
-          <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
-            <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
-            {t.trust.clients}
-          </span>
-
-          <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
-            <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
-            {t.trust.hosting}
-          </span>
-
-          <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
-            <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
-            {t.trust.experts}
-          </span>
-        </div>
-      </section>
-
       {/* =========================================================
           ABOUT
       ========================================================= */}
