@@ -27,5 +27,7 @@ export function isLocale(value: string | undefined | null): value is Locale {
 export const PUBLIC_PATHS = [
   "/confidentialite",
   "/mentions-legales",
+  "/cgvu",
+  "/cookies",
   "/faq",
 ] as const;

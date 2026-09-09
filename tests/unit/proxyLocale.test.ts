@@ -43,7 +43,7 @@ describe("proxy locale routing", () => {
   });
 
   it("rewrites every prefix-free public path, and does not loop on any", () => {
-    for (const path of ["/faq", "/confidentialite", "/mentions-legales"]) {
+    for (const path of ["/faq", "/confidentialite", "/mentions-legales", "/cgvu", "/cookies"]) {
       const first = get(path);
       expect(first.status, `${path} should rewrite, not redirect`).not.toBe(307);
       expect(first.headers.get("x-middleware-rewrite")).toContain(`/fr${path}`);
