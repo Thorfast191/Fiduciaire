@@ -27,13 +27,13 @@ export function isServiceType(value: unknown): value is ServiceType {
 }
 
 /**
- * Prestations a client opens for themselves. Declarations stay admin-created:
- * the firm opens the year's dossier once the period is active, which is the
- * flow the portal and the admin table were built around.
+ * Prestations a client opens for themselves. In the mockup the client logs in
+ * and starts their own declaration for the open period — there is no "wait for
+ * the firm" step — so every prestation, the declaration included, is
+ * self-serve. The active-period gate and the one-per-year index still bound it,
+ * and nothing reaches the firm until the client has paid to transmit.
  */
-export const CLIENT_CREATABLE: readonly ServiceType[] = SERVICE_TYPES.filter(
-  (t) => t !== "declaration",
-);
+export const CLIENT_CREATABLE: readonly ServiceType[] = SERVICE_TYPES;
 
 /** URL segment for a prestation's portal and admin pages. */
 export const SERVICE_SLUG: Record<ServiceType, string> = {

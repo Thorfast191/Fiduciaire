@@ -34,8 +34,15 @@ export default async function PrestationPage({
   ]);
 
   const serviceType = SLUG_TO_SERVICE[slug];
-  // `declaration` has its own home at /portal, so it is not addressable here.
-  if (!serviceType || !CLIENT_CREATABLE.includes(serviceType)) notFound();
+  // `declaration` is client-creatable but has its own home at /portal, so it is
+  // not addressable through the generic prestation list.
+  if (
+    !serviceType ||
+    serviceType === "declaration" ||
+    !CLIENT_CREATABLE.includes(serviceType)
+  ) {
+    notFound();
+  }
 
   const [dossiers, activeYears] = await Promise.all([
     user ? listDossiersForClient(user.id, serviceType) : Promise.resolve([]),

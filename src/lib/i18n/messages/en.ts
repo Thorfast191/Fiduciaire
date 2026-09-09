@@ -476,6 +476,8 @@ export const en: Messages = {
     declSub:
       "Upload your documents and follow the progress of your tax return.",
     declOpen: "Open my return",
+    declStart: "Start my return",
+    declStarting: "Opening…",
     declNoneTitle: "No file for this period",
     declNoneSub:
       "Your file will be opened by our team. You will be notified by email as soon as it is available.",

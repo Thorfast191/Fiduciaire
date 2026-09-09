@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/guards";
 import { listDossiersForClient } from "@/lib/dossiers";
-import { listPeriodOptions } from "@/lib/taxPeriods";
+import { listPeriodOptions, isActivePeriod } from "@/lib/taxPeriods";
 import { resolvePeriod } from "@/lib/adminPeriod";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
+import { StartDeclaration } from "./StartDeclaration";
 import { getT } from "@/lib/i18n";
 
 /**
@@ -40,6 +41,10 @@ export default async function PortalHomePage({
   const selected = resolvePeriod(options, periode);
   const dossier = dossiers.find((d) => d.taxYear === selected);
   const done = dossier?.status === "completed";
+
+  // With no dossier yet, the client can start one themselves — but only for a
+  // period the firm has opened, the same gate the create route enforces.
+  const canStart = !dossier && (await isActivePeriod(selected));
 
   const dayMonth = new Intl.DateTimeFormat(
     locale === "fr" ? "fr-CH" : "en-GB",
@@ -93,6 +98,20 @@ export default async function PortalHomePage({
                 <StatusBadge status={dossier.status} />
               </div>
             </>
+          ) : canStart ? (
+            <>
+              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-brand">
+                {t.portal.declEyebrowTodo} · {selected}
+              </span>
+
+              <div className="disp mt-1.5 text-[24px] font-bold">
+                {t.portal.declTitle} {selected}
+              </div>
+
+              <p className="mt-1 text-[13.5px] text-muted">
+                {t.portal.declSub}
+              </p>
+            </>
           ) : (
             <>
               <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
@@ -117,6 +136,8 @@ export default async function PortalHomePage({
           >
             {t.portal.declOpen} →
           </Link>
+        ) : canStart ? (
+          <StartDeclaration t={t} year={selected} />
         ) : null}
       </div>
 

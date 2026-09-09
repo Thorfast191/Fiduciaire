@@ -42,10 +42,11 @@ describe("POST /api/dossiers", () => {
     expect(res.status).toBe(401);
   });
 
-  it("rejects a client (admin-only)", async () => {
+  it("rejects a client opening a dossier for someone else", async () => {
     const client = await makeUser();
+    const victim = await makeUser();
     const { token } = await createSession(client.id, {});
-    const request = postReq({ clientId: client.id, taxYear: 2025 });
+    const request = postReq({ clientId: victim.id, taxYear: 2025 });
     request.cookies.set(SESSION_COOKIE_NAME, token);
     const res = await createDossierRoute(request);
     expect(res.status).toBe(403);

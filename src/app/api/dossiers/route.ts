@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
   const serviceType: ServiceType = parsed.data.serviceType ?? "declaration";
   const isAdmin = user.role === "admin" || user.role === "super_admin";
 
-  // Clients open their own prestation requests, the way the mockup's
-  // "Nouvelle demande" buttons do — but only for themselves, and never a
-  // declaration: the firm opens the year's dossier when the period starts.
+  // Clients open their own prestation requests, the way the mockup does — but
+  // only for themselves. The declaration is included: on the mockup the client
+  // starts it from their home for the open period.
   if (!isAdmin) {
     if (parsed.data.clientId && parsed.data.clientId !== user.id) {
       return NextResponse.json(

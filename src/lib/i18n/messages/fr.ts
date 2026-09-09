@@ -477,6 +477,8 @@ export const fr = {
     declSub:
       "Déposez vos documents et suivez l'avancement de votre déclaration d'impôt.",
     declOpen: "Ouvrir ma déclaration",
+    declStart: "Commencer ma déclaration",
+    declStarting: "Ouverture…",
     declNoneTitle: "Aucun dossier pour cette période",
     declNoneSub:
       "Votre dossier sera ouvert par notre équipe. Vous serez averti par e-mail dès qu'il sera disponible.",

@@ -139,7 +139,7 @@ describe("POST /api/dossiers — who may open what", () => {
     expect(body.dossier.clientId).toBe(client.id);
   });
 
-  it("refuses to let a client open a declaration for themselves", async () => {
+  it("lets a client open their own declaration for an open period", async () => {
     const client = await makeUser();
     const { token } = await createSession(client.id, {});
     await openPeriod(2047);
@@ -148,7 +148,10 @@ describe("POST /api/dossiers — who may open what", () => {
       postReq({ taxYear: 2047, serviceType: "declaration" }, token),
     );
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.dossier.serviceType).toBe("declaration");
+    expect(body.dossier.clientId).toBe(client.id);
   });
 
   it("refuses to let a client open a request for somebody else", async () => {
@@ -211,8 +214,8 @@ describe("POST /api/dossiers — who may open what", () => {
 });
 
 describe("service type vocabulary", () => {
-  it("keeps declarations out of what a client may open", () => {
-    expect(CLIENT_CREATABLE).not.toContain("declaration");
-    expect(CLIENT_CREATABLE).toHaveLength(SERVICE_TYPES.length - 1);
+  it("lets a client open every prestation, the declaration included", () => {
+    expect(CLIENT_CREATABLE).toContain("declaration");
+    expect(CLIENT_CREATABLE).toHaveLength(SERVICE_TYPES.length);
   });
 });
