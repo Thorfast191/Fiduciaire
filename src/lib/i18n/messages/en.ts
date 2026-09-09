@@ -606,6 +606,7 @@ export const en: Messages = {
     accueil: {
       canton: "Canton of domicile on 31.12",
       departureDate: "Date of departure abroad",
+      arrivalDate: "Date of arrival in Switzerland",
       express: "I would like 48h express processing",
       assistanceTitle: "Fiduvia assistance",
       assistanceSub:
@@ -640,6 +641,7 @@ export const en: Messages = {
     revenus: {
       title: "Type(s) of income",
       salarie: "Employed",
+      etudiant: "Student / apprentice",
       independant: "Self-employed",
       rentier: "Pensioner (AVS, AI, LPP)",
       chomage: "Unemployment and/or APG",
@@ -690,6 +692,9 @@ export const en: Messages = {
       upload: "Upload",
       uploaded: "Uploaded",
       toUpload: "To upload",
+      replace: "Replace",
+      download: "Download",
+      remove: "Remove",
       submit: "Pay and submit my tax return",
       submitting: "Redirecting to payment...",
       submitHint:
@@ -708,6 +713,7 @@ export const en: Messages = {
 
     price: {
       base: "Single person",
+      etudiant: "Student / apprentice",
       couple: "Married / couple",
       independant: "Self-employed",
       owner: "Property",
@@ -740,6 +746,7 @@ export const en: Messages = {
         situation: "Situation",
         canton: "Canton of domicile",
         departureDate: "Date of departure",
+        arrivalDate: "Arrival date",
         express: "48h express processing",
         taxationOffice: "Assessed by default",
         etatCivil: "Marital status",

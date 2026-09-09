@@ -16,8 +16,10 @@ import type { Messages } from "@/lib/i18n/messages/fr";
 const BASE_SINGLE = 80;
 const BASE_COUPLE = 120;
 const BASE_SELF_EMPLOYED = 250;
+const BASE_STUDENT = 25;
 
-/** Index into `t.sim.proOptions`; 4 is "Indépendant·e". */
+/** Indices into `t.sim.proOptions`: 0 is "Étudiant / apprenti", 4 is "Indépendant·e". */
+const STUDENT_INDEX = 0;
 const SELF_EMPLOYED_INDEX = 4;
 
 export function PriceSimulator({ t }: { t: Messages }) {
@@ -27,9 +29,14 @@ export function PriceSimulator({ t }: { t: Messages }) {
 
   const base = couple === null ? null : couple ? BASE_COUPLE : BASE_SINGLE;
 
-  // Self-employment is priced on its own card rather than as a supplement, so
-  // it replaces the base rather than adding to it.
-  const total = proIndex === SELF_EMPLOYED_INDEX ? BASE_SELF_EMPLOYED : base;
+  // Self-employment and student/apprentice are each priced on their own card
+  // rather than as a supplement, so they replace the marital-status base.
+  const total =
+    proIndex === SELF_EMPLOYED_INDEX
+      ? BASE_SELF_EMPLOYED
+      : proIndex === STUDENT_INDEX
+        ? BASE_STUDENT
+        : base;
 
   return (
     <div className="mt-5">

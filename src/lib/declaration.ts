@@ -38,6 +38,7 @@ export type Marital = (typeof MARITAL)[number];
 
 export const INCOME_KINDS = [
   "salarie",
+  "etudiant",
   "independant",
   "rentier",
   "chomage",
@@ -78,6 +79,7 @@ export interface Answers {
   situation: Situation;
   canton: string;
   departureDate: string;
+  arrivalDate: string;
   express: boolean;
   etatCivil: Marital | "";
   children: Child[];
@@ -101,6 +103,7 @@ export function emptyAnswers(): Answers {
     situation: "standard",
     canton: "Vaud",
     departureDate: "",
+    arrivalDate: "",
     express: false,
     etatCivil: "",
     children: [],
@@ -268,9 +271,15 @@ export function computePrice(a: Answers): {
 
   const married = a.etatCivil === "marie" || a.etatCivil === "partenariat";
   const independent = !!a.revenus?.independant;
+  const student = !!a.revenus?.etudiant;
 
+  // Base tariff, one tier only. Self-employed is the most involved (250); a
+  // student/apprentice the simplest (25); otherwise it is the couple/single
+  // rate. Self-employment wins over the student rate if somehow both are set.
   if (independent) {
     lines.push({ key: "independant", amount: 250 });
+  } else if (student) {
+    lines.push({ key: "etudiant", amount: 25 });
   } else {
     lines.push({
       key: married ? "couple" : "base",
@@ -370,6 +379,9 @@ export function summariseAnswers(
         { key: "canton", value: a.canton || labels.none },
         ...(a.situation === "depart"
           ? [{ key: "departureDate", value: a.departureDate || labels.none }]
+          : []),
+        ...(a.situation === "arrivee"
+          ? [{ key: "arrivalDate", value: a.arrivalDate || labels.none }]
           : []),
         { key: "express", value: a.express ? labels.yes : labels.no },
         { key: "taxationOffice", value: bool(a.taxationOffice) },

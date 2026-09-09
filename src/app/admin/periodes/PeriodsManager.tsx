@@ -21,6 +21,9 @@ export default function PeriodsManager({
 
   const [busy, setBusy] = useState<number | "create" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Defaults to the next year but is editable, so the firm can open a past year
+  // for a late filer (e.g. 2025) or a future one, not only the next.
+  const [createYear, setCreateYear] = useState(nextYear);
 
   async function send(
     method: "POST" | "PATCH",
@@ -64,16 +67,27 @@ export default function PeriodsManager({
           </p>
         </div>
 
-        <button
-          type="button"
-          disabled={busy !== null}
-          onClick={() => send("POST", { year: nextYear }, "create")}
-          className="inline-flex items-center gap-2 rounded-xl bg-teal-100 px-4 py-2.5 text-[14px] font-semibold text-brand transition-colors hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {busy === "create"
-            ? t.admin.periods.working
-            : `${t.admin.periods.create} ${nextYear}`}
-        </button>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min={2000}
+            max={2100}
+            value={createYear}
+            onChange={(e) => setCreateYear(Number(e.target.value))}
+            aria-label={t.admin.periods.create}
+            className="h-[42px] w-[92px] rounded-xl border border-line-default bg-card px-3 text-[15px] font-semibold text-strong outline-none transition-colors hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10"
+          />
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => send("POST", { year: createYear }, "create")}
+            className="inline-flex items-center gap-2 rounded-xl bg-teal-100 px-4 py-2.5 text-[14px] font-semibold text-brand transition-colors hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {busy === "create"
+              ? t.admin.periods.working
+              : `${t.admin.periods.create} ${createYear}`}
+          </button>
+        </div>
       </div>
 
       {error ? (

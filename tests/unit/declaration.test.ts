@@ -154,6 +154,18 @@ describe("computePrice", () => {
     expect(computePrice(answers({ etatCivil: "partenariat" })).total).toBe(120);
   });
 
+  it("charges a student/apprentice 25, below the single rate", () => {
+    expect(computePrice(answers({ revenus: { etudiant: true } })).total).toBe(25);
+    // Even when married, the student rate applies…
+    expect(
+      computePrice(answers({ etatCivil: "marie", revenus: { etudiant: true } })).total,
+    ).toBe(25);
+    // …but self-employment still outranks it.
+    expect(
+      computePrice(answers({ revenus: { etudiant: true, independant: true } })).total,
+    ).toBe(250);
+  });
+
   it("charges the self-employed 250 instead of the personal rate", () => {
     const price = computePrice(
       answers({ etatCivil: "marie", revenus: { independant: true } }),

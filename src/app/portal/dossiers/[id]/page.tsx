@@ -82,7 +82,11 @@ export default async function DossierDetailPage({
           status={access.dossier.status}
           initialAnswers={answers}
           initialStep={access.dossier.currentStep}
-          uploadedKeys={documents.map((doc) => doc.category)}
+          uploadedDocs={documents.map((doc) => ({
+            id: doc.id,
+            category: doc.category,
+            filename: doc.filename,
+          }))}
           previousYear={previous}
         />
       </>

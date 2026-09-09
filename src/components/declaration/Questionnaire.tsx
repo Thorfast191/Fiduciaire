@@ -26,11 +26,14 @@ export interface QuestionnaireProps {
   status: DossierStatus;
   initialAnswers: Answers;
   initialStep: number;
-  /** Document category keys already uploaded against this dossier. */
-  uploadedKeys: string[];
+  /** Documents already deposited against this dossier, newest kept per category. */
+  uploadedDocs: { id: string; category: string; filename: string }[];
   /** Previous year's answers, offered as a starting point. */
   previousYear?: number;
 }
+
+/** The deposited document shown on a category row: what to download or replace. */
+export type UploadedDoc = { id: string; filename: string };
 
 const AUTOSAVE_MS = 900;
 
@@ -48,7 +51,7 @@ export function Questionnaire({
   status,
   initialAnswers,
   initialStep,
-  uploadedKeys,
+  uploadedDocs,
   previousYear,
 }: QuestionnaireProps) {
   const router = useRouter();
@@ -134,7 +137,10 @@ export function Questionnaire({
 
   const price = computePrice(answers);
   const docs = requiredDocuments(answers);
-  const uploaded = new Set(uploadedKeys);
+  // Most recent deposited document per category — a re-upload can leave more
+  // than one row for a category, and the row shows/acts on the latest.
+  const uploaded = new Map<string, UploadedDoc>();
+  for (const d of uploadedDocs) uploaded.set(d.category, { id: d.id, filename: d.filename });
   const doneCount = docs.filter((k) => uploaded.has(k)).length;
 
   const yesNo = [
@@ -267,6 +273,17 @@ export function Questionnaire({
                       type="date"
                       value={answers.departureDate}
                       onChange={(departureDate) => patch({ departureDate })}
+                    />
+                  </Question>
+                ) : null}
+
+                {answers.situation === "arrivee" ? (
+                  <Question label={d.accueil.arrivalDate}>
+                    <TextField
+                      label={d.accueil.arrivalDate}
+                      type="date"
+                      value={answers.arrivalDate}
+                      onChange={(arrivalDate) => patch({ arrivalDate })}
                     />
                   </Question>
                 ) : null}
@@ -438,7 +455,7 @@ export function Questionnaire({
             {step === 2 ? (
               <Question label={d.revenus.title} required>
                 <div className="flex flex-col gap-2.5">
-                  {(["salarie", "independant", "rentier", "chomage"] as const).map(
+                  {(["salarie", "etudiant", "independant", "rentier", "chomage"] as const).map(
                     (k) => (
                       <CheckRow
                         key={k}
@@ -830,23 +847,28 @@ function DocumentRow({
   t,
   dossierId,
   docKey,
-  done,
+  doc,
   readOnly,
-  onUploaded,
+  onChanged,
 }: {
   t: Messages;
   dossierId: string;
   docKey: string;
-  done: boolean;
+  /** The deposited document for this category, if any. */
+  doc: UploadedDoc | undefined;
   readOnly: boolean;
-  onUploaded: () => void;
+  onChanged: () => void;
 }) {
   const d = t.declaration;
   const meta = DOCUMENT_CATALOGUE[docKey];
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
+  const done = Boolean(doc);
 
+  // Deposits a file for this category. When one is already deposited this is a
+  // replacement: upload the new file first, then remove the old one, so a
+  // failed upload leaves the existing document intact.
   async function pick(file: File | undefined) {
     if (!file) return;
     setFailed(false);
@@ -856,10 +878,38 @@ function DocumentRow({
     }
     setBusy(true);
     const ok = await uploadFor(dossierId, docKey, file);
+    if (ok && doc) {
+      await fetch(`/api/documents/${doc.id}`, { method: "DELETE" }).catch(() => {});
+    }
     setBusy(false);
-    if (ok) onUploaded();
+    if (ok) onChanged();
     else setFailed(true);
   }
+
+  async function download() {
+    if (!doc) return;
+    setFailed(false);
+    const res = await fetch(`/api/documents/${doc.id}/download-url`);
+    if (!res.ok) {
+      setFailed(true);
+      return;
+    }
+    const { downloadUrl } = await res.json();
+    window.location.href = downloadUrl;
+  }
+
+  async function remove() {
+    if (!doc) return;
+    setFailed(false);
+    setBusy(true);
+    const res = await fetch(`/api/documents/${doc.id}`, { method: "DELETE" });
+    setBusy(false);
+    if (res.ok) onChanged();
+    else setFailed(true);
+  }
+
+  const ghostBtn =
+    "rounded-lg border border-line-default px-3 py-2 text-[12.5px] font-medium text-brand transition hover:border-line-strong hover:bg-sunken disabled:opacity-60";
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-[var(--radius-md)] border border-line bg-card px-4 py-3.5">
@@ -881,7 +931,11 @@ function DocumentRow({
         <span className="disp block text-[15px] font-bold">
           {meta?.title ?? docKey}
         </span>
-        {meta?.hint ? (
+        {doc ? (
+          <span className="mt-0.5 block truncate text-[12.5px] text-body" title={doc.filename}>
+            {doc.filename}
+          </span>
+        ) : meta?.hint ? (
           <span className="mt-0.5 block text-[12.5px] text-muted">
             {meta.hint}
           </span>
@@ -901,24 +955,44 @@ function DocumentRow({
         {done ? d.transmission.uploaded : d.transmission.toUpload}
       </span>
 
-      {readOnly ? null : (
-        <>
-          <input
-            ref={input}
-            type="file"
-            accept="application/pdf,image/jpeg,image/png"
-            className="hidden"
-            onChange={(e) => pick(e.target.files?.[0])}
-          />
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => input.current?.click()}
-            className="fx-btn-outline w-full shrink-0 px-4 py-2.5 sm:w-auto"
-          >
-            {busy ? d.saving : d.transmission.upload}
+      <input
+        ref={input}
+        type="file"
+        accept="application/pdf,image/jpeg,image/png"
+        className="hidden"
+        onChange={(e) => {
+          pick(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+
+      {/* Deposited: the client can always download; before submission they can
+          also replace or remove it. Not deposited: a single upload button. */}
+      {doc ? (
+        <span className="flex shrink-0 flex-wrap gap-2">
+          <button type="button" disabled={busy} onClick={download} className={ghostBtn}>
+            {d.transmission.download}
           </button>
-        </>
+          {readOnly ? null : (
+            <>
+              <button type="button" disabled={busy} onClick={() => input.current?.click()} className={ghostBtn}>
+                {busy ? d.saving : d.transmission.replace}
+              </button>
+              <button type="button" disabled={busy} onClick={remove} className={ghostBtn}>
+                {d.transmission.remove}
+              </button>
+            </>
+          )}
+        </span>
+      ) : readOnly ? null : (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => input.current?.click()}
+          className="fx-btn-outline w-full shrink-0 px-4 py-2.5 sm:w-auto"
+        >
+          {busy ? d.saving : d.transmission.upload}
+        </button>
       )}
     </div>
   );
@@ -938,7 +1012,7 @@ function TransmissionStep({
   t: Messages;
   dossierId: string;
   docs: string[];
-  uploaded: Set<string>;
+  uploaded: Map<string, UploadedDoc>;
   doneCount: number;
   price: ReturnType<typeof computePrice>;
   readOnly: boolean;
@@ -1048,9 +1122,9 @@ function TransmissionStep({
             t={t}
             dossierId={dossierId}
             docKey={key}
-            done={uploaded.has(key)}
+            doc={uploaded.get(key)}
             readOnly={readOnly}
-            onUploaded={onUploaded}
+            onChanged={onUploaded}
           />
         ))}
       </div>

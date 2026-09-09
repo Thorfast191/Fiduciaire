@@ -608,6 +608,7 @@ export const fr = {
     accueil: {
       canton: "Canton de domicile au 31.12",
       departureDate: "Date du départ à l'étranger",
+      arrivalDate: "Date d'arrivée en Suisse",
       express: "Je souhaite un traitement express 48h",
       assistanceTitle: "Fiduvia assistance",
       assistanceSub:
@@ -642,6 +643,7 @@ export const fr = {
     revenus: {
       title: "Type(s) de revenu(s)",
       salarie: "Salarié·e",
+      etudiant: "Étudiant·e / apprenti·e",
       independant: "Indépendant·e",
       rentier: "Rentier·ère (AVS, AI, LPP)",
       chomage: "Chômage et/ou APG",
@@ -692,6 +694,9 @@ export const fr = {
       upload: "Transmettre",
       uploaded: "Transmis",
       toUpload: "À transmettre",
+      replace: "Remplacer",
+      download: "Télécharger",
+      remove: "Supprimer",
       submit: "Payer et transmettre ma déclaration",
       submitting: "Redirection vers le paiement...",
       submitHint:
@@ -710,6 +715,7 @@ export const fr = {
 
     price: {
       base: "Personne seule",
+      etudiant: "Étudiant / apprenti",
       couple: "Marié·e / couple",
       independant: "Indépendant·e",
       owner: "Immeuble",
@@ -742,6 +748,7 @@ export const fr = {
         situation: "Situation",
         canton: "Canton de domicile",
         departureDate: "Date du départ",
+        arrivalDate: "Date d'arrivée",
         express: "Traitement express 48h",
         taxationOffice: "Taxé d'office",
         etatCivil: "État civil",
