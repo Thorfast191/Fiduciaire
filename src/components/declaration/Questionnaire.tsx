@@ -644,46 +644,54 @@ export function Questionnaire({
                   </div>
                 </Question>
 
-                <Question label={d.fortune.dettes}>
+                <Question label={d.fortune.dettesTitle}>
                   <RadioRow
                     name="dettes"
                     value={answers.dettes}
                     onChange={(v) => patch({ dettes: v as Answers["dettes"] })}
-                    options={yesNo}
+                    options={[
+                      { value: "commerciale", label: d.fortune.dettesCommerciale },
+                      { value: "privee", label: d.fortune.dettesPrivee },
+                    ]}
                   />
                 </Question>
 
-                <Question label={d.fortune.heritage}>
-                  <RadioRow
-                    name="heritage"
-                    value={answers.heritageEnCours}
-                    onChange={(v) =>
-                      patch({ heritageEnCours: v as Answers["heritageEnCours"] })
-                    }
-                    options={yesNo}
-                  />
-                </Question>
+                <Question label={d.fortune.heritageDonationsTitle}>
+                  <div className="flex flex-col gap-3.5">
+                    <div>
+                      <div className="flex items-start justify-between gap-3">
+                        <CheckRow
+                          checked={answers.heritageEnCours === "oui"}
+                          onChange={(on) =>
+                            patch({ heritageEnCours: on ? "oui" : "" })
+                          }
+                          label={d.fortune.heritage}
+                        />
+                        <span className="fx-figure shrink-0 whitespace-nowrap rounded-full bg-teal-100 px-2.5 py-1 text-[11px] font-semibold text-brand">
+                          {d.fortune.heritageBadge}
+                        </span>
+                      </div>
+                      <p className="mt-1 pl-[30px] text-[12.5px] leading-[1.4] text-muted">
+                        {d.fortune.heritageNote}
+                      </p>
+                    </div>
 
-                <Question label={d.fortune.donationEffectuee}>
-                  <RadioRow
-                    name="donationEffectuee"
-                    value={answers.donationEffectuee}
-                    onChange={(v) =>
-                      patch({ donationEffectuee: v as Answers["donationEffectuee"] })
-                    }
-                    options={yesNo}
-                  />
-                </Question>
+                    <CheckRow
+                      checked={answers.donationEffectuee === "oui"}
+                      onChange={(on) =>
+                        patch({ donationEffectuee: on ? "oui" : "" })
+                      }
+                      label={d.fortune.donationEffectuee}
+                    />
 
-                <Question label={d.fortune.donationRecue}>
-                  <RadioRow
-                    name="donationRecue"
-                    value={answers.donationRecue}
-                    onChange={(v) =>
-                      patch({ donationRecue: v as Answers["donationRecue"] })
-                    }
-                    options={yesNo}
-                  />
+                    <CheckRow
+                      checked={answers.donationRecue === "oui"}
+                      onChange={(on) =>
+                        patch({ donationRecue: on ? "oui" : "" })
+                      }
+                      label={d.fortune.donationRecue}
+                    />
+                  </div>
                 </Question>
               </>
             ) : null}

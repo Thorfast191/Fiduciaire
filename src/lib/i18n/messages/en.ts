@@ -707,17 +707,24 @@ export const en: Messages = {
     },
 
     fortune: {
-      title: "Assets",
-      epargne: "Savings accounts",
-      titres: "Securities and investments",
+      title: "Wealth",
+      epargne: "Savings account(s)",
+      titres: "Securities account(s)",
       crypto: "Cryptocurrencies",
       assuranceVie: "Life insurance",
-      immeuble: "Property-linked account",
-      aucun: "No bank account / wealth",
-      dettes: "Do you have debts as at 31.12?",
-      heritage: "Is an inheritance or gift in progress?",
-      donationEffectuee: "Did you make a gift during the year?",
-      donationRecue: "Did you receive a gift during the year?",
+      immeuble: "Property account(s)",
+      aucun: "No bank account/wealth",
+      dettesTitle: "Debts",
+      dettesCommerciale: "Business",
+      dettesPrivee: "Private",
+      heritageDonationsTitle: "Inheritance and gifts",
+      heritage:
+        "I received an inheritance during the year and/or an estate involving me is being settled",
+      heritageNote:
+        "An inheritance is taxable the day after the person's death, even if the succession agreement is not yet concluded.",
+      heritageBadge: "+ CHF 25",
+      donationEffectuee: "I made a gift",
+      donationRecue: "I received a gift",
     },
 
     immeubles: {

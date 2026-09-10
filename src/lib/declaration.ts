@@ -119,7 +119,7 @@ export interface Answers {
   /** Transport/meal-expense periods (salaried filers). */
   transportPeriods: TransportPeriod[];
   fortuneTypes: Partial<Record<WealthKind, boolean>>;
-  dettes: "oui" | "non" | "";
+  dettes: "commerciale" | "privee" | "";
   heritageEnCours: "oui" | "non" | "";
   /** Whether the filer made a gift during the year. */
   donationEffectuee: "oui" | "non" | "";
@@ -259,7 +259,7 @@ export function requiredDocuments(a: Answers): string[] {
   if (ft.assuranceVie) d.push("attestAssuranceVie");
   if (ft.immeuble) d.push("releveCompteImmeuble");
 
-  if (a.dettes === "oui") d.push("attestationDettes");
+  if (a.dettes !== "") d.push("attestationDettes");
   if (a.heritageEnCours === "oui") d.push("pacteSuccessoral");
   // A gift made or received during the year is evidenced the same way as a
   // succession — the deed / pacte successoral.
@@ -491,7 +491,7 @@ export function summariseAnswers(
       remark: remark(3),
       rows: [
         { key: "fortuneTypes", value: list(a.fortuneTypes ?? {}, labels.wealth) },
-        { key: "dettes", value: bool(a.dettes) },
+        { key: "dettes", value: a.dettes ? labels.yes : labels.no },
         { key: "heritage", value: bool(a.heritageEnCours) },
         { key: "donationEffectuee", value: bool(a.donationEffectuee) },
         { key: "donationRecue", value: bool(a.donationRecue) },

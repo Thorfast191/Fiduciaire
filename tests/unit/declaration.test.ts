@@ -150,7 +150,7 @@ describe("requiredDocuments", () => {
           assuranceVie: true,
           immeuble: true,
         },
-        dettes: "oui",
+        dettes: "commerciale",
         heritageEnCours: "oui",
         loyersPayes: "oui",
         taxationOffice: "oui",

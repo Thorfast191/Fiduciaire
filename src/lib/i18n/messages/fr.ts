@@ -709,17 +709,24 @@ export const fr = {
     },
 
     fortune: {
-      title: "Éléments de fortune",
-      epargne: "Comptes d'épargne",
-      titres: "Titres et placements",
+      title: "Fortune",
+      epargne: "Compte(s) épargne",
+      titres: "Compte(s) titres",
       crypto: "Cryptomonnaies",
       assuranceVie: "Assurance-vie",
-      immeuble: "Compte lié à un immeuble",
-      aucun: "Aucun compte bancaire / fortune",
-      dettes: "Avez-vous des dettes au 31.12 ?",
-      heritage: "Une succession ou donation est-elle en cours ?",
-      donationEffectuee: "Avez-vous effectué une donation durant l'année ?",
-      donationRecue: "Avez-vous perçu une donation durant l'année ?",
+      immeuble: "Compte(s) immeuble",
+      aucun: "Aucun compte bancaire/fortune",
+      dettesTitle: "Dettes",
+      dettesCommerciale: "Commerciale",
+      dettesPrivee: "Privée",
+      heritageDonationsTitle: "Héritages et donations",
+      heritage:
+        "J'ai perçu un héritage en cours d'année et/ou j'ai un héritage en cours de règlement",
+      heritageNote:
+        "Un héritage est imposable le lendemain du décès de la personne même si le pacte successoral n'est pas conclu.",
+      heritageBadge: "+ CHF 25",
+      donationEffectuee: "J'ai effectué une donation",
+      donationRecue: "J'ai perçu une donation",
     },
 
     immeubles: {
