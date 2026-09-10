@@ -76,8 +76,16 @@ export interface Child {
   birthDate: string;
   avs: string;
   situation: string;
-  /** Whether the child receives maintenance contributions. */
+  /**
+   * Whether the child (minor, or an adult in training/studies) is a dependant.
+   * Named `contributions` for historical reasons; it drives the maintenance
+   * document ("L'enfant … est-il à votre charge ?").
+   */
   contributions: "oui" | "non" | "";
+  /** "Cet enfant fait-il ménage commun avec vous ?" */
+  menageCommun: "oui" | "non" | "";
+  /** "Faites-vous ménage commun avec l'autre parent de cet enfant ?" */
+  menageAutreParent: "oui" | "non" | "";
 }
 
 export interface Property {
@@ -88,7 +96,13 @@ export interface Property {
   acquisition: "achat" | "heritage" | "donation" | "";
   alienation: "vente" | "donation" | "";
   rented: "oui" | "non" | "";
+  /** Annual rent received, when the property is let. */
+  loyerTouche: string;
+  /** Whether the let property is furnished. */
+  loueMeuble: boolean;
   hasDebt: "oui" | "non" | "";
+  /** Amount of the debt tied to the property, when there is one. */
+  detteMontant: string;
 }
 
 export interface Answers {

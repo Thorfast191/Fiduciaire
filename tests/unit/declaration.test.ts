@@ -53,7 +53,10 @@ describe("requiredDocuments", () => {
             acquisition: "achat",
             alienation: "",
             rented: "oui",
+            loyerTouche: "",
+            loueMeuble: false,
             hasDebt: "oui",
+            detteMontant: "",
           },
         ],
       }),
@@ -87,6 +90,8 @@ describe("requiredDocuments", () => {
       avs: "",
       situation: "",
       contributions: "oui" as const,
+      menageCommun: "" as const,
+      menageAutreParent: "" as const,
     };
     expect(requiredDocuments(answers({ children: [child] }))).toContain(
       "pensionAlim",
@@ -112,7 +117,10 @@ describe("requiredDocuments", () => {
             acquisition: "heritage",
             alienation: "",
             rented: "",
+            loyerTouche: "",
+            loueMeuble: false,
             hasDebt: "",
+            detteMontant: "",
           },
         ],
       }),
@@ -203,7 +211,10 @@ describe("computePrice", () => {
       acquisition: "" as const,
       alienation: "" as const,
       rented: "" as const,
+      loyerTouche: "",
+      loueMeuble: false,
       hasDebt: "" as const,
+      detteMontant: "",
     };
     const two = computePrice(
       answers({

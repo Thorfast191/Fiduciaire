@@ -673,10 +673,15 @@ export const en: Messages = {
       childSituation: "Professional situation",
       situationScolarise: "In school",
       situationEtudiant: "Student",
+      situationSalarie: "Employed",
+      situationAutre: "Other",
       situationApprenti: "Apprentice",
       situationActif: "Working",
       contributions:
         "Is the child a minor, apprentice or student in your care?",
+      menageCommun: "Does this child live in the same household as you?",
+      menageAutreParent:
+        "Do you share a household with the child's other parent?",
     },
 
     revenus: {
@@ -728,8 +733,11 @@ export const en: Messages = {
       donation: "Gift",
       alienation: "Reason for disposal during the year",
       vente: "Sale",
-      rented: "Is the property rented out?",
+      rented: "Is this property rented out?",
+      loyerTouche: "Rent received",
+      loueMeuble: "Property let furnished",
       hasDebt: "Is there a debt linked to this property?",
+      detteMontant: "Amount of the debt linked to the property",
       add: "Add a property",
       remove: "Remove",
       rentPaid: "Do you pay rent?",

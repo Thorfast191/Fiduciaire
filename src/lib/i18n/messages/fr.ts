@@ -675,10 +675,15 @@ export const fr = {
       childSituation: "Situation professionnelle",
       situationScolarise: "Scolarisé",
       situationEtudiant: "Étudiant",
+      situationSalarie: "Salarié",
+      situationAutre: "Autre",
       situationApprenti: "Apprenti",
       situationActif: "Actif",
       contributions:
         "L'enfant mineur, majeur en apprentissage ou aux études est-il à votre charge ?",
+      menageCommun: "Cet enfant fait-il ménage commun avec vous ?",
+      menageAutreParent:
+        "Faites-vous ménage commun avec l'autre parent de cet enfant ?",
     },
 
     revenus: {
@@ -730,8 +735,11 @@ export const fr = {
       donation: "Donation",
       alienation: "Motif d'aliénation durant l'année",
       vente: "Vente",
-      rented: "L'immeuble est-il loué ?",
-      hasDebt: "Une dette est-elle liée à cet immeuble ?",
+      rented: "Cet immeuble est-il loué ?",
+      loyerTouche: "Loyer touché",
+      loueMeuble: "Immeuble loué meublé",
+      hasDebt: "Existe-t-il une dette liée à l'immeuble ?",
+      detteMontant: "Montant de la dette liée à l'immeuble",
       add: "Ajouter un immeuble",
       remove: "Supprimer",
       rentPaid: "Payez-vous un loyer ?",

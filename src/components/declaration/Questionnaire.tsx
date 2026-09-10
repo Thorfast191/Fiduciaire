@@ -424,28 +424,68 @@ export function Questionnaire({
                           value={child.situation}
                           onChange={(v) => patchChild(i, { situation: v })}
                           options={[
-                            { value: "scolarise", label: d.famille.situationScolarise },
                             { value: "etudiant", label: d.famille.situationEtudiant },
-                            { value: "apprenti", label: d.famille.situationApprenti },
-                            { value: "actif", label: d.famille.situationActif },
+                            { value: "salarie", label: d.famille.situationSalarie },
+                            { value: "autre", label: d.famille.situationAutre },
                           ]}
                         />
                       </div>
 
-                      <p className="mt-4 text-[13.5px] text-body">
-                        {d.famille.contributions}
-                      </p>
-                      <div className="mt-2">
-                        <RadioRow
-                          name={`contrib-${i}`}
-                          value={child.contributions}
-                          onChange={(v) =>
-                            patchChild(i, {
-                              contributions: v as Child["contributions"],
-                            })
-                          }
-                          options={yesNo}
-                        />
+                      <div className="mt-4 flex flex-col gap-3 border-t border-line pt-4">
+                        <div>
+                          <p className="text-[13.5px] text-body">
+                            {d.famille.contributions}
+                          </p>
+                          <div className="mt-2">
+                            <RadioRow
+                              name={`contrib-${i}`}
+                              value={child.contributions}
+                              onChange={(v) =>
+                                patchChild(i, {
+                                  contributions: v as Child["contributions"],
+                                })
+                              }
+                              options={yesNo}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[13.5px] text-body">
+                            {d.famille.menageCommun}
+                          </p>
+                          <div className="mt-2">
+                            <RadioRow
+                              name={`menage-${i}`}
+                              value={child.menageCommun}
+                              onChange={(v) =>
+                                patchChild(i, {
+                                  menageCommun: v as Child["menageCommun"],
+                                })
+                              }
+                              options={yesNo}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[13.5px] text-body">
+                            {d.famille.menageAutreParent}
+                          </p>
+                          <div className="mt-2">
+                            <RadioRow
+                              name={`menage-parent-${i}`}
+                              value={child.menageAutreParent}
+                              onChange={(v) =>
+                                patchChild(i, {
+                                  menageAutreParent:
+                                    v as Child["menageAutreParent"],
+                                })
+                              }
+                              options={yesNo}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -743,6 +783,32 @@ export function Questionnaire({
                           />
                         </div>
 
+                        {im.rented === "oui" ? (
+                          <div className="mt-3 flex flex-wrap items-end gap-3">
+                            <TextField
+                              label={d.immeubles.loyerTouche}
+                              placeholder="CHF / an"
+                              value={im.loyerTouche}
+                              onChange={(v) =>
+                                patchProperty(i, { loyerTouche: v })
+                              }
+                            />
+                            <label className="flex cursor-pointer items-center gap-2 py-3 text-[14px] text-body">
+                              <input
+                                type="checkbox"
+                                checked={im.loueMeuble}
+                                onChange={(e) =>
+                                  patchProperty(i, {
+                                    loueMeuble: e.target.checked,
+                                  })
+                                }
+                                className="h-[18px] w-[18px] accent-[var(--brand)]"
+                              />
+                              {d.immeubles.loueMeuble}
+                            </label>
+                          </div>
+                        ) : null}
+
                         <p className="mt-4 text-[13.5px] text-body">
                           {d.immeubles.hasDebt}
                         </p>
@@ -758,6 +824,19 @@ export function Questionnaire({
                             options={yesNo}
                           />
                         </div>
+
+                        {im.hasDebt === "oui" ? (
+                          <div className="mt-3">
+                            <TextField
+                              label={d.immeubles.detteMontant}
+                              placeholder="CHF"
+                              value={im.detteMontant}
+                              onChange={(v) =>
+                                patchProperty(i, { detteMontant: v })
+                              }
+                            />
+                          </div>
+                        ) : null}
 
                         <div className="mt-4 flex gap-2">
                           <button
@@ -929,8 +1008,10 @@ function emptyChild(): Child {
     lastName: "",
     birthDate: "",
     avs: "",
-    situation: "scolarise",
+    situation: "etudiant",
     contributions: "",
+    menageCommun: "",
+    menageAutreParent: "",
   };
 }
 
@@ -943,7 +1024,10 @@ function emptyProperty(): Property {
     acquisition: "",
     alienation: "",
     rented: "",
+    loyerTouche: "",
+    loueMeuble: false,
     hasDebt: "",
+    detteMontant: "",
   };
 }
 
