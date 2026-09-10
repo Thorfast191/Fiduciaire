@@ -510,17 +510,13 @@ export function Questionnaire({
 
             {step === 2 ? (
               <>
-                <Question label={d.revenus.title} required>
+                <Question label={d.revenus.title} required hint={d.revenus.sub}>
                   <div className="flex flex-col gap-2.5">
                     {(
-                      [
-                        "salarie",
-                        "etudiant",
-                        "independant",
-                        "rentier",
-                        "chomage",
-                        "autre",
-                      ] as const
+                      // The reference's income types, in its order — no
+                      // "étudiant" here (the student rate is a simulator/tariff
+                      // teaser, not a declaration income type).
+                      ["salarie", "rentier", "chomage", "independant", "autre"] as const
                     ).map((k) => (
                       <CheckRow
                         key={k}

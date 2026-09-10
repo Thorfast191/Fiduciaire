@@ -688,12 +688,13 @@ export const en: Messages = {
 
     revenus: {
       title: "Type(s) of income",
+      sub: "Multiple choices possible",
       salarie: "Employed",
       etudiant: "Student / apprentice",
       independant: "Self-employed",
       rentier: "Pensioner (AVS, AI, LPP)",
       chomage: "Unemployment and/or APG",
-      autre: "Other",
+      autre: "Other…",
     },
     transport: {
       title: "Travel and meal expenses",

@@ -689,12 +689,13 @@ export const fr = {
 
     revenus: {
       title: "Type(s) de revenu(s)",
+      sub: "Plusieurs choix possibles",
       salarie: "Salarié·e",
       etudiant: "Étudiant·e / apprenti·e",
       independant: "Indépendant·e",
-      rentier: "Rentier·ère (AVS, AI, LPP)",
+      rentier: "Rentier, ère (AVS, AI, LPP)",
       chomage: "Chômage et/ou APG",
-      autre: "Autre",
+      autre: "Autre…",
     },
     transport: {
       title: "Frais de transport et de repas",
