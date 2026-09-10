@@ -19,16 +19,13 @@ export function clientNav(t: Messages): NavEntry[] {
   const prestation = (type: ServiceType) =>
     `/portal/prestations/${SERVICE_SLUG[type]}`;
 
+  // Exactly the five prestations the reference sidebar lists. Départ à
+  // l'étranger and Décès are situations chosen inside the declaration (the
+  // situation pop-up), not sidebar entries, so they are deliberately absent.
   return [
     { kind: "head", label: n.servicesHead },
     { kind: "link", label: n.taxReturns, href: "/portal" },
     { kind: "link", label: n.capital, href: prestation("capital") },
-    // The mockup reaches "départ" and "décès" from inside the declaration
-    // questionnaire, which this project does not have. They are advertised on
-    // the marketing page, so they get their own sidebar entries here rather
-    // than being unreachable.
-    { kind: "link", label: n.departure, href: prestation("departure") },
-    { kind: "link", label: n.deces, href: prestation("deces") },
     { kind: "link", label: n.simulation, href: prestation("simulation") },
     { kind: "link", label: n.instalments, href: prestation("acompte") },
     { kind: "link", label: n.review, href: prestation("relecture") },
