@@ -499,6 +499,7 @@ export const en: Messages = {
     helpDoc1: "List of documents to provide",
     helpDoc2: "How to use the site",
     comingSoon: "Available soon",
+    helpDocFormat: "PDF · Download",
     deadlinesTitle: "Deadlines",
     deadline1Label: "First deadline",
     deadline1Note: "Legal deadline to file your tax return.",

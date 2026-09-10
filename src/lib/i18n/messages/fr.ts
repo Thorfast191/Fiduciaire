@@ -500,6 +500,7 @@ export const fr = {
     helpDoc1: "Liste des documents à fournir",
     helpDoc2: "Marche à suivre du site",
     comingSoon: "Bientôt disponible",
+    helpDocFormat: "PDF · À télécharger",
     deadlinesTitle: "Délais",
     deadline1Label: "Première échéance",
     deadline1Note: "Délai légal pour déposer sa déclaration d'impôt.",

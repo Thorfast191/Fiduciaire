@@ -175,8 +175,8 @@ export default async function PortalHomePage({
           </h2>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <HelpDoc label={t.portal.helpDoc1} soon={t.portal.comingSoon} />
-            <HelpDoc label={t.portal.helpDoc2} soon={t.portal.comingSoon} />
+            <HelpDoc label={t.portal.helpDoc1} format={t.portal.helpDocFormat} />
+            <HelpDoc label={t.portal.helpDoc2} format={t.portal.helpDocFormat} />
           </div>
         </div>
 
@@ -202,9 +202,9 @@ export default async function PortalHomePage({
   );
 }
 
-function HelpDoc({ label, soon }: { label: string; soon: string }) {
+function HelpDoc({ label, format }: { label: string; format: string }) {
   return (
-    <div className="flex min-h-[112px] flex-col gap-2 rounded-[var(--radius-md)] border border-line bg-card p-4 shadow-[var(--shadow-xs)]">
+    <div className="flex min-h-[112px] flex-col gap-2 rounded-[var(--radius-md)] border border-line bg-card p-4 shadow-[var(--shadow-xs)] transition-colors hover:border-line-strong">
       <span className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-teal-100 text-brand">
         <svg
           viewBox="0 0 24 24"
@@ -222,8 +222,20 @@ function HelpDoc({ label, soon }: { label: string; soon: string }) {
 
       <span className="disp text-[16px] font-bold">{label}</span>
 
-      <span className="mt-auto font-mono text-[9.5px] uppercase tracking-[0.08em] text-muted">
-        {soon}
+      <span className="mt-auto flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-[0.08em] text-muted">
+        {format}
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-[13px] w-[13px] text-brand"
+          aria-hidden="true"
+        >
+          <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16" />
+        </svg>
       </span>
     </div>
   );
