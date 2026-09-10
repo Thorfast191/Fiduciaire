@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { useLoginModal } from "./LoginModal";
 
@@ -11,9 +11,13 @@ import { useLoginModal } from "./LoginModal";
  */
 export function LoginTrigger({
   className,
+  style,
   children,
 }: {
   className?: string;
+  // Link colour must be set inline: the unlayered `a { color: inherit }` reset
+  // in globals.css outranks any Tailwind text-colour utility on an <a>.
+  style?: CSSProperties;
   children: ReactNode;
 }) {
   const modal = useLoginModal();
@@ -22,6 +26,7 @@ export function LoginTrigger({
     <Link
       href="/login"
       className={className}
+      style={style}
       onClick={(e) => {
         // Let the browser handle anything but an unmodified primary click.
         if (

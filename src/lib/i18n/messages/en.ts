@@ -58,6 +58,16 @@ export const en: Messages = {
     indicative:
       "Indicative amount, excluding any supplements. The final price is confirmed when your file is opened.",
     pickHint: "Select your situation to get an estimate.",
+    supplementsTitle: "Additional elements",
+    assistanceTitle: "Fiduvia assistance",
+    collapse: "Show less",
+    supplements: [
+      { label: "Property owner", note: "CHF 75 / property" },
+      { label: "Securities / cryptocurrencies", note: "+ CHF 30" },
+      { label: "Inheritance / estate", note: "+ CHF 25" },
+      { label: "48h express processing", note: "+ CHF 50" },
+      { label: "Taxed by default", note: "+ CHF 75" },
+    ],
   },
 
   trust: {

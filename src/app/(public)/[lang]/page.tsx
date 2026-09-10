@@ -160,7 +160,10 @@ export default async function HomePage({
           <LocaleSwitch current={lang} />
 
           {/* LOGIN */}
-          <LoginTrigger className="flex shrink-0 items-center whitespace-nowrap rounded-[9px] bg-[var(--brand)] px-[18px] py-[10px] text-[14px] font-semibold text-white transition-colors duration-150 hover:bg-[var(--brand-hover)]">
+          <LoginTrigger
+            className="flex shrink-0 items-center whitespace-nowrap rounded-[9px] bg-[var(--brand)] px-[18px] py-[10px] text-[14px] font-semibold transition-colors duration-150 hover:bg-[var(--brand-hover)]"
+            style={{ color: "#fff" }}
+          >
             <span className="hidden sm:inline">{t.nav.login}</span>
             <span className="sm:hidden">{t.nav.loginShort}</span>
           </LoginTrigger>
@@ -285,7 +288,10 @@ export default async function HomePage({
                 style={{ color: "var(--text-muted)" }}
               >
                 {t.hero.already}{" "}
-                <LoginTrigger className="font-semibold text-[var(--brand)]">
+                <LoginTrigger
+                  className="font-semibold"
+                  style={{ color: "var(--brand)" }}
+                >
                   {t.nav.login}
                 </LoginTrigger>
               </span>
@@ -297,14 +303,8 @@ export default async function HomePage({
             id="pricing"
             className="relative z-10 w-full max-w-[395px] shrink-0 rounded-[18px] border border-[var(--border-subtle)] bg-white p-6 shadow-[0_18px_50px_rgba(15,42,63,.12)]"
           >
-            <div className="flex items-start justify-between border-b border-[var(--border-subtle)] pb-5">
-              <div>
-                <p className="fx-eyebrow text-[10px]">{t.sim.eyebrow}</p>
-
-                <h2 className="mt-2 text-[23px] font-bold tracking-[-0.03em] text-[var(--petrol-900)]">
-                  {t.sim.title}
-                </h2>
-              </div>
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+              <p className="fx-eyebrow text-[10px]">{t.sim.eyebrow}</p>
 
               <span className="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.1em] text-[var(--text-subtle)]">
                 {t.sim.noCommitment}
@@ -319,6 +319,28 @@ export default async function HomePage({
       {/* =========================================================
           TRUST BAR
       ========================================================= */}
+      <section className="bg-[var(--teal-600)]">
+        <div
+          className="mx-auto flex flex-wrap items-center justify-center gap-x-[44px] gap-y-4 px-[34px] py-[22px]"
+          style={{ maxWidth: "1120px" }}
+        >
+          <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
+            <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
+            {t.trust.clients}
+          </span>
+
+          <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
+            <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
+            {t.trust.hosting}
+          </span>
+
+          <span className="flex items-center gap-[10px] text-[14px] font-semibold text-white">
+            <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-[var(--teal-300)] opacity-75" />
+            {t.trust.experts}
+          </span>
+        </div>
+      </section>
+
       {/* =========================================================
           ABOUT
       ========================================================= */}

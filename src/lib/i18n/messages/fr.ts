@@ -54,6 +54,16 @@ export const fr = {
     indicative:
       "Montant indicatif, hors suppléments éventuels. Le tarif définitif est confirmé à l'ouverture du dossier.",
     pickHint: "Sélectionnez votre situation pour obtenir une estimation.",
+    supplementsTitle: "Éléments supplémentaires",
+    assistanceTitle: "Fiduvia assistance",
+    collapse: "Réduire",
+    supplements: [
+      { label: "Propriétaire immobilier", note: "CHF 75 / immeuble" },
+      { label: "Titres / cryptomonnaies", note: "+ CHF 30" },
+      { label: "Héritage / succession", note: "+ CHF 25" },
+      { label: "Traitement express en 48h", note: "+ CHF 50" },
+      { label: "Taxé·e d'office", note: "+ CHF 75" },
+    ],
   },
 
   trust: {
