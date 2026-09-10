@@ -6,6 +6,7 @@ import { resolvePeriod } from "@/lib/adminPeriod";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { StartDeclaration } from "./StartDeclaration";
+import { declarationProgress, normaliseAnswers } from "@/lib/declaration";
 import { getT } from "@/lib/i18n";
 
 /**
@@ -41,6 +42,12 @@ export default async function PortalHomePage({
   const selected = resolvePeriod(options, periode);
   const dossier = dossiers.find((d) => d.taxYear === selected);
   const done = dossier?.status === "completed";
+
+  // How far the client has filled the questionnaire. Above zero, the card
+  // switches from "Ouvrir" to "Continuer" and shows a progress bar, matching
+  // the mockup; a started declaration also skips the situation pop-up.
+  const progress = dossier ? declarationProgress(normaliseAnswers(dossier.answers)) : 0;
+  const started = !done && progress > 0;
 
   // With no dossier yet, the client can start one themselves — but only for a
   // period the firm has opened, the same gate the create route enforces.
@@ -94,9 +101,23 @@ export default async function PortalHomePage({
                 {t.portal.declSub}
               </p>
 
-              <div className="mt-4">
-                <StatusBadge status={dossier.status} />
-              </div>
+              {started ? (
+                <div className="mt-5 flex items-center gap-3">
+                  <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-sunken">
+                    <div
+                      className="h-full rounded-full bg-brand"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <span className="fx-figure text-[13px] font-semibold text-muted">
+                    {progress}%
+                  </span>
+                </div>
+              ) : done ? (
+                <div className="mt-4">
+                  <StatusBadge status={dossier.status} />
+                </div>
+              ) : null}
             </>
           ) : canStart ? (
             <>
@@ -131,10 +152,15 @@ export default async function PortalHomePage({
 
         {dossier ? (
           <Link
-            href={`/portal/dossiers/${dossier.id}`}
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-brand px-[22px] py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-hover"
+            href={
+              started || done
+                ? `/portal/dossiers/${dossier.id}`
+                : `/portal/dossiers/${dossier.id}?situation=1`
+            }
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-brand px-[22px] py-3 text-[15px] font-semibold transition-colors hover:bg-brand-hover"
+            style={{ color: "#fff" }}
           >
-            {t.portal.declOpen} →
+            {started ? t.portal.declContinue : t.portal.declOpen} →
           </Link>
         ) : canStart ? (
           <StartDeclaration t={t} year={selected} />

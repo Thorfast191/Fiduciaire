@@ -76,11 +76,9 @@ export function SituationPicker({
     router.refresh();
   }
 
-  // "Standard" is offered last, after the special cases, as in the mockup.
-  const choices: Situation[] = [
-    ...SITUATIONS.filter((k) => k !== "standard"),
-    "standard",
-  ];
+  // The four special situations are the cards; "standard" is the button below,
+  // "continuer sur la déclaration d'impôt", exactly as in the mockup.
+  const choices: Situation[] = SITUATIONS.filter((k) => k !== "standard");
 
   return (
     <div
@@ -146,7 +144,7 @@ export function SituationPicker({
         <button
           type="button"
           disabled={saving}
-          onClick={close}
+          onClick={() => choose("standard")}
           className="fx-btn-send mt-5 w-full"
         >
           {s.none}

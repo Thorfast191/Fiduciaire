@@ -522,6 +522,7 @@ export const fr = {
     declSub:
       "Déposez vos documents et suivez l'avancement de votre déclaration d'impôt.",
     declOpen: "Ouvrir ma déclaration",
+    declContinue: "Continuer ma déclaration",
     declStart: "Commencer ma déclaration",
     declStarting: "Ouverture…",
     declNoneTitle: "Aucun dossier pour cette période",

@@ -5,6 +5,7 @@ import {
   requiredDocuments,
   computePrice,
   assistanceTotal,
+  declarationProgress,
   DOCUMENT_CATALOGUE,
   type Answers,
 } from "../../src/lib/declaration";
@@ -248,6 +249,37 @@ describe("assistanceTotal", () => {
 
   it("is nothing when nothing is chosen", () => {
     expect(assistanceTotal({})).toBe(0);
+  });
+});
+
+describe("declarationProgress", () => {
+  it("is zero for an untouched declaration", () => {
+    // Empty answers default to standard/Vaud, which must not count as progress.
+    expect(declarationProgress(emptyAnswers())).toBe(0);
+  });
+
+  it("rises as steps gain genuine input", () => {
+    const started = declarationProgress(
+      answers({ etatCivil: "marie", revenus: { salarie: true } }),
+    );
+    expect(started).toBeGreaterThan(0);
+
+    const further = declarationProgress(
+      answers({
+        etatCivil: "marie",
+        revenus: { salarie: true },
+        proprietaireImmeuble: "oui",
+        pilier3: true,
+        reviewBeforeTransmit: true,
+      }),
+    );
+    expect(further).toBeGreaterThan(started);
+  });
+
+  it("counts a chosen situation as progress on the first step", () => {
+    expect(declarationProgress(answers({ situation: "depart" }))).toBeGreaterThan(
+      0,
+    );
   });
 });
 

@@ -206,6 +206,30 @@ export type DocumentKey = keyof typeof DOCUMENT_CATALOGUE;
  * Order matters: it is the order the client sees them in, and the mockup puts
  * the two universally-required pieces first and "divers" last.
  */
+/**
+ * Indicative completion of the seven questionnaire steps, 0–100, for the portal
+ * card's progress bar. Each step counts once it holds genuine input (the canton
+ * defaults to Vaud, so step one needs more than that). A dossier the client has
+ * not touched returns 0, which is what tells the card to say "Ouvrir" rather
+ * than "Continuer".
+ */
+export function declarationProgress(a: Answers): number {
+  const steps = [
+    a.situation !== "standard" ||
+      a.canton !== "Vaud" ||
+      a.express ||
+      Boolean(a.departureDate) ||
+      Boolean(a.arrivalDate),
+    a.etatCivil !== "",
+    Object.values(a.revenus ?? {}).some(Boolean),
+    Object.values(a.fortuneTypes ?? {}).some(Boolean) || a.dettes !== "",
+    a.proprietaireImmeuble !== "",
+    a.pilier3 || a.rachat2 || a.loyersPayes !== "" || a.taxationOffice !== "",
+    a.reviewBeforeTransmit || a.transmitWithoutReview,
+  ];
+  return Math.round((steps.filter(Boolean).length / steps.length) * 100);
+}
+
 export function requiredDocuments(a: Answers): string[] {
   const d: string[] = ["ficheTransmission", "copiePrecedente"];
 

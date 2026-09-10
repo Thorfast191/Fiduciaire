@@ -277,7 +277,8 @@ export default async function HomePage({
             <div className="mt-[30px] flex flex-wrap items-center gap-[18px]">
               <Link
                 href="/signup"
-                className="inline-flex items-center gap-[9px] rounded-[12px] bg-[var(--brand)] px-[26px] py-[15px] text-[16px] font-semibold text-white transition hover:bg-[var(--brand-hover)]"
+                className="inline-flex items-center gap-[9px] rounded-[12px] bg-[var(--brand)] px-[26px] py-[15px] text-[16px] font-semibold transition hover:bg-[var(--brand-hover)]"
+                style={{ color: "#fff" }}
               >
                 {t.hero.cta}
                 <span className="text-[18px]">→</span>
