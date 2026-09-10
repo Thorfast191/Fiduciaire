@@ -394,25 +394,29 @@ export const fr = {
     },
 
     signup: {
-      eyebrow: "Bienvenue chez Fiduvia",
-      title: "Créer mon compte",
-      sub: "Créez votre espace personnel pour gérer vos documents, démarches et échanges avec Fiduvia.",
+      eyebrow: "Création de compte",
+      title: "Créez votre espace Fiduvia",
+      sub: "Quelques informations suffisent pour ouvrir votre espace et commencer votre déclaration.",
+      perks: [
+        "Votre déclaration remplie en ligne, à votre rythme",
+        "Le dépôt de vos documents au même endroit",
+        "Le suivi de votre dossier jusqu'à la taxation",
+      ],
+      backHome: "Retour à l'accueil",
       submit: "Créer mon compte",
       loading: "Création du compte...",
-      emailHint:
-        "Cette adresse sera utilisée pour la vérification de votre compte.",
-      passwordTitle: "Votre mot de passe doit contenir :",
-      passwordRule: "Au moins 10 caractères",
       passwordMismatch: "Les deux mots de passe ne correspondent pas.",
-      termsLabel: "J'accepte les conditions générales et la politique de confidentialité.",
-      termsLinkCgv: "conditions générales",
-      termsLinkPrivacy: "politique de confidentialité",
-      termsRequired: "Vous devez accepter les conditions générales pour créer un compte.",
+      termsIntro: "J'ai lu et j'accepte les conditions générales : ",
+      termsSep: " · ",
+      termsPrivacy: "Politique de confidentialité",
+      termsMentions: "Mentions légales / Impressum",
+      termsData: "Protection des données",
+      termsRequired:
+        "Veuillez accepter les conditions générales pour créer votre compte.",
+      legal:
+        "En créant un compte, vous acceptez notre politique de confidentialité.",
       hasAccount: "Vous avez déjà un compte ?",
       login: "Se connecter",
-      secureTitle: "Création de compte sécurisée",
-      secureBody:
-        "Votre adresse e-mail sera vérifiée avant l'accès à votre espace client.",
     },
 
     verify: {
@@ -467,7 +471,9 @@ export const fr = {
       lastName: "Nom",
       lastNamePlaceholder: "Votre nom",
       email: "Adresse e-mail",
-      emailPlaceholder: "vous@exemple.ch",
+      emailPlaceholder: "prenom.nom@exemple.ch",
+      phone: "Téléphone",
+      phonePlaceholder: "+41 79 000 00 00",
       password: "Mot de passe",
       passwordPlaceholder: "Votre mot de passe",
       newPassword: "Nouveau mot de passe",
