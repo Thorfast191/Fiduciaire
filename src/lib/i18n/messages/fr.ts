@@ -641,7 +641,7 @@ export const fr = {
 
     reuse: {
       title: "Vous avez déposé une déclaration en {year}",
-      body: "Reprenez ce que vous avez déjà déclaré (état civil, enfants, revenus, fortune…) pour gagner du temps.",
+      body: "Reprenez les éléments déjà déclarés (état civil, enfants, revenus, fortune…) pour gagner du temps.",
       button: "Reprendre ces éléments",
       done: "Éléments repris",
     },
@@ -727,6 +727,12 @@ export const fr = {
       heritageBadge: "+ CHF 25",
       donationEffectuee: "J'ai effectué une donation",
       donationRecue: "J'ai perçu une donation",
+      entryPrenom: "Prénom",
+      entryNom: "Nom",
+      entryLien: "Lien de parenté",
+      entryMontant: "Montant",
+      entryAdd: "Ajouter une ligne",
+      entryRemove: "Supprimer",
     },
 
     immeubles: {

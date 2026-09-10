@@ -70,6 +70,18 @@ export interface TransportPeriod {
   workPlace: string;
 }
 
+/** One party to an inheritance or gift: name, relationship, amount. */
+export interface SuccessionEntry {
+  firstName: string;
+  lastName: string;
+  lien: string;
+  montant: string;
+}
+
+export function emptySuccessionEntry(): SuccessionEntry {
+  return { firstName: "", lastName: "", lien: "", montant: "" };
+}
+
 export interface Child {
   firstName: string;
   lastName: string;
@@ -121,10 +133,14 @@ export interface Answers {
   fortuneTypes: Partial<Record<WealthKind, boolean>>;
   dettes: "commerciale" | "privee" | "";
   heritageEnCours: "oui" | "non" | "";
+  /** Parties to the inheritance, shown once `heritageEnCours` is "oui". */
+  heritageEntries: SuccessionEntry[];
   /** Whether the filer made a gift during the year. */
   donationEffectuee: "oui" | "non" | "";
+  donationEffectueeEntries: SuccessionEntry[];
   /** Whether the filer received a gift during the year. */
   donationRecue: "oui" | "non" | "";
+  donationRecueEntries: SuccessionEntry[];
   proprietaireImmeuble: "oui" | "non" | "";
   immeubles: Property[];
   loyersPayes: "oui" | "non" | "";
@@ -155,8 +171,11 @@ export function emptyAnswers(): Answers {
     fortuneTypes: {},
     dettes: "",
     heritageEnCours: "",
+    heritageEntries: [],
     donationEffectuee: "",
+    donationEffectueeEntries: [],
     donationRecue: "",
+    donationRecueEntries: [],
     proprietaireImmeuble: "",
     immeubles: [],
     loyersPayes: "",

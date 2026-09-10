@@ -12,11 +12,13 @@ import {
   requiredDocuments,
   DOCUMENT_CATALOGUE,
   ASSISTANCE_OPTIONS,
+  emptySuccessionEntry,
   type Answers,
   type AssistanceKey,
   type Child,
   type Property,
   type TransportPeriod,
+  type SuccessionEntry,
 } from "@/lib/declaration";
 import { Question, RadioRow, CheckRow, TextField, SelectField } from "./Field";
 
@@ -31,6 +33,7 @@ export interface QuestionnaireProps {
   uploadedDocs: { id: string; category: string; filename: string }[];
   /** Previous year's answers, offered as a starting point. */
   previousYear?: number;
+  previousAnswers?: Answers;
 }
 
 /** The deposited document shown on a category row: what to download or replace. */
@@ -54,6 +57,7 @@ export function Questionnaire({
   initialStep,
   uploadedDocs,
   previousYear,
+  previousAnswers,
 }: QuestionnaireProps) {
   const router = useRouter();
   const d = t.declaration;
@@ -250,7 +254,29 @@ export function Questionnaire({
 
                     <button
                       type="button"
-                      onClick={() => setReused(true)}
+                      onClick={() => {
+                        // Carry over the stable elements — the one-off events
+                        // (situation, héritage, donation, express, taxation
+                        // d'office, assistance) are not reused.
+                        if (previousAnswers) {
+                          patch({
+                            canton: previousAnswers.canton,
+                            etatCivil: previousAnswers.etatCivil,
+                            children: previousAnswers.children,
+                            revenus: previousAnswers.revenus,
+                            transportPeriods: previousAnswers.transportPeriods,
+                            fortuneTypes: previousAnswers.fortuneTypes,
+                            dettes: previousAnswers.dettes,
+                            proprietaireImmeuble:
+                              previousAnswers.proprietaireImmeuble,
+                            immeubles: previousAnswers.immeubles,
+                            loyersPayes: previousAnswers.loyersPayes,
+                            pilier3: previousAnswers.pilier3,
+                            rachat2: previousAnswers.rachat2,
+                          });
+                        }
+                        setReused(true);
+                      }}
                       className="fx-btn-send"
                     >
                       {d.reuse.button}
@@ -657,41 +683,102 @@ export function Questionnaire({
                 </Question>
 
                 <Question label={d.fortune.heritageDonationsTitle}>
-                  <div className="flex flex-col gap-3.5">
-                    <div>
-                      <div className="flex items-start justify-between gap-3">
-                        <CheckRow
-                          checked={answers.heritageEnCours === "oui"}
-                          onChange={(on) =>
-                            patch({ heritageEnCours: on ? "oui" : "" })
-                          }
-                          label={d.fortune.heritage}
-                        />
-                        <span className="fx-figure shrink-0 whitespace-nowrap rounded-full bg-teal-100 px-2.5 py-1 text-[11px] font-semibold text-brand">
-                          {d.fortune.heritageBadge}
-                        </span>
+                  {(() => {
+                    const entryLabels = {
+                      prenom: d.fortune.entryPrenom,
+                      nom: d.fortune.entryNom,
+                      lien: d.fortune.entryLien,
+                      montant: d.fortune.entryMontant,
+                      add: d.fortune.entryAdd,
+                      remove: d.fortune.entryRemove,
+                    };
+                    // Ticking a box seeds one blank entry row, like the mockup.
+                    const seed = (list: SuccessionEntry[]) =>
+                      list.length ? list : [emptySuccessionEntry()];
+                    return (
+                      <div className="flex flex-col gap-4">
+                        <div>
+                          <div className="flex items-start justify-between gap-3">
+                            <CheckRow
+                              checked={answers.heritageEnCours === "oui"}
+                              onChange={(on) =>
+                                patch({
+                                  heritageEnCours: on ? "oui" : "",
+                                  heritageEntries: on
+                                    ? seed(answers.heritageEntries)
+                                    : answers.heritageEntries,
+                                })
+                              }
+                              label={d.fortune.heritage}
+                            />
+                            <span className="fx-figure shrink-0 whitespace-nowrap rounded-full bg-teal-100 px-2.5 py-1 text-[11px] font-semibold text-brand">
+                              {d.fortune.heritageBadge}
+                            </span>
+                          </div>
+                          <p className="mt-1 pl-[30px] text-[12.5px] leading-[1.4] text-muted">
+                            {d.fortune.heritageNote}
+                          </p>
+                          {answers.heritageEnCours === "oui" ? (
+                            <SuccessionEntries
+                              entries={answers.heritageEntries}
+                              labels={entryLabels}
+                              onChange={(heritageEntries) =>
+                                patch({ heritageEntries })
+                              }
+                            />
+                          ) : null}
+                        </div>
+
+                        <div>
+                          <CheckRow
+                            checked={answers.donationEffectuee === "oui"}
+                            onChange={(on) =>
+                              patch({
+                                donationEffectuee: on ? "oui" : "",
+                                donationEffectueeEntries: on
+                                  ? seed(answers.donationEffectueeEntries)
+                                  : answers.donationEffectueeEntries,
+                              })
+                            }
+                            label={d.fortune.donationEffectuee}
+                          />
+                          {answers.donationEffectuee === "oui" ? (
+                            <SuccessionEntries
+                              entries={answers.donationEffectueeEntries}
+                              labels={entryLabels}
+                              onChange={(donationEffectueeEntries) =>
+                                patch({ donationEffectueeEntries })
+                              }
+                            />
+                          ) : null}
+                        </div>
+
+                        <div>
+                          <CheckRow
+                            checked={answers.donationRecue === "oui"}
+                            onChange={(on) =>
+                              patch({
+                                donationRecue: on ? "oui" : "",
+                                donationRecueEntries: on
+                                  ? seed(answers.donationRecueEntries)
+                                  : answers.donationRecueEntries,
+                              })
+                            }
+                            label={d.fortune.donationRecue}
+                          />
+                          {answers.donationRecue === "oui" ? (
+                            <SuccessionEntries
+                              entries={answers.donationRecueEntries}
+                              labels={entryLabels}
+                              onChange={(donationRecueEntries) =>
+                                patch({ donationRecueEntries })
+                              }
+                            />
+                          ) : null}
+                        </div>
                       </div>
-                      <p className="mt-1 pl-[30px] text-[12.5px] leading-[1.4] text-muted">
-                        {d.fortune.heritageNote}
-                      </p>
-                    </div>
-
-                    <CheckRow
-                      checked={answers.donationEffectuee === "oui"}
-                      onChange={(on) =>
-                        patch({ donationEffectuee: on ? "oui" : "" })
-                      }
-                      label={d.fortune.donationEffectuee}
-                    />
-
-                    <CheckRow
-                      checked={answers.donationRecue === "oui"}
-                      onChange={(on) =>
-                        patch({ donationRecue: on ? "oui" : "" })
-                      }
-                      label={d.fortune.donationRecue}
-                    />
-                  </div>
+                    );
+                  })()}
                 </Question>
               </>
             ) : null}
@@ -1008,6 +1095,81 @@ export function Questionnaire({
     );
     patch({ transportPeriods: next });
   }
+}
+
+/** Repeatable name / relationship / amount rows for an inheritance or gift. */
+function SuccessionEntries({
+  entries,
+  labels,
+  onChange,
+}: {
+  entries: SuccessionEntry[];
+  labels: {
+    prenom: string;
+    nom: string;
+    lien: string;
+    montant: string;
+    add: string;
+    remove: string;
+  };
+  onChange: (next: SuccessionEntry[]) => void;
+}) {
+  const patchEntry = (i: number, u: Partial<SuccessionEntry>) =>
+    onChange(entries.map((e, j) => (j === i ? { ...e, ...u } : e)));
+
+  return (
+    <div className="mt-3 flex flex-col gap-3">
+      {entries.map((e, i) => (
+        <div
+          key={i}
+          className="rounded-[var(--radius-md)] border border-line bg-sunken p-4"
+        >
+          <div className="flex flex-wrap gap-3">
+            <TextField
+              label={labels.prenom}
+              value={e.firstName}
+              onChange={(v) => patchEntry(i, { firstName: v })}
+            />
+            <TextField
+              label={labels.nom}
+              value={e.lastName}
+              onChange={(v) => patchEntry(i, { lastName: v })}
+            />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <TextField
+              label={labels.lien}
+              value={e.lien}
+              onChange={(v) => patchEntry(i, { lien: v })}
+            />
+            <TextField
+              label={labels.montant}
+              type="number"
+              placeholder="CHF"
+              value={e.montant}
+              onChange={(v) => patchEntry(i, { montant: v })}
+            />
+          </div>
+          {entries.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => onChange(entries.filter((_, j) => j !== i))}
+              className="mt-3 text-[12.5px] font-medium text-[#A2443A]"
+            >
+              {labels.remove}
+            </button>
+          ) : null}
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...entries, emptySuccessionEntry()])}
+        className="self-start text-[13px] font-semibold text-brand"
+      >
+        {labels.add}
+      </button>
+    </div>
+  );
 }
 
 function emptyChild(): Child {

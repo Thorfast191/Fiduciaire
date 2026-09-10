@@ -65,10 +65,15 @@ export default async function DossierDetailPage({
     ]);
 
     const answers = normaliseAnswers(access.dossier.answers);
-    const previous = siblings
-      .map((row) => row.taxYear)
-      .filter((year) => year < access.dossier.taxYear)
-      .sort((a, b) => b - a)[0];
+    // The most recent earlier declaration, if any — its answers seed the
+    // "Reprendre ces éléments" shortcut on the first step.
+    const previousDossier = siblings
+      .filter((row) => row.taxYear < access.dossier.taxYear)
+      .sort((a, b) => b.taxYear - a.taxYear)[0];
+    const previous = previousDossier?.taxYear;
+    const previousAnswers = previousDossier
+      ? normaliseAnswers(previousDossier.answers)
+      : undefined;
 
     return (
       <>
@@ -94,6 +99,7 @@ export default async function DossierDetailPage({
             filename: doc.filename,
           }))}
           previousYear={previous}
+          previousAnswers={previousAnswers}
         />
       </>
     );

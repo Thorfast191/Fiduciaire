@@ -725,6 +725,12 @@ export const en: Messages = {
       heritageBadge: "+ CHF 25",
       donationEffectuee: "I made a gift",
       donationRecue: "I received a gift",
+      entryPrenom: "First name",
+      entryNom: "Last name",
+      entryLien: "Relationship",
+      entryMontant: "Amount",
+      entryAdd: "Add a line",
+      entryRemove: "Remove",
     },
 
     immeubles: {
