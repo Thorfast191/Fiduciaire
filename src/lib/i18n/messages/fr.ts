@@ -917,6 +917,26 @@ export const fr = {
     },
   },
 
+  capitalForm: {
+    yearLabel: "Année du retrait",
+    cantonLabel: "Canton",
+    cantonPlaceholder: "— Sélectionner —",
+    docTitle: "Attestation de l'assurance / banque",
+    docHint: "Document attestant le versement du capital",
+    upload: "Téléverser",
+    replace: "Remplacer",
+    remove: "Supprimer",
+    download: "Télécharger",
+    priceLabel: "Forfait prestation en capital",
+    transmit: "Transmettre ce dossier",
+    transmitting: "Transmission…",
+    needDoc: "Veuillez joindre l'attestation avant de transmettre.",
+    transmittedTitle: "Dossier transmis",
+    transmittedBody:
+      "Nous avons bien reçu votre prestation en capital. Notre équipe la traite et vous informera une fois le dossier clôturé.",
+    error: "Une erreur est survenue. Veuillez réessayer.",
+  },
+
   documents: {
     fiscalDossier: "Dossier fiscal",
     title: "Documents",

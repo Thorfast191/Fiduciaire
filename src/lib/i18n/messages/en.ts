@@ -914,6 +914,26 @@ export const en: Messages = {
     },
   },
 
+  capitalForm: {
+    yearLabel: "Year of withdrawal",
+    cantonLabel: "Canton",
+    cantonPlaceholder: "— Select —",
+    docTitle: "Insurance / bank certificate",
+    docHint: "Document confirming the payment of the capital",
+    upload: "Upload",
+    replace: "Replace",
+    remove: "Remove",
+    download: "Download",
+    priceLabel: "Capital benefit flat fee",
+    transmit: "Submit this file",
+    transmitting: "Submitting…",
+    needDoc: "Please attach the certificate before submitting.",
+    transmittedTitle: "File submitted",
+    transmittedBody:
+      "We have received your capital benefit. Our team is processing it and will let you know once the file is closed.",
+    error: "Something went wrong. Please try again.",
+  },
+
   documents: {
     fiscalDossier: "Tax file",
     title: "Documents",
