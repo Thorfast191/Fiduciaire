@@ -631,6 +631,7 @@ export const en: Messages = {
       sub: "Select the relevant situation, or continue with your standard tax return.",
       standard: "Standard",
       arrivee: "Arrival from abroad",
+      // (situations.standard renders as "Normale" in FR; "Standard" reads fine in EN)
       taxation_office: "Default assessment",
       deces: "Death",
       depart: "Departure abroad",
@@ -646,12 +647,13 @@ export const en: Messages = {
 
     accueil: {
       canton: "Canton of domicile on 31.12",
+      cantonPlaceholder: "— Select —",
       departureDate: "Date of departure abroad",
       arrivalDate: "Date of arrival in Switzerland",
       express: "I would like 48h express processing",
       assistanceTitle: "Fiduvia assistance",
       assistanceSub:
-        "Deadline extension requests, final assessment review, objections, follow-up of supporting documents.",
+        "Select the assistance services you want. The price adjusts automatically.",
       taxationOffice: "Were you assessed by default during this tax period?",
       taxationOfficeHint:
         "If so, we will file the objection and handle the process for you.",

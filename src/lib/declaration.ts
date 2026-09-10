@@ -7,15 +7,8 @@
  * this module stays free of React and of `"use client"`.
  */
 
-export const CANTONS = [
-  "Vaud",
-  "Valais",
-  "Fribourg",
-  "Genève",
-  "Neuchâtel",
-  "Berne",
-  "Jura",
-] as const;
+/** The cantons Fiduvia serves, as the reference's canton dropdown lists them. */
+export const CANTONS = ["Vaud", "Valais", "Fribourg"] as const;
 
 /** The special situations offered before a declaration is started. */
 export const SITUATIONS = [
@@ -159,7 +152,7 @@ export interface Answers {
 export function emptyAnswers(): Answers {
   return {
     situation: "standard",
-    canton: "Vaud",
+    canton: "",
     departureDate: "",
     arrivalDate: "",
     express: false,
@@ -241,15 +234,14 @@ export type DocumentKey = keyof typeof DOCUMENT_CATALOGUE;
  */
 /**
  * Indicative completion of the seven questionnaire steps, 0–100, for the portal
- * card's progress bar. Each step counts once it holds genuine input (the canton
- * defaults to Vaud, so step one needs more than that). A dossier the client has
- * not touched returns 0, which is what tells the card to say "Ouvrir" rather
- * than "Continuer".
+ * card's progress bar. Each step counts once it holds genuine input. A dossier
+ * the client has not touched returns 0, which is what tells the card to say
+ * "Ouvrir" rather than "Continuer".
  */
 export function declarationProgress(a: Answers): number {
   const steps = [
     a.situation !== "standard" ||
-      a.canton !== "Vaud" ||
+      a.canton !== "" ||
       a.express ||
       Boolean(a.departureDate) ||
       Boolean(a.arrivalDate),
@@ -304,7 +296,10 @@ export function requiredDocuments(a: Answers): string[] {
   }
 
   if (a.loyersPayes === "oui") d.push("bailLoyerLocataire");
-  if (a.taxationOffice === "oui") d.push("decisionTaxationOffice");
+  // Taxation d'office is chosen as a situation (the pop-up), not a question;
+  // either signal asks for the assessment decision.
+  if (a.taxationOffice === "oui" || a.situation === "taxation_office")
+    d.push("decisionTaxationOffice");
   if (a.pilier3) d.push("pilier3a");
   if (a.rachat2) d.push("rachatLpp");
 
@@ -395,7 +390,7 @@ export function computePrice(a: Answers): {
   const assistance = assistanceTotal(a.assistance ?? {});
   if (assistance > 0) lines.push({ key: "assistance", amount: assistance });
 
-  if (a.taxationOffice === "oui")
+  if (a.taxationOffice === "oui" || a.situation === "taxation_office")
     lines.push({ key: "taxationOffice", amount: TAXATION_OFFICE_PRICE });
 
   return {

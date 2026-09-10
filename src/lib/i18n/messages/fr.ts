@@ -631,7 +631,7 @@ export const fr = {
     situations: {
       title: "Une de ces situations s'est-elle produite durant la période fiscale {year} ?",
       sub: "Sélectionnez la situation concernée, ou poursuivez avec votre déclaration standard.",
-      standard: "Standard",
+      standard: "Normale",
       arrivee: "Arrivée de l'étranger",
       taxation_office: "Taxation d'office",
       deces: "Décès",
@@ -648,12 +648,13 @@ export const fr = {
 
     accueil: {
       canton: "Canton de domicile au 31.12",
+      cantonPlaceholder: "— Sélectionner —",
       departureDate: "Date du départ à l'étranger",
       arrivalDate: "Date d'arrivée en Suisse",
-      express: "Je souhaite un traitement express 48h",
+      express: "Je souhaite un traitement express en 48h",
       assistanceTitle: "Fiduvia assistance",
       assistanceSub:
-        "Demandes de délai, analyse de la taxation définitive, réclamations, suivi des pièces justificatives.",
+        "Sélectionnez les prestations d'assistance souhaitées. Le tarif s'ajuste automatiquement.",
       taxationOffice: "Avez-vous été taxé d'office durant cette période fiscale ?",
       taxationOfficeHint:
         "Si oui nous nous occuperons de faire une réclamation et les démarches pour vous.",

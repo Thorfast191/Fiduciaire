@@ -289,7 +289,10 @@ export function Questionnaire({
                     label={d.accueil.canton}
                     value={answers.canton}
                     onChange={(canton) => patch({ canton })}
-                    options={CANTONS.map((c) => ({ value: c, label: c }))}
+                    options={[
+                      { value: "", label: d.accueil.cantonPlaceholder },
+                      ...CANTONS.map((c) => ({ value: c, label: c })),
+                    ]}
                   />
                 </Question>
 
@@ -315,13 +318,13 @@ export function Questionnaire({
                   </Question>
                 ) : null}
 
-                <Question label={d.accueil.express}>
+                <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-6">
                   <CheckRow
                     checked={answers.express}
                     onChange={(express) => patch({ express })}
                     label={d.accueil.express}
                   />
-                </Question>
+                </div>
 
                 <Question
                   label={d.accueil.assistanceTitle}
@@ -349,24 +352,10 @@ export function Questionnaire({
                           delete next.ensemble;
                           patch({ assistance: next });
                         }}
-                        label={`${t.assistance.options[o.key]} — CHF ${o.price}`}
+                        label={t.assistance.options[o.key]}
                       />
                     ))}
                   </div>
-                </Question>
-
-                <Question
-                  label={d.accueil.taxationOffice}
-                  hint={d.accueil.taxationOfficeHint}
-                >
-                  <RadioRow
-                    name="taxationOffice"
-                    value={answers.taxationOffice}
-                    onChange={(v) =>
-                      patch({ taxationOffice: v as Answers["taxationOffice"] })
-                    }
-                    options={yesNo}
-                  />
                 </Question>
               </>
             ) : null}
