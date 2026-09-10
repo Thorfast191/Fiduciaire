@@ -8,6 +8,7 @@ import {
 } from "@/lib/declaration";
 import { listDocumentsForDossier } from "@/lib/documents";
 import { markDossierSubmitted } from "@/lib/dossiers";
+import { assignInvoiceNumber } from "@/lib/invoices";
 import {
   createCheckoutSession,
   retrieveCheckoutSession,
@@ -134,12 +135,15 @@ export async function finalizeCheckoutSession(
         eq(payments.status, "pending"),
       ),
     )
-    .returning({ dossierId: payments.dossierId });
+    .returning({ id: payments.id, dossierId: payments.dossierId });
 
-  const dossierId = updated[0]?.dossierId;
-  if (!dossierId) return { finalized: false };
+  const settled = updated[0];
+  if (!settled?.dossierId) return { finalized: false };
 
-  await markDossierSubmitted(dossierId);
+  // Give the settled payment its invoice number now, so numbering follows
+  // payment order. Downloading the invoice would assign one anyway.
+  await assignInvoiceNumber(settled.id);
+  await markDossierSubmitted(settled.dossierId);
   return { finalized: true };
 }
 

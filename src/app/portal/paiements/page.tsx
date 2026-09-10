@@ -103,6 +103,14 @@ export default async function PaymentsPage() {
                     >
                       {row.status === "paid" ? `✓ ${p.paid}` : p.pending}
                     </div>
+                    {row.status === "paid" ? (
+                      <a
+                        href={`/api/payments/${row.id}/invoice`}
+                        className="mt-1.5 inline-block text-[12px] font-medium text-[var(--brand)] hover:underline"
+                      >
+                        {p.downloadInvoice}
+                      </a>
+                    ) : null}
                   </td>
                 </tr>
               ))}

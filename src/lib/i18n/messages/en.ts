@@ -863,6 +863,19 @@ export const en: Messages = {
       twint: "TWINT",
       other: "Other",
     },
+    downloadInvoice: "Download invoice",
+    invoice: {
+      title: "INVOICE",
+      number: "No.",
+      date: "Date",
+      billedTo: "Billed to",
+      description: "Description",
+      amount: "Amount",
+      total: "Total",
+      paidBy: "Paid by {method}",
+      vatNote: "VAT not applicable — turnover below the legal threshold.",
+      thanks: "Thank you for your trust.",
+    },
   },
 
   documents: {

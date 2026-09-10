@@ -358,6 +358,10 @@ export const payments = pgTable(
      *  second payment row for the same session. */
     stripeSessionId: text("stripe_session_id").unique(),
     stripePaymentIntentId: text("stripe_payment_intent_id"),
+    /** Human invoice number, e.g. "FID-2026-0001". Assigned once a payment is
+     *  settled (see `assignInvoiceNumber`); null while pending. Unique so a
+     *  number is never reused. */
+    invoiceNumber: text("invoice_number").unique(),
     paidAt: timestamp("paid_at", { withTimezone: true })
       .notNull()
       .default(sql`now()`),
@@ -371,6 +375,16 @@ export const payments = pgTable(
     index("payments_dossier_idx").on(t.dossierId),
   ],
 );
+
+/**
+ * One row per calendar year, holding the last invoice sequence issued that
+ * year. Incremented atomically (INSERT … ON CONFLICT DO UPDATE … RETURNING) so
+ * two concurrent payments never take the same number.
+ */
+export const invoiceCounters = pgTable("invoice_counters", {
+  year: integer("year").primaryKey(),
+  lastSeq: integer("last_seq").notNull().default(0),
+});
 
 export type AssistanceSubscription =
   typeof assistanceSubscriptions.$inferSelect;

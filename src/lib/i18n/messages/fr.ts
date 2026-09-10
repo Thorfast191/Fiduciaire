@@ -865,6 +865,20 @@ export const fr = {
       twint: "TWINT",
       other: "Autre",
     },
+    downloadInvoice: "Télécharger la facture",
+    invoice: {
+      title: "FACTURE",
+      number: "N°",
+      date: "Date",
+      billedTo: "Facturé à",
+      description: "Description",
+      amount: "Montant",
+      total: "Total",
+      paidBy: "Payé par {method}",
+      vatNote:
+        "TVA non applicable — chiffre d'affaires inférieur au seuil légal.",
+      thanks: "Merci de votre confiance.",
+    },
   },
 
   documents: {

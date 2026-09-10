@@ -3,6 +3,7 @@ import { db } from "@/db/client";
 import { assistanceSubscriptions, payments, users } from "@/db/schema";
 import type { AssistanceSubscription, Payment } from "@/db/schema";
 import { assistanceTotal, type AssistanceKey } from "@/lib/declaration";
+import { assignInvoiceNumber } from "@/lib/invoices";
 
 export async function listSubscriptions(
   clientId: string,
@@ -113,6 +114,7 @@ export async function listAllPayments(limit = 200): Promise<AdminPaymentRow[]> {
       dossierId: payments.dossierId,
       stripeSessionId: payments.stripeSessionId,
       stripePaymentIntentId: payments.stripePaymentIntentId,
+      invoiceNumber: payments.invoiceNumber,
       paidAt: payments.paidAt,
       createdAt: payments.createdAt,
       firstName: users.firstName,
@@ -134,6 +136,7 @@ export async function recordPayment(params: {
   status: Payment["status"];
 }): Promise<Payment> {
   const [row] = await db.insert(payments).values(params).returning();
+  if (row.status === "paid") await assignInvoiceNumber(row.id);
   return row;
 }
 
@@ -146,6 +149,7 @@ export async function setPaymentStatus(
     .set({ status, ...(status === "paid" ? { paidAt: new Date() } : {}) })
     .where(eq(payments.id, id))
     .returning();
+  if (row?.status === "paid") await assignInvoiceNumber(row.id);
   return row;
 }
 
