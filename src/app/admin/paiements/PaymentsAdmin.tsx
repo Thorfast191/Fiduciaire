@@ -247,6 +247,14 @@ export function PaymentsAdmin({
                     </td>
                     <td className="fx-figure px-4 py-4 text-right text-[15px] font-bold text-strong">
                       CHF {r.amountChf}
+                      {r.status === "paid" ? (
+                        <a
+                          href={`/api/payments/${r.id}/invoice`}
+                          className="mt-1 block text-[11px] font-medium text-[var(--brand)] hover:underline"
+                        >
+                          {t.payments.downloadInvoice}
+                        </a>
+                      ) : null}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
