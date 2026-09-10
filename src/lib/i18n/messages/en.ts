@@ -744,8 +744,11 @@ export const en: Messages = {
     },
 
     deductions: {
-      pilier3: "Do you contribute to a 3rd pillar (3a)?",
-      rachat2: "Did you make a 2nd pillar (LPP) buy-in this year?",
+      loyerPaid: "I pay rent",
+      loyerNote:
+        "The imputed rental value is taken into account if you are an owner.",
+      pilier3: "I contributed to pillar 3a",
+      rachat2: "I made a 2nd-pillar buy-in",
     },
 
     transmission: {

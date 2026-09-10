@@ -870,38 +870,38 @@ export function Questionnaire({
                       </Question>
                     ))
                   : null}
-
-                <Question label={d.immeubles.rentPaid}>
-                  <RadioRow
-                    name="loyers"
-                    value={answers.loyersPayes}
-                    onChange={(v) =>
-                      patch({ loyersPayes: v as Answers["loyersPayes"] })
-                    }
-                    options={yesNo}
-                  />
-                </Question>
               </>
             ) : null}
 
             {step === 5 ? (
-              <>
-                <Question label={d.deductions.pilier3}>
+              <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-6">
+                <div className="flex flex-col gap-3.5">
+                  <div>
+                    <CheckRow
+                      checked={answers.loyersPayes === "oui"}
+                      onChange={(on) =>
+                        patch({ loyersPayes: on ? "oui" : "" })
+                      }
+                      label={d.deductions.loyerPaid}
+                    />
+                    <p className="mt-1 pl-[30px] text-[12.5px] leading-[1.4] text-muted">
+                      {d.deductions.loyerNote}
+                    </p>
+                  </div>
+
                   <CheckRow
                     checked={answers.pilier3}
                     onChange={(pilier3) => patch({ pilier3 })}
-                    label={d.yes}
+                    label={d.deductions.pilier3}
                   />
-                </Question>
 
-                <Question label={d.deductions.rachat2}>
                   <CheckRow
                     checked={answers.rachat2}
                     onChange={(rachat2) => patch({ rachat2 })}
-                    label={d.yes}
+                    label={d.deductions.rachat2}
                   />
-                </Question>
-              </>
+                </div>
+              </div>
             ) : null}
 
             {step === 6 ? (

@@ -746,19 +746,22 @@ export const fr = {
     },
 
     deductions: {
-      pilier3: "Cotisez-vous au 3e pilier (3a) ?",
-      rachat2: "Avez-vous effectué un rachat 2e pilier (LPP) cette année ?",
+      loyerPaid: "Je paie un loyer",
+      loyerNote:
+        "La valeur locative sera prise en compte si vous êtes propriétaire.",
+      pilier3: "J'ai cotisé au 3e pilier A",
+      rachat2: "J'ai effectué un rachat de 2e pilier",
     },
 
     transmission: {
       title: "Toutes vos pièces justificatives",
       note: "documents requis selon votre situation",
-      priceTitle: "Récapitulatif du prix",
+      priceTitle: "Récapitulatif du tarif",
       total: "Total",
-      progress: "{done} / {total} documents transmis",
-      upload: "Transmettre",
-      uploaded: "Transmis",
-      toUpload: "À transmettre",
+      progress: "{done} / {total} documents déposés",
+      upload: "Téléverser",
+      uploaded: "Déposé",
+      toUpload: "À déposer",
       replace: "Remplacer",
       download: "Télécharger",
       remove: "Supprimer",
