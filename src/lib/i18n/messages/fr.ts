@@ -937,6 +937,89 @@ export const fr = {
     error: "Une erreur est survenue. Veuillez réessayer.",
   },
 
+  simulationForm: {
+    periodLabel: "Pour quelle période fiscale souhaitez-vous la simulation d'impôt ?",
+    cantonLabel: "Canton de domicile au 31.12",
+    cantonPlaceholder: "— Sélectionner —",
+    express: "Je souhaite un traitement express en 48h",
+    familyTitle: "Situation familiale",
+    maritalLabel: "Situation familiale",
+    childrenLabel: "Nombre d'enfants à charge",
+    revenusTitle: "Revenus",
+    revenusLabel: "Total des revenus annuels (CHF)",
+    revenusNote: "Salaires, rentes et autres revenus cumulés du ménage.",
+    fortuneTitle: "Fortune",
+    fortuneLabel: "Total de la fortune (CHF)",
+    fortuneNote: "Épargne, titres et autres avoirs au 31.12.",
+    immeublesTitle: "Immeubles",
+    proprietaire: "Je suis propriétaire",
+    deductionsTitle: "Déductions",
+    deductionsLabel: "Déductions envisagées",
+    deductionsPlaceholder:
+      "Rachats LPP, 3e pilier, frais de garde, pension... Décrivez librement.",
+    transmitTitle: "Transmission du formulaire",
+    transmitNote:
+      "Aucun document n'est requis pour une simulation. Vérifiez vos informations puis transmettez le formulaire.",
+    transmit: "Transmettre la simulation",
+    transmitting: "Transmission…",
+    transmittedTitle: "Simulation transmise",
+    transmittedBody:
+      "Nous avons bien reçu votre demande de simulation. Notre équipe vous répondra prochainement.",
+    error: "Une erreur est survenue. Veuillez réessayer.",
+  },
+
+  acomptesForm: {
+    periodLabel:
+      "Pour quelle période fiscale souhaitez-vous la détermination des acomptes ?",
+    cantonLabel: "Canton de domicile au 31.12",
+    cantonPlaceholder: "— Sélectionner —",
+    express: "Je souhaite un traitement express en 48h",
+    rfTitle: "Revenus et fortune",
+    revenu: "Revenu annuel attendu (CHF)",
+    fortune: "Fortune attendue au 31.12 (CHF)",
+    autres: "Autres revenus attendus (CHF)",
+    charges: "Charges et déductions attendues (CHF)",
+    transmitTitle: "Transmission du document",
+    transmitNote:
+      "Joignez le formulaire de détermination des acomptes puis transmettez votre demande.",
+    docTitle: "Formulaire de détermination des acomptes",
+    docHint: "Téléversez le formulaire de détermination des acomptes complété.",
+    upload: "Téléverser",
+    download: "Télécharger",
+    remove: "Supprimer",
+    transmit: "Transmettre la demande",
+    transmitting: "Transmission…",
+    needDoc: "Veuillez joindre le formulaire avant de transmettre.",
+    transmittedTitle: "Demande transmise",
+    transmittedBody:
+      "Nous avons bien reçu votre demande de détermination des acomptes. Notre équipe la traite.",
+    error: "Une erreur est survenue. Veuillez réessayer.",
+  },
+
+  relectureForm: {
+    periodLabel:
+      "Pour quelle année de déclaration d'impôt souhaitez-vous une relecture ?",
+    situationTitle: "Votre situation",
+    seule: "Personne seule",
+    couple: "En couple",
+    priceLabel: "Tarif de la relecture",
+    transmitTitle: "Transmission du document",
+    transmitNote:
+      "Joignez la copie de votre déclaration d'impôt puis transmettez votre demande.",
+    docTitle: "Copie de votre déclaration d'impôt",
+    docHint: "Téléversez une copie de la déclaration d'impôt à relire.",
+    upload: "Téléverser",
+    download: "Télécharger",
+    remove: "Supprimer",
+    transmit: "Transmettre la demande",
+    transmitting: "Transmission…",
+    needDoc: "Veuillez joindre la copie avant de transmettre.",
+    transmittedTitle: "Demande transmise",
+    transmittedBody:
+      "Nous avons bien reçu votre demande de relecture. Notre équipe vous répondra prochainement.",
+    error: "Une erreur est survenue. Veuillez réessayer.",
+  },
+
   documents: {
     fiscalDossier: "Dossier fiscal",
     title: "Documents",

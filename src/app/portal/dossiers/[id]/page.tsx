@@ -2,6 +2,11 @@ import Link from "next/link";
 import { getT } from "@/lib/i18n";
 import DossierDetail from "./DossierDetail";
 import { CapitalForm } from "./CapitalForm";
+import {
+  SimulationForm,
+  AcomptesForm,
+  RelectureForm,
+} from "./PrestationForms";
 import NotificationBanner from "./NotificationBanner";
 import { listNotificationsForDossier } from "@/lib/notifications";
 import { getAccessibleDossier } from "@/lib/dossiers";
@@ -142,6 +147,12 @@ export default async function DossierDetailPage({
       <div className="mt-6">
         {access.ok && serviceType === "capital" ? (
           <CapitalForm dossierId={id} taxYear={access.dossier.taxYear} />
+        ) : access.ok && serviceType === "simulation" ? (
+          <SimulationForm dossierId={id} taxYear={access.dossier.taxYear} />
+        ) : access.ok && serviceType === "acompte" ? (
+          <AcomptesForm dossierId={id} taxYear={access.dossier.taxYear} />
+        ) : access.ok && serviceType === "relecture" ? (
+          <RelectureForm dossierId={id} taxYear={access.dossier.taxYear} />
         ) : (
           <DossierDetail dossierId={id} />
         )}
