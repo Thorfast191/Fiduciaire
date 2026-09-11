@@ -677,10 +677,12 @@ export function RelectureForm({
   const f = t.relectureForm;
   const p = usePrestation(dossierId);
 
+  const [periode, setPeriode] = useState(String(taxYear));
   const [situation, setSituation] = useState("seule");
 
   useEffect(() => {
     if (!p.loaded) return;
+    setPeriode(str(p.answers.relPeriode) || String(taxYear));
     setSituation(str(p.answers.relSituation) || "seule");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.loaded]);
@@ -690,41 +692,37 @@ export function RelectureForm({
     return <Transmitted title={f.transmittedTitle} body={f.transmittedBody} />;
 
   const doc = p.docs.find((d) => d.category === "copieDeclaration");
+  const cy = new Date().getFullYear();
+  const periodOpts = [cy - 3, cy - 2, cy - 1, cy].map((y) => ({
+    value: String(y),
+    label: String(y),
+  }));
+  // Couple relecture costs more, as in the mockup (`relPrice = couple ? 75 : 50`).
+  const fee = situation === "couple" ? 75 : RELECTURE_FEE;
 
   return (
     <div className="flex flex-col gap-4">
-      <Card>
-        <SelectField
-          label={f.periodLabel}
-          value={String(taxYear)}
-          onChange={() => {}}
-          options={[{ value: String(taxYear), label: String(taxYear) }]}
-        />
+      <Card title={f.periodLabel}>
+        <div className="max-w-[200px]">
+          <SelectField
+            label=""
+            value={periode}
+            onChange={setPeriode}
+            options={periodOpts}
+          />
+        </div>
       </Card>
 
       <Card title={f.situationTitle}>
-        <div className="flex flex-col gap-2.5">
-          {[
+        <RadioRow
+          name="rel-situation"
+          value={situation}
+          onChange={setSituation}
+          options={[
             { value: "seule", label: f.seule },
             { value: "couple", label: f.couple },
-          ].map((o) => (
-            <label
-              key={o.value}
-              className="flex cursor-pointer items-center gap-3 text-[15px] text-body"
-            >
-              <input
-                type="radio"
-                name="rel-situation"
-                checked={situation === o.value}
-                onChange={() => setSituation(o.value)}
-                className="h-[18px] w-[18px] accent-[var(--brand)]"
-              />
-              <span className={situation === o.value ? "font-semibold text-strong" : ""}>
-                {o.label}
-              </span>
-            </label>
-          ))}
-        </div>
+          ]}
+        />
 
         <div className="mt-4 flex items-baseline justify-between gap-4 border-t border-line pt-4">
           <span className="text-[15px] font-semibold text-strong">
@@ -734,16 +732,22 @@ export function RelectureForm({
             className="fx-figure text-[22px] font-extrabold leading-none"
             style={{ color: "var(--brand)" }}
           >
-            CHF {RELECTURE_FEE}
+            CHF {fee}
           </span>
         </div>
       </Card>
 
-      <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
-        <p className="disp m-0 text-[16px] font-bold text-strong">
+      <div
+        className="rounded-[16px] border p-6"
+        style={{ background: "#F5F8F8", borderColor: "#C7E0DE" }}
+      >
+        <p className="m-0 text-[16px] font-bold" style={{ color: "#145863" }}>
           {f.transmitTitle}
         </p>
-        <p className="mt-1 text-[13.5px] leading-[1.45] text-muted">
+        <p
+          className="mt-2 text-[14px] leading-[1.55]"
+          style={{ color: "#2E6068" }}
+        >
           {f.transmitNote}
         </p>
         <div className="mt-4">
@@ -780,7 +784,10 @@ export function RelectureForm({
                 p.setError(f.needDoc);
                 return;
               }
-              p.finalize({ relSituation: situation }, f.error);
+              p.finalize(
+                { relPeriode: periode, relSituation: situation },
+                f.error,
+              );
             }}
           />
         </div>
