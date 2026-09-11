@@ -126,7 +126,7 @@ export function SelectField({
 }) {
   return (
     <label className="flex min-w-[180px] flex-1 flex-col gap-[7px]">
-      <span className="fx-field-label m-0">{label}</span>
+      {label ? <span className="fx-field-label m-0">{label}</span> : null}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}

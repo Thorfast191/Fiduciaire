@@ -2,7 +2,12 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useT } from "@/lib/i18n/I18nProvider";
-import { TextField, SelectField, CheckRow } from "@/components/declaration/Field";
+import {
+  TextField,
+  SelectField,
+  CheckRow,
+  RadioRow,
+} from "@/components/declaration/Field";
 import { FormAlert } from "@/components/ui/Field";
 import { CANTONS } from "@/lib/declaration";
 import { usePrestation, type PrestationDoc } from "./usePrestation";
@@ -154,6 +159,21 @@ function Transmitted({ title, body }: { title: string; body: string }) {
 
 /* ------------------------------- Simulation ------------------------------- */
 
+interface SimImmeuble {
+  lieu: string;
+  acqDate: string;
+  alienDate: string;
+  loue: "oui" | "non" | "";
+  dette: "oui" | "non" | "";
+}
+const emptySimImmeuble = (): SimImmeuble => ({
+  lieu: "",
+  acqDate: "",
+  alienDate: "",
+  loue: "",
+  dette: "",
+});
+
 export function SimulationForm({
   dossierId,
   taxYear,
@@ -165,6 +185,7 @@ export function SimulationForm({
   const f = t.simulationForm;
   const p = usePrestation(dossierId);
 
+  const [periode, setPeriode] = useState(String(taxYear));
   const [canton, setCanton] = useState("");
   const [express, setExpress] = useState(false);
   const [marital, setMarital] = useState("celibataire");
@@ -172,10 +193,12 @@ export function SimulationForm({
   const [revenus, setRevenus] = useState("");
   const [fortune, setFortune] = useState("");
   const [proprio, setProprio] = useState(false);
+  const [immeubles, setImmeubles] = useState<SimImmeuble[]>([]);
   const [deductions, setDeductions] = useState("");
 
   useEffect(() => {
     if (!p.loaded) return;
+    setPeriode(str(p.answers.simPeriode) || String(taxYear));
     setCanton(str(p.answers.canton));
     setExpress(bool(p.answers.express));
     setMarital(str(p.answers.etatCivil) || "celibataire");
@@ -183,6 +206,11 @@ export function SimulationForm({
     setRevenus(str(p.answers.simRevenus));
     setFortune(str(p.answers.simFortune));
     setProprio(bool(p.answers.simProprietaire));
+    setImmeubles(
+      Array.isArray(p.answers.simImmeubles)
+        ? (p.answers.simImmeubles as SimImmeuble[])
+        : [],
+    );
     setDeductions(str(p.answers.simDeductions));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.loaded]);
@@ -198,47 +226,82 @@ export function SimulationForm({
     { value: "divorce", label: t.declaration.famille.divorce },
     { value: "veuf", label: t.declaration.famille.veuf },
   ];
+  const cy = new Date().getFullYear();
+  const periodOpts = [cy - 3, cy - 2, cy - 1, cy].map((y) => ({
+    value: String(y),
+    label: String(y),
+  }));
+  const childrenOpts = Array.from({ length: 9 }, (_, n) => ({
+    value: String(n),
+    label: String(n),
+  }));
+  const yesNo = [
+    { value: "oui", label: t.declaration.yes },
+    { value: "non", label: t.declaration.no },
+  ];
+
+  function setOwner(on: boolean) {
+    setProprio(on);
+    if (on && immeubles.length === 0) setImmeubles([emptySimImmeuble()]);
+  }
+  function patchImm(i: number, patch: Partial<SimImmeuble>) {
+    setImmeubles((rows) =>
+      rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)),
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      <Card>
-        <SelectField
-          label={f.periodLabel}
-          value={String(taxYear)}
-          onChange={() => {}}
-          options={[{ value: String(taxYear), label: String(taxYear) }]}
-        />
+      <Card title={f.periodLabel}>
+        <div className="max-w-[200px]">
+          <SelectField
+            label=""
+            value={periode}
+            onChange={setPeriode}
+            options={periodOpts}
+          />
+        </div>
+      </Card>
+
+      <Card title={f.cantonLabel}>
+        <div className="max-w-[340px]">
+          <SelectField
+            label=""
+            value={canton}
+            onChange={setCanton}
+            options={[
+              { value: "", label: f.cantonPlaceholder },
+              ...CANTONS.map((c) => ({ value: c, label: c })),
+            ]}
+          />
+        </div>
       </Card>
 
       <Card>
-        <SelectField
-          label={f.cantonLabel}
-          value={canton}
-          onChange={setCanton}
-          options={[
-            { value: "", label: f.cantonPlaceholder },
-            ...CANTONS.map((c) => ({ value: c, label: c })),
-          ]}
-        />
-      </Card>
-
-      <Card>
-        <CheckRow checked={express} onChange={setExpress} label={f.express} />
+        <div className="flex items-start justify-between gap-3">
+          <CheckRow checked={express} onChange={setExpress} label={f.express} />
+          <span
+            className="shrink-0 whitespace-nowrap rounded-full px-[10px] py-[4px] text-[12.5px] font-bold"
+            style={{ background: "#D9EFEC", color: "#145863" }}
+          >
+            {f.expressPill}
+          </span>
+        </div>
       </Card>
 
       <Card title={f.familyTitle}>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <SelectField
             label={f.maritalLabel}
             value={marital}
             onChange={setMarital}
             options={marOpts}
           />
-          <TextField
+          <SelectField
             label={f.childrenLabel}
-            type="number"
             value={children}
             onChange={setChildren}
+            options={childrenOpts}
           />
         </div>
       </Card>
@@ -262,7 +325,107 @@ export function SimulationForm({
       </Card>
 
       <Card title={f.immeublesTitle}>
-        <CheckRow checked={proprio} onChange={setProprio} label={f.proprietaire} />
+        <CheckRow checked={proprio} onChange={setOwner} label={f.proprietaire} />
+
+        {proprio ? (
+          <div className="mt-[18px] flex flex-col gap-[14px]">
+            {immeubles.map((im, i) => (
+              <div
+                key={i}
+                className="rounded-[14px] border border-line p-5"
+              >
+                <div className="mb-3.5 flex items-center justify-between">
+                  <span className="text-[14.5px] font-bold text-strong">
+                    {f.immeubleEntry} {i + 1}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={t.declaration.transmission.remove}
+                    onClick={() =>
+                      setImmeubles((rows) => rows.filter((_, idx) => idx !== i))
+                    }
+                    className="flex p-1 text-[#9AA6B6] transition hover:text-[#C0584A]"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-x-[18px] gap-y-[14px] sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <TextField
+                      label={f.lieuLabel}
+                      value={im.lieu}
+                      onChange={(v) => patchImm(i, { lieu: v })}
+                    />
+                  </div>
+                  <TextField
+                    label={f.acqLabel}
+                    type="date"
+                    value={im.acqDate}
+                    onChange={(v) => patchImm(i, { acqDate: v })}
+                  />
+                  <TextField
+                    label={f.alienLabel}
+                    type="date"
+                    value={im.alienDate}
+                    onChange={(v) => patchImm(i, { alienDate: v })}
+                  />
+                  <div className="sm:col-span-2">
+                    <p className="mb-2 text-[14px] font-semibold text-body">
+                      {f.loueLabel}
+                    </p>
+                    <RadioRow
+                      name={`sim-loue-${i}`}
+                      value={im.loue}
+                      onChange={(v) =>
+                        patchImm(i, { loue: v as SimImmeuble["loue"] })
+                      }
+                      options={yesNo}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <p className="mb-2 text-[14px] font-semibold text-body">
+                      {f.detteLabel}
+                    </p>
+                    <RadioRow
+                      name={`sim-dette-${i}`}
+                      value={im.dette}
+                      onChange={(v) =>
+                        patchImm(i, { dette: v as SimImmeuble["dette"] })
+                      }
+                      options={yesNo}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() =>
+                setImmeubles((rows) => [...rows, emptySimImmeuble()])
+              }
+              className="self-start rounded-[10px] px-4 py-2.5 text-[14px] font-semibold"
+              style={{ background: "#E6F6EE", color: "#186B47" }}
+            >
+              {f.addImmeuble}
+            </button>
+          </div>
+        ) : null}
       </Card>
 
       <Card title={f.deductionsTitle}>
@@ -274,11 +437,17 @@ export function SimulationForm({
         />
       </Card>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--green-600)]/30 bg-[var(--green-100)] p-5">
-        <p className="disp m-0 text-[16px] font-bold text-strong">
+      <div
+        className="rounded-[16px] border p-6"
+        style={{ background: "#F1FAF5", borderColor: "#BFE6D3" }}
+      >
+        <p className="m-0 text-[16px] font-bold" style={{ color: "#186B47" }}>
           {f.transmitTitle}
         </p>
-        <p className="mt-1 text-[13.5px] leading-[1.45] text-muted">
+        <p
+          className="mt-2 text-[14px] leading-[1.55]"
+          style={{ color: "#2E6B4E" }}
+        >
           {f.transmitNote}
         </p>
         {p.error ? (
@@ -294,6 +463,7 @@ export function SimulationForm({
             onClick={() =>
               p.finalize(
                 {
+                  simPeriode: periode,
                   canton,
                   express,
                   etatCivil: marital,
@@ -301,6 +471,7 @@ export function SimulationForm({
                   simRevenus: revenus,
                   simFortune: fortune,
                   simProprietaire: proprio,
+                  simImmeubles: proprio ? immeubles : [],
                   simDeductions: deductions,
                 },
                 f.error,
