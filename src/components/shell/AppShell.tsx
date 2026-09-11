@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import type { NavEntry } from "./nav";
 import { useT } from "@/lib/i18n/I18nProvider";
 import { ProfileModal, type ProfileFields } from "./ProfileModal";
+import { useCanton } from "./CantonContext";
 
 export interface ShellAccount {
   name: string;
@@ -23,11 +24,6 @@ interface AppShellProps {
   title: string;
   /** Topbar right-hand caption, rendered in mono uppercase. */
   meta?: string;
-  /**
-   * Canton of the client's declaration, if any — shows the flag pill in the
-   * topbar as the mockup does. One of the CANTONS names ("Vaud"/…).
-   */
-  canton?: string;
   /**
    * Route whose topbar keeps `title` instead of taking the nav entry's label.
    * The mockup's client topbar reads "Mon espace" on the declarations module
@@ -91,12 +87,12 @@ export function AppShell({
   nav,
   title,
   meta,
-  canton,
   titleFallbackFor,
   account,
   children,
 }: AppShellProps) {
   const t = useT();
+  const { canton } = useCanton();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);

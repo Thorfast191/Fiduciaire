@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n/I18nProvider";
 import { SelectField } from "@/components/declaration/Field";
 import { FormAlert } from "@/components/ui/Field";
 import { CANTONS } from "@/lib/declaration";
+import { useCanton } from "@/components/shell/CantonContext";
 
 /**
  * "Prestation en capital" — the reference's bespoke form (Fiduvia.dc.html):
@@ -35,6 +36,7 @@ export function CapitalForm({
 }) {
   const t = useT();
   const f = t.capitalForm;
+  const { setCanton: setFlagCanton } = useCanton();
 
   const [status, setStatus] = useState<DossierStatus>("not_started");
   const [canton, setCanton] = useState("");
@@ -57,6 +59,10 @@ export function CapitalForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     load();
   }, []);
+
+  useEffect(() => {
+    if (canton) setFlagCanton(canton);
+  }, [canton, setFlagCanton]);
 
   const attestation = docs.find((d) => d.category === DOC_CATEGORY);
   const readOnly = status !== "not_started";

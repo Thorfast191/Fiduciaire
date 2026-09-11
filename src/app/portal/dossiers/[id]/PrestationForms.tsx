@@ -10,6 +10,7 @@ import {
 } from "@/components/declaration/Field";
 import { FormAlert } from "@/components/ui/Field";
 import { CANTONS } from "@/lib/declaration";
+import { useCanton } from "@/components/shell/CantonContext";
 import { usePrestation, type PrestationDoc } from "./usePrestation";
 
 /**
@@ -202,6 +203,7 @@ export function SimulationForm({
   const t = useT();
   const f = t.simulationForm;
   const p = usePrestation(dossierId);
+  const { setCanton: setFlagCanton } = useCanton();
 
   const [periode, setPeriode] = useState(String(taxYear));
   const [canton, setCanton] = useState("");
@@ -232,6 +234,12 @@ export function SimulationForm({
     setDeductions(str(p.answers.simDeductions));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.loaded]);
+
+  // Keep the topbar flag in step with the chosen canton (non-empty only, so a
+  // canton-less form keeps the declaration's flag).
+  useEffect(() => {
+    if (canton) setFlagCanton(canton);
+  }, [canton, setFlagCanton]);
 
   if (!p.loaded) return <p className="text-[13px] text-muted">{t.documents.loading}</p>;
   if (p.status !== "not_started")
@@ -514,6 +522,7 @@ export function AcomptesForm({
   const t = useT();
   const f = t.acomptesForm;
   const p = usePrestation(dossierId);
+  const { setCanton: setFlagCanton } = useCanton();
 
   const [periode, setPeriode] = useState(String(taxYear));
   const [canton, setCanton] = useState("");
@@ -534,6 +543,10 @@ export function AcomptesForm({
     setCharges(str(p.answers.acoCharges));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.loaded]);
+
+  useEffect(() => {
+    if (canton) setFlagCanton(canton);
+  }, [canton, setFlagCanton]);
 
   if (!p.loaded) return <p className="text-[13px] text-muted">{t.documents.loading}</p>;
   if (p.status !== "not_started")

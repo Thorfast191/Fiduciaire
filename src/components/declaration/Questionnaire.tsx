@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Messages } from "@/lib/i18n/messages/fr";
 import type { DossierStatus } from "@/db/schema";
+import { useCanton } from "@/components/shell/CantonContext";
 import {
   CANTONS,
   STEPS,
@@ -62,8 +63,14 @@ export function Questionnaire({
   const router = useRouter();
   const d = t.declaration;
 
+  const { setCanton: setFlagCanton } = useCanton();
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [step, setStep] = useState(initialStep);
+
+  // Keep the topbar canton flag in step with the declaration's canton.
+  useEffect(() => {
+    if (answers.canton) setFlagCanton(answers.canton);
+  }, [answers.canton, setFlagCanton]);
   const [saving, setSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
   const [reused, setReused] = useState(false);

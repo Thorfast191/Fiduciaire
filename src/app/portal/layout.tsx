@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { getCurrentUser, requireRole } from "@/lib/auth/guards";
 import { AppShell } from "@/components/shell/AppShell";
 import { clientNav } from "@/components/shell/nav";
+import { CantonProvider } from "@/components/shell/CantonContext";
 import { listDossiersForClient } from "@/lib/dossiers";
 import { normaliseAnswers } from "@/lib/declaration";
 import { getT } from "@/lib/i18n";
@@ -34,28 +35,29 @@ export default async function PortalLayout({
   return (
     <I18nProvider locale={locale} messages={t}>
       <div lang={locale}>
-        <AppShell
-          variant="client"
-          nav={clientNav(t)}
-          title={t.portal.spaceTitle}
-          titleFallbackFor="/portal"
-          meta={`${t.admin.fiscalPeriod} ${new Date().getFullYear() - 1}`}
-          canton={canton}
-          account={{
-            name: `${firstName} ${lastName}`.trim(),
-            initials,
-            tag: t.portal.spaceTag,
-            profile: {
-              firstName,
-              lastName,
-              email: user?.email ?? "",
-              phone: user?.phone ?? "",
+        <CantonProvider initial={canton}>
+          <AppShell
+            variant="client"
+            nav={clientNav(t)}
+            title={t.portal.spaceTitle}
+            titleFallbackFor="/portal"
+            meta={`${t.admin.fiscalPeriod} ${new Date().getFullYear() - 1}`}
+            account={{
+              name: `${firstName} ${lastName}`.trim(),
               initials,
-            },
-          }}
-        >
-          {children}
-        </AppShell>
+              tag: t.portal.spaceTag,
+              profile: {
+                firstName,
+                lastName,
+                email: user?.email ?? "",
+                phone: user?.phone ?? "",
+                initials,
+              },
+            }}
+          >
+            {children}
+          </AppShell>
+        </CantonProvider>
       </div>
     </I18nProvider>
   );
