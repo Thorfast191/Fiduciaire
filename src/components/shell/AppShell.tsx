@@ -24,6 +24,11 @@ interface AppShellProps {
   /** Topbar right-hand caption, rendered in mono uppercase. */
   meta?: string;
   /**
+   * Canton of the client's declaration, if any — shows the flag pill in the
+   * topbar as the mockup does. One of the CANTONS names ("Vaud"/…).
+   */
+  canton?: string;
+  /**
    * Route whose topbar keeps `title` instead of taking the nav entry's label.
    * The mockup's client topbar reads "Mon espace" on the declarations module
    * but the section's own name everywhere else.
@@ -34,6 +39,40 @@ interface AppShellProps {
 }
 
 const ACTIVE_BG = "rgba(63,167,160,0.16)";
+
+/**
+ * The mockup's simplified two-band canton flags (`Fiduvia.dc.html:1547`): a
+ * white band and the canton's colour, stacked (Vaud/Fribourg) or side by side
+ * (Valais). Keyed by the canton name we store on the declaration.
+ */
+const CANTON_FLAG: Record<
+  string,
+  { color: string; row: boolean }
+> = {
+  Vaud: { color: "#0B7A3B", row: false },
+  Valais: { color: "#C8202E", row: true },
+  Fribourg: { color: "#20232A", row: false },
+};
+
+function CantonFlagPill({ canton }: { canton: string }) {
+  const flag = CANTON_FLAG[canton];
+  if (!flag) return null;
+  return (
+    <span
+      className="inline-flex items-center gap-2 rounded-full border border-line bg-card py-[5px] pl-[7px] pr-[11px]"
+    >
+      <span
+        className="flex h-[22px] w-[30px] shrink-0 overflow-hidden rounded-[5px] border border-[rgba(0,0,0,0.14)] shadow-[0_1px_2px_rgba(0,0,0,0.12)]"
+        style={{ flexDirection: flag.row ? "row" : "column" }}
+        aria-hidden="true"
+      >
+        <span className="flex-1 bg-white" />
+        <span className="flex-1" style={{ background: flag.color }} />
+      </span>
+      <span className="text-[13px] font-bold text-strong">{canton}</span>
+    </span>
+  );
+}
 
 /**
  * Longest-prefix match, so `/admin/dossiers` activates "Dossiers" rather than
@@ -52,6 +91,7 @@ export function AppShell({
   nav,
   title,
   meta,
+  canton,
   titleFallbackFor,
   account,
   children,
@@ -137,6 +177,7 @@ export function AppShell({
           <div className="disp truncate text-[20px] font-bold">{pageTitle}</div>
 
           <div className="flex items-center gap-3.5">
+            {canton ? <CantonFlagPill canton={canton} /> : null}
             {meta ? (
               <span className="hidden font-mono text-[10px] uppercase tracking-[0.1em] text-muted sm:block">
                 {meta}

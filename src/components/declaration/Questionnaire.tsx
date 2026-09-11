@@ -241,12 +241,21 @@ export function Questionnaire({
             {step === 0 ? (
               <>
                 {previousYear && !reused && !readOnly ? (
-                  <div className="flex flex-wrap items-center justify-between gap-4 rounded-[var(--radius-lg)] border border-teal-300 bg-teal-100/60 p-6">
-                    <div className="max-w-[520px]">
-                      <p className="disp m-0 text-[16px] font-bold">
+                  <div
+                    className="flex flex-wrap items-center justify-between gap-4 rounded-[18px] border p-[22px_26px]"
+                    style={{ background: "#D9EFEC", borderColor: "#79C5BD" }}
+                  >
+                    <div className="max-w-[60ch]">
+                      <p
+                        className="m-0 text-[15.5px] font-bold"
+                        style={{ color: "#145863" }}
+                      >
                         {d.reuse.title.replace("{year}", String(previousYear))}
                       </p>
-                      <p className="mt-1 text-[13.5px] leading-[1.45] text-body">
+                      <p
+                        className="mt-1 text-[13.5px] leading-[1.45]"
+                        style={{ color: "#3F6A63" }}
+                      >
                         {d.reuse.body}
                       </p>
                     </div>
@@ -276,7 +285,8 @@ export function Questionnaire({
                         }
                         setReused(true);
                       }}
-                      className="fx-btn-send"
+                      className="shrink-0 rounded-[11px] px-[18px] py-[11px] text-[14px] font-semibold text-white transition-colors hover:bg-[var(--brand-hover)]"
+                      style={{ background: "var(--brand)" }}
                     >
                       {d.reuse.button}
                     </button>
@@ -464,42 +474,48 @@ export function Questionnaire({
                           </div>
                         </div>
 
-                        <div>
-                          <p className="text-[13.5px] text-body">
-                            {d.famille.menageCommun}
-                          </p>
-                          <div className="mt-2">
-                            <RadioRow
-                              name={`menage-${i}`}
-                              value={child.menageCommun}
-                              onChange={(v) =>
-                                patchChild(i, {
-                                  menageCommun: v as Child["menageCommun"],
-                                })
-                              }
-                              options={yesNo}
-                            />
-                          </div>
-                        </div>
+                        {/* The two ménage questions only appear once the child
+                            is declared à charge, as in the reference. */}
+                        {child.contributions === "oui" ? (
+                          <>
+                            <div>
+                              <p className="text-[13.5px] text-body">
+                                {d.famille.menageCommun}
+                              </p>
+                              <div className="mt-2">
+                                <RadioRow
+                                  name={`menage-${i}`}
+                                  value={child.menageCommun}
+                                  onChange={(v) =>
+                                    patchChild(i, {
+                                      menageCommun: v as Child["menageCommun"],
+                                    })
+                                  }
+                                  options={yesNo}
+                                />
+                              </div>
+                            </div>
 
-                        <div>
-                          <p className="text-[13.5px] text-body">
-                            {d.famille.menageAutreParent}
-                          </p>
-                          <div className="mt-2">
-                            <RadioRow
-                              name={`menage-parent-${i}`}
-                              value={child.menageAutreParent}
-                              onChange={(v) =>
-                                patchChild(i, {
-                                  menageAutreParent:
-                                    v as Child["menageAutreParent"],
-                                })
-                              }
-                              options={yesNo}
-                            />
-                          </div>
-                        </div>
+                            <div>
+                              <p className="text-[13.5px] text-body">
+                                {d.famille.menageAutreParent}
+                              </p>
+                              <div className="mt-2">
+                                <RadioRow
+                                  name={`menage-parent-${i}`}
+                                  value={child.menageAutreParent}
+                                  onChange={(v) =>
+                                    patchChild(i, {
+                                      menageAutreParent:
+                                        v as Child["menageAutreParent"],
+                                    })
+                                  }
+                                  options={yesNo}
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : null}
                       </div>
                     </div>
                   ))}

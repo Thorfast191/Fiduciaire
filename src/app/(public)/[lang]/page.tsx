@@ -349,7 +349,10 @@ export default async function HomePage({
         id="about"
         className="mx-auto max-w-[1120px] px-[34px] py-[56px]"
       >
-        <span className="fx-eyebrow block text-center text-[var(--text-muted)]">
+        <span
+          className="fx-eyebrow"
+          style={{ display: "block", textAlign: "center", color: "var(--text-muted)" }}
+        >
           {t.about.eyebrow}
         </span>
 
@@ -561,7 +564,7 @@ export default async function HomePage({
       >
         {/* SECTION TITLE */}
         <div className="text-center">
-          <span className="fx-eyebrow text-[var(--text-muted)]">
+          <span className="fx-eyebrow" style={{ color: "var(--text-muted)" }}>
             {t.services.eyebrow}
           </span>
 
@@ -753,7 +756,7 @@ export default async function HomePage({
         className="mx-auto max-w-[1120px] px-[34px] py-[56px] max-[700px]:px-5"
       >
         <div className="text-center">
-          <span className="fx-eyebrow text-[var(--text-muted)]">
+          <span className="fx-eyebrow" style={{ color: "var(--text-muted)" }}>
             {t.steps.eyebrow}
           </span>
 
@@ -800,7 +803,7 @@ export default async function HomePage({
           className="mx-auto max-w-[1120px] px-[34px] py-[64px] max-[700px]:px-5"
         >
           <div className="text-center">
-            <span className="fx-eyebrow text-[var(--text-muted)]">
+            <span className="fx-eyebrow" style={{ color: "var(--text-muted)" }}>
               {t.pricing.eyebrow}
             </span>
 
@@ -832,7 +835,7 @@ export default async function HomePage({
                 <h3 className="disp m-0 text-[19px] font-bold">{plan.name}</h3>
 
                 <div className="flex items-baseline gap-[7px]">
-                  <span className="fx-eyebrow text-[var(--text-muted)]">
+                  <span className="fx-eyebrow" style={{ color: "var(--text-muted)" }}>
                     {t.pricing.from}
                   </span>
                   <span
@@ -878,7 +881,7 @@ export default async function HomePage({
         className="mx-auto max-w-[780px] px-[34px] py-[64px] max-[700px]:px-5"
       >
         <div className="text-center">
-          <span className="fx-eyebrow text-[var(--text-muted)]">
+          <span className="fx-eyebrow" style={{ color: "var(--text-muted)" }}>
             {t.faq.eyebrow}
           </span>
 
