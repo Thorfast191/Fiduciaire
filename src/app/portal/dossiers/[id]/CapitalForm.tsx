@@ -99,29 +99,16 @@ export function CapitalForm({
     }
     setBusy(true);
     try {
-      const startRes = await fetch("/api/documents/upload-url", {
+      // Proxied through our server to S3 (no browser→S3 CORS).
+      const form = new FormData();
+      form.append("dossierId", dossierId);
+      form.append("category", DOC_CATEGORY);
+      form.append("file", file);
+      const res = await fetch("/api/documents/upload", {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          dossierId,
-          filename: file.name,
-          category: DOC_CATEGORY,
-          mimeType: file.type,
-          sizeBytes: file.size,
-        }),
+        body: form,
       });
-      if (!startRes.ok) return setError(f.error);
-      const { documentId, uploadUrl } = await startRes.json();
-      const put = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "content-type": file.type },
-        body: file,
-      });
-      if (!put.ok) return setError(f.error);
-      const conf = await fetch(`/api/documents/${documentId}/confirm`, {
-        method: "POST",
-      });
-      if (!conf.ok) return setError(f.error);
+      if (!res.ok) return setError(f.error);
       await load();
     } finally {
       setBusy(false);

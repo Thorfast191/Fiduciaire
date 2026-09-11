@@ -15,12 +15,8 @@ export const BUSINESS = {
   owner: "Rathana Leas",
 
   email: "contact@fiduvia.ch",
-  /**
-   * No telephone number has been provided yet. Keep it null rather than showing
-   * a placeholder — a fake number on a live site is worse than none, and the
-   * contact form plus email cover enquiries.
-   */
-  phone: null as string | null,
+  /** Display form; `phoneHref()` builds the `tel:` link (E.164). */
+  phone: "077 248 55 16" as string | null,
 
   street: "Route de la Pontille 28",
   postalCode: "1618",
@@ -62,4 +58,13 @@ export const BUSINESS = {
 /** One-line postal address, e.g. "Route de la Pontille 28, 1618 Châtel-St-Denis". */
 export function addressLine(): string {
   return `${BUSINESS.street}, ${BUSINESS.postalCode} ${BUSINESS.city}`;
+}
+
+/** `tel:` href in E.164 (Swiss numbers), or null when no phone is set. */
+export function phoneHref(): string | null {
+  if (!BUSINESS.phone) return null;
+  const digits = BUSINESS.phone.replace(/[^0-9]/g, "");
+  // National "0…" → +41…; anything else is passed through as entered.
+  const e164 = digits.startsWith("0") ? `+41${digits.slice(1)}` : `+${digits}`;
+  return `tel:${e164}`;
 }

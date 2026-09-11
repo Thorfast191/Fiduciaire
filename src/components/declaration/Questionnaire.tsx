@@ -1270,32 +1270,16 @@ async function uploadFor(
   category: string,
   file: File,
 ): Promise<boolean> {
-  const startRes = await fetch("/api/documents/upload-url", {
+  // The file is proxied through our server to S3 (no browser→S3 CORS).
+  const form = new FormData();
+  form.append("dossierId", dossierId);
+  form.append("category", category);
+  form.append("file", file);
+  const res = await fetch("/api/documents/upload", {
     method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      dossierId,
-      filename: file.name,
-      category,
-      mimeType: file.type,
-      sizeBytes: file.size,
-    }),
+    body: form,
   });
-  if (!startRes.ok) return false;
-
-  const { documentId, uploadUrl } = await startRes.json();
-
-  const putRes = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: { "content-type": file.type },
-    body: file,
-  });
-  if (!putRes.ok) return false;
-
-  const confirmRes = await fetch(`/api/documents/${documentId}/confirm`, {
-    method: "POST",
-  });
-  return confirmRes.ok;
+  return res.ok;
 }
 
 // Which glyph each document category shows, transcribed from the mockup's

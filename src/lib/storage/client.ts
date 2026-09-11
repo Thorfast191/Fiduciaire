@@ -35,6 +35,26 @@ export async function getUploadUrl(
   return getSignedUrl(client, command, { expiresIn: SIGNED_URL_TTL_SECONDS });
 }
 
+/**
+ * Uploads bytes straight from the app server, so the browser never PUTs to S3
+ * directly — no cross-origin request, and therefore no bucket CORS to
+ * configure. Used by the `/api/documents/upload` proxy route.
+ */
+export async function putObject(
+  key: string,
+  body: Uint8Array,
+  contentType: string,
+): Promise<void> {
+  await client.send(
+    new PutObjectCommand({
+      Bucket: env.STORAGE_BUCKET,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+    }),
+  );
+}
+
 export async function getDownloadUrl(
   key: string,
   filename: string,

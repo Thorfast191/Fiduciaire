@@ -36,8 +36,7 @@ export function StructuredData({
       description: t.hero.p1,
       inLanguage: locale === "fr" ? "fr-CH" : "en",
       email: BUSINESS.email,
-      // No `telephone`: none is published yet, and inventing one would seed a
-      // wrong number into Google's local panel.
+      ...(BUSINESS.phone ? { telephone: BUSINESS.phone } : {}),
       address: {
         "@type": "PostalAddress",
         streetAddress: BUSINESS.street,

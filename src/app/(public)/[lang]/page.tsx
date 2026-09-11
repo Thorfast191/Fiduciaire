@@ -9,6 +9,7 @@ import { PriceSimulator } from "@/components/PriceSimulator";
 import { ContactForm } from "@/components/ContactForm";
 import { LoginTrigger } from "@/components/auth/LoginTrigger";
 import { getMessages } from "@/lib/i18n";
+import { BUSINESS, phoneHref } from "@/lib/business";
 import { LOCALES, isLocale } from "@/lib/i18n/config";
 import { localeAlternates, socialMeta } from "@/lib/seo";
 
@@ -958,6 +959,18 @@ export default async function HomePage({
               </a>
             </div>
 
+            {phoneHref() ? (
+              <div className="flex flex-col gap-[4px]">
+                <span className="fx-field-label m-0">{t.contact.phone}</span>
+                <a
+                  href={phoneHref()!}
+                  className="text-[15px] text-[var(--brand)]"
+                >
+                  {BUSINESS.phone}
+                </a>
+              </div>
+            ) : null}
+
             <div className="flex flex-col gap-[4px]">
               <span className="fx-field-label m-0">{t.contact.hoursTitle}</span>
 
@@ -1055,6 +1068,12 @@ export default async function HomePage({
               <span className="text-[14px] leading-[1.5] text-[var(--text-on-dark)]">
                 {t.footer.addressLine2}
               </span>
+
+              {phoneHref() ? (
+                <a href={phoneHref()!} className="fx-onDark-link">
+                  {BUSINESS.phone}
+                </a>
+              ) : null}
 
               <a href="mailto:contact@fiduvia.ch" className="fx-onDark-link">
                 {t.footer.email}

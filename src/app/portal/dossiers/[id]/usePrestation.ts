@@ -60,35 +60,16 @@ export function usePrestation(dossierId: string) {
     }
     setBusy(true);
     try {
-      const startRes = await fetch("/api/documents/upload-url", {
+      // The file goes through our server to S3 (no browser→S3 CORS).
+      const form = new FormData();
+      form.append("dossierId", dossierId);
+      form.append("category", category);
+      form.append("file", file);
+      const res = await fetch("/api/documents/upload", {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          dossierId,
-          filename: file.name,
-          category,
-          mimeType: file.type,
-          sizeBytes: file.size,
-        }),
+        body: form,
       });
-      if (!startRes.ok) {
-        setError(labels.generic);
-        return false;
-      }
-      const { documentId, uploadUrl } = await startRes.json();
-      const put = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "content-type": file.type },
-        body: file,
-      });
-      if (!put.ok) {
-        setError(labels.generic);
-        return false;
-      }
-      const conf = await fetch(`/api/documents/${documentId}/confirm`, {
-        method: "POST",
-      });
-      if (!conf.ok) {
+      if (!res.ok) {
         setError(labels.generic);
         return false;
       }

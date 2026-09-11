@@ -78,38 +78,17 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
 
     setUploading(true);
     try {
-      const startRes = await fetch("/api/documents/upload-url", {
+      // Proxied through our server to S3 (no browser→S3 CORS).
+      const form = new FormData();
+      form.append("dossierId", dossierId);
+      form.append("category", category);
+      form.append("file", file);
+      const res = await fetch("/api/documents/upload", {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          dossierId,
-          filename: file.name,
-          category,
-          mimeType: file.type,
-          sizeBytes: file.size,
-        }),
+        body: form,
       });
-      if (!startRes.ok) {
-        setError(t.documents.errStart);
-        return;
-      }
-      const { documentId, uploadUrl } = await startRes.json();
-
-      const putRes = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "content-type": file.type },
-        body: file,
-      });
-      if (!putRes.ok) {
+      if (!res.ok) {
         setError(t.documents.errUpload);
-        return;
-      }
-
-      const confirmRes = await fetch(`/api/documents/${documentId}/confirm`, {
-        method: "POST",
-      });
-      if (!confirmRes.ok) {
-        setError(t.documents.errConfirm);
         return;
       }
 

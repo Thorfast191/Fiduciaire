@@ -7,6 +7,7 @@ import {
   deleteObject,
   getObjectMetadata,
   getUploadUrl,
+  putObject,
 } from "@/lib/storage/client";
 
 export const ALLOWED_MIME_TYPES = [
@@ -75,6 +76,57 @@ export async function createPendingUpload(params: {
 
   const uploadUrl = await getUploadUrl(storageKey, params.mimeType);
   return { ok: true, documentId, uploadUrl };
+}
+
+export type DirectUploadResult =
+  | { ok: true; documentId: string }
+  | { ok: false; error: "invalid_type" | "too_large" | "invalid_category" };
+
+/**
+ * Uploads a file the app server received (multipart) straight to S3 and records
+ * it as confirmed in one step — the browser never PUTs to S3, so there is no
+ * cross-origin request and no bucket CORS to maintain. The bytes are in hand, so
+ * the size and type are the real ones (no separate metadata re-check needed).
+ */
+export async function uploadDocumentDirect(params: {
+  ownerId: string;
+  uploadedBy: string;
+  dossierId: string;
+  filename: string;
+  category: string;
+  mimeType: string;
+  body: Uint8Array;
+}): Promise<DirectUploadResult> {
+  const type = params.mimeType.split(";")[0].trim().toLowerCase();
+  if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(type)) {
+    return { ok: false, error: "invalid_type" };
+  }
+  if (params.body.byteLength <= 0 || params.body.byteLength > MAX_SIZE_BYTES) {
+    return { ok: false, error: "too_large" };
+  }
+  if (!(DOCUMENT_CATEGORIES as readonly string[]).includes(params.category)) {
+    return { ok: false, error: "invalid_category" };
+  }
+
+  const documentId = crypto.randomUUID();
+  const storageKey = buildStorageKey(params.ownerId, documentId, params.filename);
+
+  await putObject(storageKey, params.body, type);
+
+  await db.insert(documents).values({
+    id: documentId,
+    ownerId: params.ownerId,
+    uploadedBy: params.uploadedBy,
+    dossierId: params.dossierId,
+    filename: params.filename,
+    category: params.category as (typeof DOCUMENT_CATEGORIES)[number],
+    storageKey,
+    mimeType: type,
+    sizeBytes: params.body.byteLength,
+    uploadedAt: new Date(),
+  });
+
+  return { ok: true, documentId };
 }
 
 export type ConfirmUploadResult =
