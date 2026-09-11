@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n/I18nProvider";
 import { SelectField } from "@/components/declaration/Field";
 import { FormAlert } from "@/components/ui/Field";
 import { CANTONS } from "@/lib/declaration";
+import { taxYearOptionsDesc } from "@/lib/taxYears";
 import { useCanton } from "@/components/shell/CantonContext";
 
 /**
@@ -39,6 +40,7 @@ export function CapitalForm({
   const { setCanton: setFlagCanton } = useCanton();
 
   const [status, setStatus] = useState<DossierStatus>("not_started");
+  const [retraitYear, setRetraitYear] = useState(String(taxYear));
   const [canton, setCanton] = useState("");
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -50,6 +52,7 @@ export function CapitalForm({
     if (!res.ok) return;
     const body = await res.json();
     setStatus(body.dossier.status);
+    setRetraitYear(String(body.dossier.answers?.retraitYear ?? taxYear));
     setCanton(body.dossier.answers?.canton ?? "");
     setDocs(body.documents ?? []);
     setLoaded(true);
@@ -184,9 +187,15 @@ export function CapitalForm({
       <div className="flex flex-col gap-5">
         <SelectField
           label={f.yearLabel}
-          value={String(taxYear)}
-          onChange={() => {}}
-          options={[{ value: String(taxYear), label: String(taxYear) }]}
+          value={retraitYear}
+          onChange={(v) => {
+            setRetraitYear(v);
+            if (!readOnly) void saveAnswers({ retraitYear: v });
+          }}
+          options={taxYearOptionsDesc().map((y) => ({
+            value: String(y),
+            label: String(y),
+          }))}
         />
 
         <SelectField

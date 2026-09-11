@@ -763,6 +763,8 @@ export const en: Messages = {
       postcode: "Postcode and town",
       country: "Country",
       share: "Ownership share (%)",
+      dateAcq: "Acquisition date if during the year",
+      dateAlien: "Disposal date if during the year (sale, gift, etc.)",
       acquisition: "Reason for acquisition",
       achat: "Purchase",
       heritageMotif: "Inheritance",

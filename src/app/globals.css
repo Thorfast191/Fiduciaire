@@ -582,16 +582,16 @@ summary::-webkit-details-marker {
 .fx-field-label {
   display: block;
 
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 600;
   line-height: 1.2;
 
-  text-transform: uppercase;
-
-  color: var(--text-muted);
+  /* The mockup uses a dark, readable label (#3B4654) rather than the small
+     grey uppercase caption; the client asked for the darker treatment. */
+  color: #3b4654;
 }
 
 .fx-field-input {

@@ -10,6 +10,7 @@ import {
 } from "@/components/declaration/Field";
 import { FormAlert } from "@/components/ui/Field";
 import { CANTONS } from "@/lib/declaration";
+import { taxYearOptionsDesc } from "@/lib/taxYears";
 import { useCanton } from "@/components/shell/CantonContext";
 import { usePrestation, type PrestationDoc } from "./usePrestation";
 
@@ -183,6 +184,7 @@ interface SimImmeuble {
   acqDate: string;
   alienDate: string;
   loue: "oui" | "non" | "";
+  loyer: string;
   dette: "oui" | "non" | "";
 }
 const emptySimImmeuble = (): SimImmeuble => ({
@@ -190,6 +192,7 @@ const emptySimImmeuble = (): SimImmeuble => ({
   acqDate: "",
   alienDate: "",
   loue: "",
+  loyer: "",
   dette: "",
 });
 
@@ -252,8 +255,7 @@ export function SimulationForm({
     { value: "divorce", label: t.declaration.famille.divorce },
     { value: "veuf", label: t.declaration.famille.veuf },
   ];
-  const cy = new Date().getFullYear();
-  const periodOpts = [cy - 3, cy - 2, cy - 1, cy].map((y) => ({
+  const periodOpts = taxYearOptionsDesc().map((y) => ({
     value: String(y),
     label: String(y),
   }));
@@ -423,6 +425,16 @@ export function SimulationForm({
                       options={yesNo}
                     />
                   </div>
+                  {im.loue === "oui" ? (
+                    <div className="sm:col-span-2 max-w-[280px]">
+                      <TextField
+                        label={t.declaration.immeubles.loyerTouche}
+                        placeholder="CHF / an"
+                        value={im.loyer}
+                        onChange={(v) => patchImm(i, { loyer: v })}
+                      />
+                    </div>
+                  ) : null}
                   <div className="sm:col-span-2">
                     <p className="mb-2 text-[14px] font-semibold text-body">
                       {f.detteLabel}
@@ -553,8 +565,7 @@ export function AcomptesForm({
     return <Transmitted title={f.transmittedTitle} body={f.transmittedBody} />;
 
   const doc = p.docs.find((d) => d.category === "formulaireAcomptes");
-  const cy = new Date().getFullYear();
-  const periodOpts = [cy - 3, cy - 2, cy - 1, cy].map((y) => ({
+  const periodOpts = taxYearOptionsDesc().map((y) => ({
     value: String(y),
     label: String(y),
   }));
@@ -705,8 +716,7 @@ export function RelectureForm({
     return <Transmitted title={f.transmittedTitle} body={f.transmittedBody} />;
 
   const doc = p.docs.find((d) => d.category === "copieDeclaration");
-  const cy = new Date().getFullYear();
-  const periodOpts = [cy - 3, cy - 2, cy - 1, cy].map((y) => ({
+  const periodOpts = taxYearOptionsDesc().map((y) => ({
     value: String(y),
     label: String(y),
   }));

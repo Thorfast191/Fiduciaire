@@ -12,6 +12,7 @@ import {
   computePrice,
   requiredDocuments,
   declarationStepFlags,
+  EXPRESS_PRICE,
   DOCUMENT_CATALOGUE,
   ASSISTANCE_OPTIONS,
   emptySuccessionEntry,
@@ -339,11 +340,19 @@ export function Questionnaire({
                 ) : null}
 
                 <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-6">
-                  <CheckRow
-                    checked={answers.express}
-                    onChange={(express) => patch({ express })}
-                    label={d.accueil.express}
-                  />
+                  <div className="flex items-start justify-between gap-3">
+                    <CheckRow
+                      checked={answers.express}
+                      onChange={(express) => patch({ express })}
+                      label={d.accueil.express}
+                    />
+                    <span
+                      className="shrink-0 whitespace-nowrap rounded-full px-[10px] py-[4px] text-[12.5px] font-bold"
+                      style={{ background: "#D9EFEC", color: "#145863" }}
+                    >
+                      + CHF {EXPRESS_PRICE}
+                    </span>
+                  </div>
                 </div>
 
                 <Question
@@ -842,35 +851,60 @@ export function Questionnaire({
                         </div>
 
                         <div className="mt-3 flex flex-wrap gap-3">
-                          <SelectField
-                            label={d.immeubles.acquisition}
-                            value={im.acquisition}
+                          <TextField
+                            label={d.immeubles.dateAcq}
+                            type="date"
+                            value={im.dateAcquisition}
                             onChange={(v) =>
-                              patchProperty(i, {
-                                acquisition: v as Property["acquisition"],
-                              })
+                              patchProperty(i, { dateAcquisition: v })
                             }
-                            options={[
-                              { value: "", label: "—" },
-                              { value: "achat", label: d.immeubles.achat },
-                              { value: "heritage", label: d.immeubles.heritageMotif },
-                              { value: "donation", label: d.immeubles.donation },
-                            ]}
                           />
-                          <SelectField
-                            label={d.immeubles.alienation}
-                            value={im.alienation}
+                          {/* Motif appears once a date is entered, and drives
+                              which documents are asked for. */}
+                          {im.dateAcquisition ? (
+                            <SelectField
+                              label={d.immeubles.acquisition}
+                              value={im.acquisition}
+                              onChange={(v) =>
+                                patchProperty(i, {
+                                  acquisition: v as Property["acquisition"],
+                                })
+                              }
+                              options={[
+                                { value: "", label: "—" },
+                                { value: "achat", label: d.immeubles.achat },
+                                { value: "heritage", label: d.immeubles.heritageMotif },
+                                { value: "donation", label: d.immeubles.donation },
+                              ]}
+                            />
+                          ) : null}
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap gap-3">
+                          <TextField
+                            label={d.immeubles.dateAlien}
+                            type="date"
+                            value={im.dateAlienation}
                             onChange={(v) =>
-                              patchProperty(i, {
-                                alienation: v as Property["alienation"],
-                              })
+                              patchProperty(i, { dateAlienation: v })
                             }
-                            options={[
-                              { value: "", label: "—" },
-                              { value: "vente", label: d.immeubles.vente },
-                              { value: "donation", label: d.immeubles.donation },
-                            ]}
                           />
+                          {im.dateAlienation ? (
+                            <SelectField
+                              label={d.immeubles.alienation}
+                              value={im.alienation}
+                              onChange={(v) =>
+                                patchProperty(i, {
+                                  alienation: v as Property["alienation"],
+                                })
+                              }
+                              options={[
+                                { value: "", label: "—" },
+                                { value: "vente", label: d.immeubles.vente },
+                                { value: "donation", label: d.immeubles.donation },
+                              ]}
+                            />
+                          ) : null}
                         </div>
 
                         <p className="mt-4 text-[13.5px] text-body">
@@ -1206,6 +1240,8 @@ function emptyProperty(): Property {
     postcode: "",
     country: "Suisse",
     share: "100",
+    dateAcquisition: "",
+    dateAlienation: "",
     acquisition: "",
     alienation: "",
     rented: "",

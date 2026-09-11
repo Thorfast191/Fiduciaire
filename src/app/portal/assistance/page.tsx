@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/auth/guards";
 import { getT } from "@/lib/i18n";
-import { listActiveTaxPeriodYears } from "@/lib/taxPeriods";
+import { taxYearOptionsDesc } from "@/lib/taxYears";
 import { listSubscriptions } from "@/lib/assistance";
 import { AssistancePlanner } from "./AssistancePlanner";
 
@@ -12,10 +12,8 @@ import { AssistancePlanner } from "./AssistancePlanner";
 export default async function AssistancePage() {
   const [user, { t }] = await Promise.all([getCurrentUser(), getT()]);
 
-  const [years, subscriptions] = await Promise.all([
-    listActiveTaxPeriodYears(),
-    user ? listSubscriptions(user.id) : Promise.resolve([]),
-  ]);
+  const subscriptions = user ? await listSubscriptions(user.id) : [];
+  const years = taxYearOptionsDesc();
 
   return (
     <div className="max-w-[1040px]">

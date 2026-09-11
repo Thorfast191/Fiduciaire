@@ -98,6 +98,10 @@ export interface Property {
   postcode: string;
   country: string;
   share: string;
+  /** Acquisition / disposal dates, when either happened during the year. The
+   *  motif is asked (and drives the documents) only once a date is entered. */
+  dateAcquisition: string;
+  dateAlienation: string;
   acquisition: "achat" | "heritage" | "donation" | "";
   alienation: "vente" | "donation" | "";
   rented: "oui" | "non" | "";

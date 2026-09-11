@@ -765,6 +765,8 @@ export const fr = {
       postcode: "NPA et localité",
       country: "Pays",
       share: "Part de propriété (%)",
+      dateAcq: "Date d'acquisition si en cours d'année",
+      dateAlien: "Date d'aliénation si en cours d'année (Vente, donation, etc...)",
       acquisition: "Motif d'acquisition",
       achat: "Achat",
       heritageMotif: "Héritage",

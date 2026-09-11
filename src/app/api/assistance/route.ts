@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { saveSubscription } from "@/lib/assistance";
-import { isActivePeriod } from "@/lib/taxPeriods";
 import { readJsonBody } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
 import { ASSISTANCE_OPTIONS } from "@/lib/declaration";
@@ -31,13 +30,6 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: e.checkInput },
-      { status: 400 },
-    );
-  }
-
-  if (!(await isActivePeriod(parsed.data.taxYear))) {
-    return NextResponse.json(
-      { ok: false, error: "inactive_period" },
       { status: 400 },
     );
   }

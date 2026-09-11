@@ -27,11 +27,16 @@ export function AssistancePlanner({
   const router = useRouter();
   const a = t.assistance;
 
-  const [year, setYear] = useState(() => years[0]?.toString() ?? "");
+  // Default to the current year when it is offered, not the newest in the list.
+  const defaultYear =
+    (years.includes(new Date().getFullYear())
+      ? new Date().getFullYear()
+      : years[0]) ?? 0;
+  const [year, setYear] = useState(() => defaultYear.toString());
   const [selected, setSelected] = useState<
     Partial<Record<AssistanceKey, boolean>>
   >(() => {
-    const existing = subscriptions.find((s) => s.taxYear === years[0]);
+    const existing = subscriptions.find((s) => s.taxYear === defaultYear);
     return Object.fromEntries((existing?.services ?? []).map((s) => [s, true]));
   });
   const [saving, setSaving] = useState(false);
