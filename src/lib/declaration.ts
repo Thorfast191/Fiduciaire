@@ -238,8 +238,13 @@ export type DocumentKey = keyof typeof DOCUMENT_CATALOGUE;
  * the client has not touched returns 0, which is what tells the card to say
  * "Ouvrir" rather than "Continuer".
  */
-export function declarationProgress(a: Answers): number {
-  const steps = [
+/**
+ * Whether each of the seven steps holds genuine input, in `STEPS` order. Drives
+ * both the progress bar and the questionnaire's step-rail check marks (a step
+ * shows ✓ once it has data, wherever the client currently is).
+ */
+export function declarationStepFlags(a: Answers): boolean[] {
+  return [
     a.situation !== "standard" ||
       a.canton !== "" ||
       a.express ||
@@ -252,6 +257,10 @@ export function declarationProgress(a: Answers): number {
     a.pilier3 || a.rachat2 || a.loyersPayes !== "" || a.taxationOffice !== "",
     a.reviewBeforeTransmit || a.transmitWithoutReview,
   ];
+}
+
+export function declarationProgress(a: Answers): number {
+  const steps = declarationStepFlags(a);
   return Math.round((steps.filter(Boolean).length / steps.length) * 100);
 }
 

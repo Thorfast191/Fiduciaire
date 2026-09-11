@@ -30,7 +30,12 @@ export default async function PortalHomePage({
 
   const firstName = user?.firstName || "Client";
 
-  const dossiers = user ? await listDossiersForClient(user.id) : [];
+  // The portal home is the declaration home, so only declaration dossiers count
+  // here — otherwise a simulation/acomptes request for the same year could be
+  // picked up and "Ouvrir ma déclaration" would open that instead.
+  const dossiers = user
+    ? await listDossiersForClient(user.id, "declaration")
+    : [];
   const dossierYears = dossiers.map((d) => d.taxYear);
 
   // Offer every period the firm has opened, plus any year this client already

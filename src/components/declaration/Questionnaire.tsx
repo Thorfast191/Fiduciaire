@@ -11,6 +11,7 @@ import {
   STEPS,
   computePrice,
   requiredDocuments,
+  declarationStepFlags,
   DOCUMENT_CATALOGUE,
   ASSISTANCE_OPTIONS,
   emptySuccessionEntry,
@@ -149,6 +150,7 @@ export function Questionnaire({
 
   const price = computePrice(answers);
   const docs = requiredDocuments(answers);
+  const stepFlags = declarationStepFlags(answers);
   // Most recent deposited document per category — a re-upload can leave more
   // than one row for a category, and the row shows/acts on the latest.
   const uploaded = new Map<string, UploadedDoc>();
@@ -199,7 +201,9 @@ export function Questionnaire({
         <nav className="-mx-1 flex w-full shrink-0 snap-x gap-1.5 overflow-x-auto px-1 pb-1 lg:mx-0 lg:w-[230px] lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
           {STEPS.map((key, i) => {
             const active = i === step;
-            const complete = i < step;
+            // ✓ once the step has data (like the mockup), not merely because it
+            // sits before the current one.
+            const complete = !active && stepFlags[i];
             return (
               <button
                 key={key}
