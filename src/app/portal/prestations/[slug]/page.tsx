@@ -2,8 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { getCurrentUser } from "@/lib/auth/guards";
-import { listDossiersForClient } from "@/lib/dossiers";
+import { listDossiersForClient, getAccessibleDossier } from "@/lib/dossiers";
 import { listActiveTaxPeriodYears } from "@/lib/taxPeriods";
+import { CapitalForm } from "../../dossiers/[id]/CapitalForm";
+import {
+  SimulationForm,
+  AcomptesForm,
+  RelectureForm,
+} from "../../dossiers/[id]/PrestationForms";
 import { getT } from "@/lib/i18n";
 import type { DossierStatus } from "@/db/schema";
 import type { Messages } from "@/lib/i18n/messages/fr";
@@ -146,13 +152,39 @@ function rowText(
   }
 }
 
+// The bespoke form for an opened request, rendered in place on the prestation
+// page (the declaration keeps its own home at /portal).
+function PrestationForm({
+  serviceType,
+  dossierId,
+  taxYear,
+}: {
+  serviceType: ServiceType;
+  dossierId: string;
+  taxYear: number;
+}) {
+  switch (serviceType) {
+    case "simulation":
+      return <SimulationForm dossierId={dossierId} taxYear={taxYear} />;
+    case "acompte":
+      return <AcomptesForm dossierId={dossierId} taxYear={taxYear} />;
+    case "relecture":
+      return <RelectureForm dossierId={dossierId} taxYear={taxYear} />;
+    default:
+      return <CapitalForm dossierId={dossierId} taxYear={taxYear} />;
+  }
+}
+
 export default async function PrestationPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ d?: string }>;
 }) {
-  const [{ slug }, user, { t }] = await Promise.all([
+  const [{ slug }, { d }, user, { t }] = await Promise.all([
     params,
+    searchParams,
     getCurrentUser(),
     getT(),
   ]);
@@ -166,6 +198,33 @@ export default async function PrestationPage({
     !CLIENT_CREATABLE.includes(serviceType)
   ) {
     notFound();
+  }
+
+  // A request is opened in place (?d=<id>), as in the mockup, so the URL — and
+  // therefore the sidebar's active prestation — stays put. Only this client's
+  // own request of this prestation renders; anything else falls back to the list.
+  if (d && user) {
+    const access = await getAccessibleDossier(d, {
+      id: user.id,
+      role: user.role,
+    });
+    if (access.ok && access.dossier.serviceType === serviceType) {
+      return (
+        <div className="max-w-[920px]">
+          <Link
+            href={`/portal/prestations/${slug}`}
+            className="mb-3 inline-flex items-center gap-[7px] text-[14px] font-semibold text-body transition-colors hover:text-brand"
+          >
+            ← {serviceLabel(t, serviceType)}
+          </Link>
+          <PrestationForm
+            serviceType={serviceType}
+            dossierId={access.dossier.id}
+            taxYear={access.dossier.taxYear}
+          />
+        </div>
+      );
+    }
   }
 
   const [dossiers, activeYears] = await Promise.all([
@@ -219,6 +278,7 @@ export default async function PrestationPage({
 
         <NewRequestForm
           t={t}
+          slug={slug}
           serviceType={serviceType}
           years={openYears}
           accent={theme.accent}
@@ -250,7 +310,7 @@ export default async function PrestationPage({
                 className="flex items-center gap-[10px] rounded-[14px] border border-[#E7EAEF] bg-card py-3 pl-5 pr-3.5 transition-[border-color,box-shadow] focus-within:border-[#79C5BD] hover:border-[#79C5BD] hover:shadow-[0_16px_36px_-26px_rgba(27,110,126,0.5)]"
               >
                 <Link
-                  href={`/portal/dossiers/${dossier.id}`}
+                  href={`/portal/prestations/${slug}?d=${dossier.id}`}
                   className="flex min-w-0 flex-1 items-center gap-[14px]"
                 >
                   <span
