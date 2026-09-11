@@ -507,6 +507,8 @@ export const fr = {
     deadline2Label: "Deuxième échéance",
     deadline2Note:
       "Délai de tolérance pour déposer sa déclaration d'impôt sans démarches.",
+    deadline3Label: "Dernière échéance",
+    deadline3Note: "Dernier délai pour déposer sa déclaration d'impôt.",
     accountLabel: "Votre compte",
     accountNote:
       "Votre espace est personnel. Vos documents ne sont accessibles qu'aux personnes autorisées.",
@@ -593,6 +595,25 @@ export const fr = {
       newRequest: "Nouvelle demande",
       yearLabel: "Année fiscale",
       creating: "Création en cours...",
+      countNone: "Aucun dossier",
+      countOne: "dossier",
+      countMany: "dossiers",
+      statusDraft: "En cours",
+      statusTransmitted: "Transmise pour traitement",
+      statusClosed: "Clôturée",
+      deleteAction: "Supprimer cette demande",
+      deleteTitle: "Supprimer cette demande ?",
+      deleteBody:
+        "Cette demande et les documents déjà déposés seront définitivement supprimés. Cette action est irréversible.",
+      deleteCancel: "Annuler",
+      deleteConfirm: "Supprimer",
+      deleting: "Suppression…",
+      deleteFailed:
+        "La suppression n'a pas pu être effectuée. Veuillez réessayer.",
+      itemCapital: "Prestation en capital",
+      itemSimulation: "Simulation d'impôt",
+      itemAcompte: "Détermination des acomptes",
+      itemRelecture: "Relecture de déclaration",
       noItems: "Vous n'avez encore aucune demande pour cette prestation.",
       noPeriod:
         "Aucune période fiscale n'est ouverte actuellement. Revenez prochainement ou contactez-nous.",
@@ -613,10 +634,10 @@ export const fr = {
     saving: "Enregistrement...",
     saved: "Enregistré",
     saveFailed: "Non enregistré — vérifiez votre connexion",
-    next: "Continuer",
-    previous: "Retour",
-    remark: "Remarque complémentaire",
-    remarkPlaceholder: "Précisez ici tout élément utile pour cette section.",
+    next: "Page suivante",
+    previous: "Page précédente",
+    remark: "Un commentaire pour votre fiduciaire sur cette page ? (facultatif)",
+    remarkPlaceholder: "Ex. : j'ai déménagé en cours d'année…",
 
     steps: {
       accueil: "Accueil",
@@ -738,7 +759,7 @@ export const fr = {
     },
 
     immeubles: {
-      owner: "Êtes-vous propriétaire d'un immeuble ?",
+      owner: "Je suis propriétaire",
       item: "Immeuble",
       street: "Rue et numéro",
       postcode: "NPA et localité",
@@ -777,10 +798,11 @@ export const fr = {
       upload: "Téléverser",
       uploaded: "Déposé",
       toUpload: "À déposer",
+      optional: "Facultatif",
       replace: "Remplacer",
       download: "Télécharger",
       remove: "Supprimer",
-      submit: "Payer et transmettre ma déclaration",
+      submit: "Transmettre ma déclaration",
       submitting: "Redirection vers le paiement...",
       submitHint:
         "Veuillez fournir tous les documents demandés avant de transmettre votre déclaration.",

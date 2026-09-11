@@ -196,6 +196,12 @@ export default async function PortalHomePage({
             date={dayMonth.format(new Date(selected + 1, 5, 30))}
             note={t.portal.deadline2Note}
           />
+
+          <DeadlineCard
+            label={t.portal.deadline3Label}
+            date={dayMonth.format(new Date(selected + 1, 8, 30))}
+            note={t.portal.deadline3Note}
+          />
         </div>
       </div>
     </div>

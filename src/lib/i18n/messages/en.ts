@@ -506,6 +506,8 @@ export const en: Messages = {
     deadline2Label: "Second deadline",
     deadline2Note:
       "Tolerance deadline to file your tax return without further steps.",
+    deadline3Label: "Last deadline",
+    deadline3Note: "Final deadline to file your tax return.",
     accountLabel: "Your account",
     accountNote:
       "Your space is personal. Your documents are only accessible to authorised people.",
@@ -592,6 +594,24 @@ export const en: Messages = {
       newRequest: "New request",
       yearLabel: "Tax year",
       creating: "Creating...",
+      countNone: "No file",
+      countOne: "file",
+      countMany: "files",
+      statusDraft: "In progress",
+      statusTransmitted: "Submitted for processing",
+      statusClosed: "Closed",
+      deleteAction: "Delete this request",
+      deleteTitle: "Delete this request?",
+      deleteBody:
+        "This request and any documents already uploaded will be permanently deleted. This cannot be undone.",
+      deleteCancel: "Cancel",
+      deleteConfirm: "Delete",
+      deleting: "Deleting…",
+      deleteFailed: "The request could not be deleted. Please try again.",
+      itemCapital: "Capital benefit",
+      itemSimulation: "Tax simulation",
+      itemAcompte: "Instalment determination",
+      itemRelecture: "Tax return review",
       noItems: "You have no requests for this service yet.",
       noPeriod:
         "No tax period is open at the moment. Please check back soon or contact us.",
@@ -611,10 +631,10 @@ export const en: Messages = {
     saving: "Saving...",
     saved: "Saved",
     saveFailed: "Not saved — check your connection",
-    next: "Continue",
-    previous: "Back",
-    remark: "Additional remark",
-    remarkPlaceholder: "Add anything useful for this section.",
+    next: "Next page",
+    previous: "Previous page",
+    remark: "A note for your fiduciary on this page? (optional)",
+    remarkPlaceholder: "E.g. I moved home during the year…",
 
     steps: {
       accueil: "Home",
@@ -737,7 +757,7 @@ export const en: Messages = {
     },
 
     immeubles: {
-      owner: "Do you own a property?",
+      owner: "I am a property owner",
       item: "Property",
       street: "Street and number",
       postcode: "Postcode and town",
@@ -776,10 +796,11 @@ export const en: Messages = {
       upload: "Upload",
       uploaded: "Uploaded",
       toUpload: "To upload",
+      optional: "Optional",
       replace: "Replace",
       download: "Download",
       remove: "Remove",
-      submit: "Pay and submit my tax return",
+      submit: "Submit my tax return",
       submitting: "Redirecting to payment...",
       submitHint:
         "Please provide all requested documents before submitting your tax return.",

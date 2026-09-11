@@ -146,7 +146,6 @@ export function Questionnaire({
   // than one row for a category, and the row shows/acts on the latest.
   const uploaded = new Map<string, UploadedDoc>();
   for (const d of uploadedDocs) uploaded.set(d.category, { id: d.id, filename: d.filename });
-  const doneCount = docs.filter((k) => uploaded.has(k)).length;
 
   const yesNo = [
     { value: "oui", label: d.yes },
@@ -770,23 +769,21 @@ export function Questionnaire({
 
             {step === 4 ? (
               <>
-                <Question label={d.immeubles.owner}>
-                  <RadioRow
-                    name="proprietaire"
-                    value={answers.proprietaireImmeuble}
-                    onChange={(v) =>
+                <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-6">
+                  <CheckRow
+                    checked={answers.proprietaireImmeuble === "oui"}
+                    onChange={(on) =>
                       patch({
-                        proprietaireImmeuble:
-                          v as Answers["proprietaireImmeuble"],
+                        proprietaireImmeuble: on ? "oui" : "",
                         immeubles:
-                          v === "oui" && answers.immeubles.length === 0
+                          on && answers.immeubles.length === 0
                             ? [emptyProperty()]
                             : answers.immeubles,
                       })
                     }
-                    options={yesNo}
+                    label={d.immeubles.owner}
                   />
-                </Question>
+                </div>
 
                 {answers.proprietaireImmeuble === "oui"
                   ? answers.immeubles.map((im, i) => (
@@ -990,15 +987,19 @@ export function Questionnaire({
                 dossierId={dossierId}
                 docs={docs}
                 uploaded={uploaded}
-                doneCount={doneCount}
                 price={price}
                 readOnly={readOnly}
                 consent={{
                   transmitWithoutReview: answers.transmitWithoutReview,
                   reviewBeforeTransmit: answers.reviewBeforeTransmit,
                 }}
+                comment={answers.comments["p6"] ?? ""}
+                onComment={(v) =>
+                  patch({ comments: { ...answers.comments, p6: v } })
+                }
                 onConsent={(u) => patch(u)}
                 onUploaded={() => router.refresh()}
+                onBack={() => goTo(step - 1)}
               />
             ) : null}
 
@@ -1006,7 +1007,7 @@ export function Questionnaire({
             {step < 6 ? (
               <Question label={d.remark}>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={answers.comments[`p${step}`] ?? ""}
                   placeholder={d.remarkPlaceholder}
                   onChange={(e) =>
@@ -1023,28 +1024,30 @@ export function Questionnaire({
             ) : null}
           </div>
 
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-            <span
-              className={`font-mono text-[10px] uppercase tracking-[0.1em] ${
-                saveFailed ? "text-[#A2443A]" : "text-muted"
-              }`}
-              role={saveFailed ? "alert" : undefined}
-            >
-              {saving ? d.saving : saveFailed ? d.saveFailed : d.saved}
-            </span>
+          {/* Steps 1–6 carry the shared nav; the transmission step (7) renders
+              its own, with the submit button in place of "next". */}
+          {step < 6 ? (
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <span
+                className={`font-mono text-[10px] uppercase tracking-[0.1em] ${
+                  saveFailed ? "text-[#A2443A]" : "text-muted"
+                }`}
+                role={saveFailed ? "alert" : undefined}
+              >
+                {saving ? d.saving : saveFailed ? d.saveFailed : d.saved}
+              </span>
 
-            <div className="flex gap-2.5">
-              {step > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => goTo(step - 1)}
-                  className="rounded-[var(--radius-md)] border border-line-default px-5 py-3 text-[15px] font-semibold text-body transition-colors hover:border-teal-300"
-                >
-                  ← {d.previous}
-                </button>
-              ) : null}
+              <div className="flex gap-2.5">
+                {step > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => goTo(step - 1)}
+                    className="rounded-[var(--radius-md)] border border-line-default px-5 py-3 text-[15px] font-semibold text-body transition-colors hover:border-teal-300"
+                  >
+                    ← {d.previous}
+                  </button>
+                ) : null}
 
-              {step < STEPS.length - 1 ? (
                 <button
                   type="button"
                   onClick={() => goTo(step + 1)}
@@ -1052,9 +1055,9 @@ export function Questionnaire({
                 >
                   {d.next} →
                 </button>
-              ) : null}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </div>
@@ -1232,11 +1235,94 @@ async function uploadFor(
   return confirmRes.ok;
 }
 
+// Which glyph each document category shows, transcribed from the mockup's
+// `DOC_ICON` map (`Fiduvia.dc.html:5087`). Anything unlisted falls back to the
+// file icon.
+const DOC_ICON: Record<string, string> = {
+  compta: "book",
+  renteAVS: "user",
+  rente2p: "trend",
+  chomage: "user",
+  pilier3a: "trend",
+  rachatLpp: "trend",
+  releveEpargne: "book",
+  comptesTitres: "book",
+  attestAssuranceVie: "shield",
+  releveCompteImmeuble: "book",
+  primesMaladie: "shield",
+  fraisMedicaux: "shield",
+  fraisGarde: "users",
+  pensionAlim: "users",
+};
+
+function DocGlyph({ name }: { name: string }) {
+  const common = {
+    width: 22,
+    height: 22,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.7,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+  switch (name) {
+    case "book":
+      return (
+        <svg {...common}>
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </svg>
+      );
+    case "trend":
+      return (
+        <svg {...common}>
+          <path d="M23 6l-9.5 9.5-5-5L1 18" />
+          <path d="M17 6h6v6" />
+        </svg>
+      );
+    case "shield":
+      return (
+        <svg {...common}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+      );
+    case "user":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="8" r="4" />
+          <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
+        </svg>
+      );
+    case "users":
+      return (
+        <svg {...common}>
+          <circle cx="9" cy="8" r="3.5" />
+          <path d="M2.5 21a6.5 6.5 0 0 1 13 0" />
+          <path d="M16 3.6a4 4 0 0 1 0 7.8" />
+          <path d="M21.5 21a6.5 6.5 0 0 0-5-6.3" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common}>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <path d="M14 2v6h6" />
+          <line x1="9" y1="13" x2="15" y2="13" />
+          <line x1="9" y1="17" x2="13" y2="17" />
+        </svg>
+      );
+  }
+}
+
 function DocumentRow({
   t,
   dossierId,
   docKey,
   doc,
+  optional,
   readOnly,
   onChanged,
 }: {
@@ -1245,6 +1331,8 @@ function DocumentRow({
   docKey: string;
   /** The deposited document for this category, if any. */
   doc: UploadedDoc | undefined;
+  /** `divers` is not required, so its badge reads "Facultatif". */
+  optional: boolean;
   readOnly: boolean;
   onChanged: () => void;
 }) {
@@ -1297,125 +1385,162 @@ function DocumentRow({
     else setFailed(true);
   }
 
-  const ghostBtn =
-    "rounded-lg border border-line-default px-3 py-2 text-[12.5px] font-medium text-brand transition hover:border-line-strong hover:bg-sunken disabled:opacity-60";
+  const fileBtn =
+    "flex shrink-0 items-center gap-1.5 rounded-[8px] border border-line-default bg-card px-[11px] py-1.5 text-[13px] font-semibold text-brand transition hover:border-line-strong disabled:opacity-60";
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-[var(--radius-md)] border border-line bg-card px-4 py-3.5">
-      <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[10px] bg-teal-100 text-brand">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          className="h-[18px] w-[18px]"
-          aria-hidden="true"
+    <div
+      className="flex flex-col gap-3 rounded-[14px] border bg-card p-[14px_16px] transition-[border-color]"
+      style={{ borderColor: done ? "#CFE6D9" : "#E7EAEF" }}
+    >
+      <div className="flex flex-wrap items-center gap-[14px]">
+        <span
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: "#D9EFEC", color: "var(--brand)" }}
         >
-          <path d="M6 3h9l3 3v15H6z" />
-          <path d="M14 3v4h4" />
-        </svg>
-      </span>
-
-      <span className="min-w-[180px] flex-1">
-        <span className="disp block text-[15px] font-bold">
-          {meta?.title ?? docKey}
+          <DocGlyph name={DOC_ICON[docKey] ?? "file"} />
         </span>
-        {doc ? (
-          <span className="mt-0.5 block truncate text-[12.5px] text-body" title={doc.filename}>
+
+        <span className="min-w-[150px] flex-1">
+          <span className="block text-[15.5px] font-semibold text-strong">
+            {meta?.title ?? docKey}
+          </span>
+          {meta?.hint ? (
+            <span className="mt-0.5 block text-[13.5px] text-[#8B97A8]">
+              {meta.hint}
+            </span>
+          ) : null}
+          {failed ? (
+            <span className="mt-0.5 block text-[13px] text-[#A2443A]">
+              {t.documents.errUpload}
+            </span>
+          ) : null}
+        </span>
+
+        <span
+          className="shrink-0 rounded-full px-[11px] py-[5px] text-[12.5px] font-bold"
+          style={
+            done
+              ? { background: "#E6F6EE", color: "#1F9D5B" }
+              : { background: "#F0F2F6", color: "#8B97A8" }
+          }
+        >
+          {done
+            ? d.transmission.uploaded
+            : optional
+              ? d.transmission.optional
+              : d.transmission.toUpload}
+        </span>
+
+        <input
+          ref={input}
+          type="file"
+          accept="application/pdf,image/jpeg,image/png"
+          className="hidden"
+          onChange={(e) => {
+            pick(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+
+        {/* Not deposited: the solid "Téléverser" button. Deposited: it turns
+            into an outline "Remplacer" so the primary style is freed up. */}
+        {readOnly ? null : done ? (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => input.current?.click()}
+            className={fileBtn}
+          >
+            {busy ? d.saving : d.transmission.replace}
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => input.current?.click()}
+            className="flex shrink-0 cursor-pointer items-center rounded-[10px] border border-brand bg-brand px-[15px] py-[9px] text-[14px] font-semibold text-white disabled:opacity-70"
+          >
+            {busy ? d.saving : d.transmission.upload}
+          </button>
+        )}
+      </div>
+
+      {/* The deposited file, with download / remove, as in the mockup. */}
+      {doc ? (
+        <div
+          className="flex items-center gap-2.5 rounded-[10px] border px-3 py-2"
+          style={{ background: "#F7FAF9", borderColor: "#E2EBE8" }}
+        >
+          <span
+            className="min-w-0 flex-1 truncate text-[13.5px] text-body"
+            title={doc.filename}
+          >
             {doc.filename}
           </span>
-        ) : meta?.hint ? (
-          <span className="mt-0.5 block text-[12.5px] text-muted">
-            {meta.hint}
-          </span>
-        ) : null}
-        {failed ? (
-          <span className="mt-0.5 block text-[12.5px] text-[#A2443A]">
-            {t.documents.errUpload}
-          </span>
-        ) : null}
-      </span>
-
-      <span
-        className={`rounded-full px-3 py-1 font-mono text-[9.5px] uppercase tracking-[0.08em] ${
-          done ? "bg-green-100 text-green-600" : "bg-sunken text-muted"
-        }`}
-      >
-        {done ? d.transmission.uploaded : d.transmission.toUpload}
-      </span>
-
-      <input
-        ref={input}
-        type="file"
-        accept="application/pdf,image/jpeg,image/png"
-        className="hidden"
-        onChange={(e) => {
-          pick(e.target.files?.[0]);
-          e.target.value = "";
-        }}
-      />
-
-      {/* Deposited: the client can always download; before submission they can
-          also replace or remove it. Not deposited: a single upload button. */}
-      {doc ? (
-        <span className="flex shrink-0 flex-wrap gap-2">
-          <button type="button" disabled={busy} onClick={download} className={ghostBtn}>
+          <button type="button" disabled={busy} onClick={download} className={fileBtn}>
             {d.transmission.download}
           </button>
           {readOnly ? null : (
-            <>
-              <button type="button" disabled={busy} onClick={() => input.current?.click()} className={ghostBtn}>
-                {busy ? d.saving : d.transmission.replace}
-              </button>
-              <button type="button" disabled={busy} onClick={remove} className={ghostBtn}>
-                {d.transmission.remove}
-              </button>
-            </>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={remove}
+              className="flex shrink-0 items-center rounded-[8px] border px-[11px] py-1.5 text-[13px] font-semibold transition disabled:opacity-60"
+              style={{ borderColor: "#ECC9C9", color: "#C0584A" }}
+            >
+              {d.transmission.remove}
+            </button>
           )}
-        </span>
-      ) : readOnly ? null : (
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => input.current?.click()}
-          className="fx-btn-outline w-full shrink-0 px-4 py-2.5 sm:w-auto"
-        >
-          {busy ? d.saving : d.transmission.upload}
-        </button>
-      )}
+        </div>
+      ) : null}
     </div>
   );
 }
 
-/** Step 7: the price summary, the document checklist, and the submit button. */
+/** Step 7: the tariff, the document checklist, the review choice and submit. */
 function TransmissionStep({
   t,
   dossierId,
   docs,
   uploaded,
-  doneCount,
   price,
   readOnly,
   consent,
+  comment,
+  onComment,
   onConsent,
   onUploaded,
+  onBack,
 }: {
   t: Messages;
   dossierId: string;
   docs: string[];
   uploaded: Map<string, UploadedDoc>;
-  doneCount: number;
   price: ReturnType<typeof computePrice>;
   readOnly: boolean;
   consent: { transmitWithoutReview: boolean; reviewBeforeTransmit: boolean };
+  comment: string;
+  onComment: (value: string) => void;
   onConsent: (update: Partial<Answers>) => void;
   onUploaded: () => void;
+  onBack: () => void;
 }) {
   const d = t.declaration;
   const [submitting, setSubmitting] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const complete = doneCount >= docs.length;
+
+  // "Divers" is optional, so it counts neither toward the required total the
+  // client sees nor toward what unlocks the submit — matching the mockup
+  // (`Fiduvia.dc.html:6255`, `reqDocKeys = docKeysAll.filter(k=>k!=="divers")`).
+  const reqDocs = docs.filter((key) => key !== "divers");
+  const reqTotal = reqDocs.length;
+  const reqDone = reqDocs.filter((key) => uploaded.has(key)).length;
+  const reqPct = reqTotal === 0 ? 0 : Math.round((reqDone / reqTotal) * 100);
+  const complete = reqDone >= reqTotal;
+  const cardBorder = { borderColor: "#E7EAEF" };
+  const sand = { background: "#F3EFE6", borderColor: "#E7EAEF" };
 
   // Opens a Stripe Checkout session and hands the browser to it. Payment is
   // what submits the declaration: the return from Stripe finalizes and locks it
@@ -1441,95 +1566,121 @@ function TransmissionStep({
   }
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-7">
-      <h2 className="disp m-0 text-[20px] font-extrabold">
-        {d.transmission.title}
-      </h2>
-      <p className="mt-1 text-[13.5px] text-muted">
-        {docs.length} {d.transmission.note}
-      </p>
+    <div className="flex flex-col gap-[18px]">
+      {/* Card 1 — every supporting document, with the tariff and progress. */}
+      <div
+        className="rounded-[18px] border bg-card p-[26px]"
+        style={cardBorder}
+      >
+        <h2 className="text-[17px] font-bold text-strong">
+          {d.transmission.title}
+        </h2>
+        <p className="mt-1 text-[13.5px] text-[#8B97A8]">
+          {reqTotal} {d.transmission.note}
+        </p>
 
-      <div className="mt-5 rounded-[var(--radius-md)] bg-sunken p-5">
-        <span className="fx-eyebrow text-[var(--text-muted)]">
-          {d.transmission.priceTitle}
-        </span>
+        <div className="mt-4 flex flex-wrap gap-3.5">
+          {/* Récapitulatif du tarif */}
+          <div
+            className="min-w-[190px] flex-1 rounded-2xl border p-[16px_18px]"
+            style={sand}
+          >
+            <div className="text-[13px] font-semibold text-[#8B97A8]">
+              {d.transmission.priceTitle}
+            </div>
 
-        <div className="mt-3 flex flex-col gap-2">
-          {price.lines.map((line) => (
-            <div
-              key={line.key + (line.count ?? "")}
-              className="flex items-baseline justify-between gap-4 text-[14px] text-body"
-            >
-              <span>
-                {d.price[line.key as keyof typeof d.price]}
-                {line.count && line.count > 1 ? ` × ${line.count}` : ""}
+            <div className="mt-2.5 flex flex-col gap-[7px]">
+              {price.lines.map((line) => (
+                <div
+                  key={line.key + (line.count ?? "")}
+                  className="flex justify-between gap-3 text-[13.5px]"
+                  style={{ color: "#46515F" }}
+                >
+                  <span>
+                    {d.price[line.key as keyof typeof d.price]}
+                    {line.count && line.count > 1 ? ` × ${line.count}` : ""}
+                  </span>
+                  <span className="fx-figure whitespace-nowrap font-semibold">
+                    CHF {line.amount}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="my-3 h-px" style={{ background: "#E0DACF" }} />
+
+            <div className="flex items-baseline justify-between gap-3">
+              <span
+                className="text-[13.5px] font-bold"
+                style={{ color: "#3B4654" }}
+              >
+                {d.transmission.total}
               </span>
-              <span className="fx-figure whitespace-nowrap font-semibold">
-                CHF {line.amount}
+              <span
+                className="fx-figure text-[24px] font-extrabold leading-none"
+                style={{ color: "var(--brand)" }}
+              >
+                CHF {price.total}
               </span>
             </div>
+          </div>
+
+          {/* Progression du dépôt */}
+          <div
+            className="min-w-[240px] flex-[2] rounded-2xl border p-[16px_18px]"
+            style={sand}
+          >
+            <div
+              className="flex justify-between text-[14px] font-semibold"
+              style={{ color: "#3B4654" }}
+            >
+              <span>
+                {d.transmission.progress
+                  .replace("{done}", String(reqDone))
+                  .replace("{total}", String(reqTotal))}
+              </span>
+              <span style={{ color: "var(--brand)" }}>{reqPct}%</span>
+            </div>
+
+            <div
+              className="mt-2.5 h-2 overflow-hidden rounded-full"
+              style={{ background: "#E7EAEF" }}
+            >
+              <div
+                className="h-full rounded-full transition-[width] duration-[400ms]"
+                style={{ width: `${reqPct}%`, background: "var(--brand)" }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2.5">
+          {docs.map((key) => (
+            <DocumentRow
+              key={key}
+              t={t}
+              dossierId={dossierId}
+              docKey={key}
+              doc={uploaded.get(key)}
+              optional={key === "divers"}
+              readOnly={readOnly}
+              onChanged={onUploaded}
+            />
           ))}
         </div>
-
-        <div className="mt-4 flex items-baseline justify-between gap-4 border-t border-line pt-4">
-          <span className="text-[15px] font-semibold text-strong">
-            {d.transmission.total}
-          </span>
-          <span
-            className="fx-figure text-[26px] font-extrabold leading-none"
-            style={{ color: "var(--brand)" }}
-          >
-            CHF {price.total}
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-4 rounded-[var(--radius-md)] bg-sunken px-5 py-4">
-        <div className="flex items-center justify-between gap-4 text-[13.5px]">
-          <span className="text-body">
-            {d.transmission.progress
-              .replace("{done}", String(doneCount))
-              .replace("{total}", String(docs.length))}
-          </span>
-          <span className="fx-figure font-semibold text-strong">
-            {docs.length === 0
-              ? "0%"
-              : `${Math.round((doneCount / docs.length) * 100)}%`}
-          </span>
-        </div>
-
-        <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-line">
-          <div
-            className="h-full rounded-full bg-brand transition-[width]"
-            style={{
-              width: `${docs.length === 0 ? 0 : (doneCount / docs.length) * 100}%`,
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-2.5">
-        {docs.map((key) => (
-          <DocumentRow
-            key={key}
-            t={t}
-            dossierId={dossierId}
-            docKey={key}
-            doc={uploaded.get(key)}
-            readOnly={readOnly}
-            onChanged={onUploaded}
-          />
-        ))}
       </div>
 
       {readOnly ? (
-        <p className="mt-5 rounded-[10px] border border-teal-300 bg-teal-100/60 px-4 py-3 text-[13.5px] text-brand">
+        <p className="rounded-[10px] border border-teal-300 bg-teal-100/60 px-4 py-3 text-[13.5px] text-brand">
           {d.transmission.submitted}
         </p>
       ) : (
         <>
-          {/* How the client wants the return handled before we file it. */}
-          <div className="mt-5 flex flex-col gap-2.5 rounded-[var(--radius-md)] border border-line bg-sunken/40 p-4">
+          {/* Card 2 — how the client wants the return handled before we file it. */}
+          <div
+            className="flex flex-col gap-3 rounded-[18px] border bg-card p-[22px_26px]"
+            style={cardBorder}
+          >
             <CheckRow
               checked={consent.transmitWithoutReview}
               onChange={(on) =>
@@ -1552,28 +1703,62 @@ function TransmissionStep({
             />
           </div>
 
-          <div className="mt-6 flex flex-col items-end gap-2">
-            {!complete ? (
-              <p className="text-right text-[13px] text-[#B26A00]">
-                {d.transmission.submitHint}
-              </p>
-            ) : null}
+          {/* Card 3 — the per-page remark, as on every other step. */}
+          <div
+            className="rounded-[18px] border bg-card p-[22px_26px]"
+            style={cardBorder}
+          >
+            <label
+              className="mb-2 block text-[14px] font-semibold"
+              style={{ color: "#3B4654" }}
+            >
+              {d.remark}
+            </label>
+            <textarea
+              rows={2}
+              value={comment}
+              placeholder={d.remarkPlaceholder}
+              onChange={(e) => onComment(e.target.value)}
+              className="fx-field-input resize-y leading-[1.6]"
+            />
+          </div>
 
-            {error ? (
-              <p role="alert" className="text-right text-[13px] text-red-600">
-                {error}
-              </p>
-            ) : null}
+          {/* Nav — previous on the left, submit on the right, as in the mockup. */}
+          <div className="mt-1 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={onBack}
+              className="px-2 py-3 text-[14.5px] font-semibold text-body transition-colors hover:text-brand"
+            >
+              ← {d.previous}
+            </button>
 
             <button
               type="button"
               onClick={() => setConfirming(true)}
               disabled={submitting || !complete}
               className="fx-btn-send"
+              style={
+                !complete
+                  ? { background: "#EDF1F6", color: "#AEB8C4", opacity: 1 }
+                  : undefined
+              }
             >
-              {submitting ? d.transmission.submitting : d.transmission.submit}
+              {submitting ? d.transmission.submitting : `${d.transmission.submit} →`}
             </button>
           </div>
+
+          {error ? (
+            <p role="alert" className="text-right text-[13px] text-red-600">
+              {error}
+            </p>
+          ) : null}
+
+          {!complete ? (
+            <p className="text-right text-[13px] text-[#B26A00]">
+              {d.transmission.submitHint}
+            </p>
+          ) : null}
         </>
       )}
 

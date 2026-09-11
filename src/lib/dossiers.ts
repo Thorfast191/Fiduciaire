@@ -3,11 +3,15 @@ import { db } from "@/db/client";
 import {
   dossiers,
   documents,
+  dossierNotifications,
+  payments,
   users,
   type Dossier,
   type DossierStatus,
   type Role,
 } from "@/db/schema";
+import { deleteObject } from "@/lib/storage/client";
+import { logger } from "@/lib/logger";
 import type { ServiceType } from "@/lib/serviceTypes";
 
 /**
@@ -268,4 +272,53 @@ export async function setDossierStatus(
     .set({ status: newStatus, updatedAt: new Date() })
     .where(eq(dossiers.id, dossierId));
   return { ok: true, previousStatus };
+}
+
+/**
+ * Deletes a draft dossier and everything hanging off it.
+ *
+ * Only the owner (or an admin) may delete, and only while the dossier is still
+ * `not_started` — once it is submitted/paid it is locked, matching the mockup's
+ * `canDelete: !submitted`. There is no FK cascade, so the document, notification
+ * and payment rows are removed first; the stored bytes for each document are
+ * dropped before the transaction (S3 cannot join it), and a failed object
+ * delete is logged rather than aborting — a row must never outlive its bytes'
+ * owner.
+ */
+export async function deleteDossier(
+  dossierId: string,
+  requester: { id: string; role: Role },
+): Promise<{ ok: true } | { ok: false; error: "not_found" | "not_deletable" }> {
+  const access = await getAccessibleDossier(dossierId, requester);
+  if (!access.ok) return { ok: false, error: "not_found" };
+  if (access.dossier.status !== "not_started") {
+    return { ok: false, error: "not_deletable" };
+  }
+
+  const docs = await db
+    .select({ id: documents.id, storageKey: documents.storageKey })
+    .from(documents)
+    .where(eq(documents.dossierId, dossierId));
+
+  for (const doc of docs) {
+    try {
+      await deleteObject(doc.storageKey);
+    } catch (err) {
+      logger.error(
+        { err, documentId: doc.id, storageKey: doc.storageKey },
+        "dossier delete: object could not be removed",
+      );
+    }
+  }
+
+  await db.transaction(async (tx) => {
+    await tx.delete(documents).where(eq(documents.dossierId, dossierId));
+    await tx
+      .delete(dossierNotifications)
+      .where(eq(dossierNotifications.dossierId, dossierId));
+    await tx.delete(payments).where(eq(payments.dossierId, dossierId));
+    await tx.delete(dossiers).where(eq(dossiers.id, dossierId));
+  });
+
+  return { ok: true };
 }
