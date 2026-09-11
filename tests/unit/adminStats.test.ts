@@ -19,11 +19,18 @@ async function makeClient(): Promise<string> {
 }
 
 describe("getAdminDashboardStats", () => {
-  it("returns a stable shape (all 4 status keys, tax years sorted desc)", async () => {
+  it("returns a stable shape (every status key, tax years sorted desc)", async () => {
     const stats = await getAdminDashboardStats();
 
     expect(Object.keys(stats.byStatus).sort()).toEqual(
-      ["completed", "in_review", "not_started", "submitted"],
+      [
+        "completed",
+        "documents_received",
+        "documents_requested",
+        "in_review",
+        "not_started",
+        "submitted",
+      ],
     );
     const years = stats.byTaxYear.map((r) => r.taxYear);
     expect(years).toEqual([...years].sort((a, b) => b - a));

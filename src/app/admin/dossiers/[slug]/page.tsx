@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { listAllDossiersWithClient, listTaxYears } from "@/lib/dossiers";
+import { getCurrentUser } from "@/lib/auth/guards";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
@@ -25,10 +26,11 @@ export default async function AdminPrestationPage({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ periode?: string }>;
 }) {
-  const [{ slug }, { periode }, years, { t }] = await Promise.all([
+  const [{ slug }, { periode }, years, user, { t }] = await Promise.all([
     params,
     searchParams,
     listTaxYears(),
+    getCurrentUser(),
     getT(),
   ]);
 
@@ -70,6 +72,7 @@ export default async function AdminPrestationPage({
 
       <DossiersTable
         slug={slug}
+        currentAdminId={user?.id ?? ""}
         rows={rows.map((r) => ({
           id: r.id,
           taxYear: r.taxYear,
@@ -79,6 +82,8 @@ export default async function AdminPrestationPage({
           lastName: r.lastName,
           email: r.email,
           documentCount: r.documentCount,
+          reservedBy: r.reservedBy,
+          reservedByName: r.reservedByName,
         }))}
       />
 

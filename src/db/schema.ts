@@ -164,6 +164,16 @@ export const dossiers = pgTable(
     answers: jsonb("answers").notNull().default({}),
     /** Which of the seven questionnaire pages the client is on. */
     currentStep: integer("current_step").notNull().default(0),
+    /**
+     * The administrator who has claimed this dossier, or null while it is
+     * unassigned. The mockup's admin space is per-agent: each admin's home
+     * shows the dossiers they have reserved and the revenue those bring in,
+     * and "Distribution automatique" spreads the unclaimed ones across the
+     * team. Nullable and unconstrained on role because an account can be
+     * demoted after reserving — the audit trail must outlive the assignment.
+     */
+    reservedBy: uuid("reserved_by").references(() => users.id),
+    reservedAt: timestamp("reserved_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .default(sql`now()`),
@@ -183,6 +193,9 @@ export const dossiers = pgTable(
     ),
     index("dossiers_tax_year_idx").on(t.taxYear),
     index("dossiers_service_type_idx").on(t.serviceType),
+    // The admin home counts and lists a single agent's reserved dossiers on
+    // every load; this keeps that scan off the whole table.
+    index("dossiers_reserved_by_idx").on(t.reservedBy),
   ],
 );
 

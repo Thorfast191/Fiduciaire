@@ -57,6 +57,40 @@ export async function demoteAdmin(id: string): Promise<AccountRow | null> {
   return row ?? null;
 }
 
+/**
+ * Promotes a client to an administrator — the mockup's "Passer administrateur".
+ * Guarded on the `client` role so it never touches an existing admin or a
+ * super admin, and returns null when the id is not a client to promote.
+ */
+export async function promoteClient(id: string): Promise<AccountRow | null> {
+  const [row] = await db
+    .update(users)
+    .set({ role: "admin", updatedAt: new Date() })
+    .where(and(eq(users.id, id), eq(users.role, "client")))
+    .returning(COLUMNS);
+
+  return row ?? null;
+}
+
+/**
+ * Deactivates a client account — the mockup's "Supprimer" on the clients list.
+ *
+ * A soft delete (stamps `disabled_at`) rather than a row removal: `dossiers`,
+ * `documents`, `payments` and `audit_log` all reference the user, and the record
+ * of who filed what must survive an account being closed. Every admin listing
+ * already filters on `disabled_at is null`, so a deactivated client drops out of
+ * the app. Guarded on the `client` role so it can never disable an admin here.
+ */
+export async function deactivateClient(id: string): Promise<AccountRow | null> {
+  const [row] = await db
+    .update(users)
+    .set({ disabledAt: new Date(), updatedAt: new Date() })
+    .where(and(eq(users.id, id), eq(users.role, "client")))
+    .returning(COLUMNS);
+
+  return row ?? null;
+}
+
 /** One account by id, for an admin screen that already holds a client's id. */
 export async function getClientById(
   id: string,

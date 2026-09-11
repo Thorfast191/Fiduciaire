@@ -17,6 +17,8 @@ export interface TableRow {
   lastName: string;
   email: string;
   documentCount: number;
+  reservedBy: string | null;
+  reservedByName: string | null;
 }
 
 /**
@@ -32,10 +34,13 @@ export interface TableRow {
 export default function DossiersTable({
   rows,
   slug,
+  currentAdminId,
 }: {
   rows: TableRow[];
   /** Prestation segment, so a row can link to its own detail page. */
   slug: string;
+  /** The signed-in admin, so a row knows whether it can release its reservation. */
+  currentAdminId: string;
 }) {
   const { locale, t } = useI18n();
   const router = useRouter();
@@ -43,6 +48,7 @@ export default function DossiersTable({
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<DossierStatus | "">("");
   const [saving, setSaving] = useState<string | null>(null);
+  const [reserving, setReserving] = useState<string | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
 
   const dateFmt = useMemo(
@@ -90,6 +96,28 @@ export default function DossiersTable({
       setFailed(t.common.genericError);
     } finally {
       setSaving(null);
+    }
+  }
+
+  async function toggleReservation(id: string, reserve: boolean) {
+    setReserving(id);
+    setFailed(null);
+
+    try {
+      const res = await fetch(`/api/dossiers/${id}/reserve`, {
+        method: reserve ? "POST" : "DELETE",
+      });
+
+      if (!res.ok) {
+        setFailed(t.admin.dossiers.errReserve);
+        return;
+      }
+
+      router.refresh();
+    } catch {
+      setFailed(t.common.genericError);
+    } finally {
+      setReserving(null);
     }
   }
 
@@ -221,6 +249,54 @@ export default function DossiersTable({
                   >
                     {t.declaration.summary.open} →
                   </Link>
+
+                  {!r.reservedBy ? (
+                    <button
+                      type="button"
+                      disabled={reserving === r.id}
+                      onClick={() => toggleReservation(r.id, true)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-teal-300 px-3 py-1.5 text-[12.5px] font-medium text-brand transition hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                        className="h-3.5 w-3.5"
+                      >
+                        <path d="M5 3h14a2 2 0 0 1 2 2v16l-9-4-9 4V5a2 2 0 0 1 2-2z" />
+                      </svg>
+                      {reserving === r.id
+                        ? t.admin.dossiers.reserving
+                        : t.admin.dossiers.reserve}
+                    </button>
+                  ) : r.reservedBy === currentAdminId ? (
+                    <>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-100 px-2.5 py-1 text-[12px] font-medium text-brand">
+                        {t.admin.dossiers.reservedByYou}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={reserving === r.id}
+                        onClick={() => toggleReservation(r.id, false)}
+                        className="rounded-lg border border-line-default px-3 py-1.5 text-[12.5px] font-medium text-muted transition hover:border-line-strong hover:bg-sunken disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {reserving === r.id
+                          ? t.admin.dossiers.reserving
+                          : t.admin.dossiers.release}
+                      </button>
+                    </>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-sunken px-2.5 py-1 text-[12px] font-medium text-muted">
+                      {t.admin.dossiers.reservedByOther.replace(
+                        "{name}",
+                        r.reservedByName ?? "—",
+                      )}
+                    </span>
+                  )}
 
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium ${

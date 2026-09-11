@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/guards";
 import { listAdminAccounts, listClientAccounts } from "@/lib/adminUsers";
 import { getT } from "@/lib/i18n";
 import AdminAccounts from "./AdminAccounts";
+import ClientAccounts from "./ClientAccounts";
 
 /**
  * User management, matching the mockup's admin "Gestion des utilisateurs"
@@ -47,43 +48,19 @@ export default async function AdminUsersPage() {
         canManage={isSuperAdmin}
       />
 
-      <section className="mt-4 rounded-2xl border border-line bg-card p-5 shadow-[var(--shadow-xs)] sm:p-6">
-        <h2 className="disp text-[17px] font-bold">
-          {t.admin.users.clientsTitle}
-        </h2>
+      <h2 className="disp mt-8 text-[19px] font-bold">
+        {t.admin.users.clientsTitle}
+      </h2>
 
-        <p className="mt-1 text-[13px] text-muted">
-          {t.admin.users.clientsSub}
-        </p>
-
-        <div className="mt-4 flex flex-col gap-2">
-          {clients.length === 0 ? (
-            <p className="py-6 text-center text-[13px] text-muted">
-              {t.admin.users.noClients}
-            </p>
-          ) : (
-            clients.map((c) => (
-              <div
-                key={c.id}
-                className="flex items-center gap-3 rounded-xl border border-line px-4 py-2.5"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-100 text-[12px] font-bold text-brand">
-                  {(c.firstName[0] ?? "") + (c.lastName[0] ?? "")}
-                </span>
-
-                <span className="flex min-w-0 flex-col">
-                  <span className="truncate text-[14.5px] font-semibold text-strong">
-                    {c.firstName} {c.lastName}
-                  </span>
-                  <span className="truncate text-[12.5px] text-muted">
-                    {c.email}
-                  </span>
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
+      <ClientAccounts
+        canManage={isSuperAdmin}
+        clients={clients.map((c) => ({
+          id: c.id,
+          firstName: c.firstName,
+          lastName: c.lastName,
+          email: c.email,
+        }))}
+      />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { db } from "@/db/client";
 import { users } from "@/db/schema";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { hashPassword } from "@/lib/auth/password";
-import { demoteAdmin, listAdminAccounts } from "@/lib/adminUsers";
+import { demoteAdmin, listAdminAccounts, promoteClient } from "@/lib/adminUsers";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
@@ -18,6 +18,8 @@ const createSchema = z.object({
 });
 
 const deleteSchema = z.object({ id: z.string().uuid() });
+
+const promoteSchema = z.object({ id: z.string().uuid() });
 
 /**
  * Managing administrators is a super-admin power: an ordinary admin must not
@@ -120,6 +122,47 @@ export async function POST(request: NextRequest) {
     action: "admin_created",
     targetType: "user",
     targetId: created.id,
+    ip: getClientIp(request),
+  });
+
+  return NextResponse.json({ ok: true });
+}
+
+/**
+ * Promotes an existing client account to administrator — the clients list's
+ * "Passer administrateur". Super-admin only, like every other change to who can
+ * reach the admin area.
+ */
+export async function PATCH(request: NextRequest) {
+  const auth = await requireSuperAdmin(request);
+  if ("error" in auth) {
+    return NextResponse.json(
+      { ok: false, error: auth.error },
+      { status: auth.status },
+    );
+  }
+
+  const parsed = promoteSchema.safeParse(await body(request));
+  if (!parsed.success) {
+    return NextResponse.json(
+      { ok: false, error: "invalid_request" },
+      { status: 400 },
+    );
+  }
+
+  const promoted = await promoteClient(parsed.data.id);
+  if (!promoted) {
+    return NextResponse.json(
+      { ok: false, error: "not_found" },
+      { status: 404 },
+    );
+  }
+
+  await writeAuditLog({
+    actorUserId: auth.user.id,
+    action: "admin_promoted",
+    targetType: "user",
+    targetId: parsed.data.id,
     ip: getClientIp(request),
   });
 

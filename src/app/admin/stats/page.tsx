@@ -1,21 +1,13 @@
 import { getAdminDashboardStats } from "@/lib/adminStats";
-import { listTaxYears } from "@/lib/dossiers";
+import { countDossiersByService, listTaxYears } from "@/lib/dossiers";
 import { StatCard } from "@/components/ui/StatCard";
 import { STATUS_ORDER } from "@/lib/dossierStatus";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
+import { serviceLabel, type ServiceType } from "@/lib/serviceTypes";
 import type { DossierStatus } from "@/db/schema";
-
-/** The mockup's `aPalette` (`Fiduvia.dc.html:2966`). */
-const PALETTE = [
-  "var(--brand)",
-  "var(--petrol-800)",
-  "var(--green-600)",
-  "var(--teal-500)",
-  "var(--amber-600)",
-];
 
 const STATUS_BAR: Record<DossierStatus, string> = {
   not_started: "bg-status-not-started",
@@ -27,18 +19,28 @@ const STATUS_BAR: Record<DossierStatus, string> = {
   completed: "bg-status-completed",
 };
 
+/** The mockup's admin breakdown order and colours (see the home artboard). */
+const STATS_PRESTATIONS: { type: ServiceType; color: string }[] = [
+  { type: "declaration", color: "var(--brand)" },
+  { type: "departure", color: "var(--petrol-800)" },
+  { type: "capital", color: "var(--green-600)" },
+  { type: "deces", color: "var(--teal-500)" },
+  { type: "simulation", color: "var(--amber-600)" },
+  { type: "acompte", color: "var(--petrol-600)" },
+];
+
 /**
- * Global statistics, matching the mockup's admin "Statistiques" artboard: the
- * same status strip as the dashboard, but scoped to the chosen period and
- * headlined by processed / in-progress counts rather than totals. The mockup's
- * third KPI is revenue; this shows active clients, since payments do not exist.
+ * Firm-wide statistics, matching the mockup's admin "Statistiques" artboard:
+ * processed / in-progress counts and the period's revenue, the status strip,
+ * and the per-prestation breakdown — all scoped to the chosen period and
+ * spanning every dossier, as opposed to the per-agent admin home.
  */
 export default async function AdminStatsPage({
   searchParams,
 }: {
   searchParams: Promise<{ periode?: string }>;
 }) {
-  const [{ periode }, years, { t }] = await Promise.all([
+  const [{ periode }, years, { t, locale }] = await Promise.all([
     searchParams,
     listTaxYears(),
     getT(),
@@ -47,17 +49,21 @@ export default async function AdminStatsPage({
   const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
 
-  const stats = await getAdminDashboardStats(selected);
+  const [stats, counts] = await Promise.all([
+    getAdminDashboardStats(selected),
+    countDossiersByService(selected),
+  ]);
   const statusTotal = STATUS_ORDER.reduce((a, s) => a + stats.byStatus[s], 0);
 
-  const h = t.admin.hub;
-  const prestations = [
-    { label: h.declarations, count: stats.totalDossiers },
-    { label: h.capital, count: 0 },
-    { label: h.simulations, count: 0 },
-    { label: h.instalments, count: 0 },
-    { label: h.reviews, count: 0 },
-  ];
+  const money = new Intl.NumberFormat(locale === "fr" ? "fr-CH" : "en-CH", {
+    maximumFractionDigits: 0,
+  });
+
+  const prestations = STATS_PRESTATIONS.map((p) => ({
+    label: serviceLabel(t, p.type),
+    count: counts[p.type] ?? 0,
+    color: p.color,
+  }));
   const maxPrestation = Math.max(1, ...prestations.map((p) => p.count));
 
   return (
@@ -86,9 +92,9 @@ export default async function AdminStatsPage({
           hint={t.admin.stats.inProgressSub}
         />
         <StatCard
-          label={t.admin.stats.clients}
-          value={stats.totalClients}
-          hint={t.admin.stats.clientsSub}
+          label={t.admin.stats.revenue}
+          value={`CHF ${money.format(stats.revenueChf)}`}
+          hint={t.admin.stats.revenueSub}
           accent
         />
       </section>
@@ -133,9 +139,9 @@ export default async function AdminStatsPage({
         </span>
 
         <div className="mt-3.5 flex flex-col gap-3">
-          {prestations.map((p, i) => (
+          {prestations.map((p) => (
             <div key={p.label} className="flex items-center gap-3">
-              <span className="disp w-[120px] shrink-0 text-[15px] font-bold sm:w-[190px]">
+              <span className="disp w-[120px] shrink-0 text-[15px] font-bold sm:w-[170px]">
                 {p.label}
               </span>
 
@@ -144,7 +150,7 @@ export default async function AdminStatsPage({
                   className="h-full rounded-full"
                   style={{
                     width: `${(p.count / maxPrestation) * 100}%`,
-                    background: PALETTE[i % PALETTE.length],
+                    background: p.color,
                   }}
                 />
               </div>

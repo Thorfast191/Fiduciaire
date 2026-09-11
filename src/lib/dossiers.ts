@@ -1,4 +1,5 @@
-import { and, eq, desc, sql } from "drizzle-orm";
+import { and, asc, eq, desc, isNull, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { db } from "@/db/client";
 import {
   dossiers,
@@ -97,6 +98,10 @@ export interface AdminDossierRow {
   email: string;
   /** Uploaded, non-deleted documents on this dossier — the files an admin can download. */
   documentCount: number;
+  /** The admin who has claimed this dossier, or null while it is unassigned. */
+  reservedBy: string | null;
+  /** That admin's display name, resolved in the same query; null when unassigned. */
+  reservedByName: string | null;
 }
 
 /**
@@ -117,6 +122,9 @@ export async function listAllDossiersWithClient({
   /** Narrow to one client, for a per-client admin view. */
   clientId?: string;
 } = {}): Promise<AdminDossierRow[]> {
+  // Self-join on `users` to resolve the reserving admin's name alongside the
+  // client's, in the one query the table already runs.
+  const reserver = alias(users, "reserver");
   return db
     .select({
       id: dossiers.id,
@@ -128,6 +136,10 @@ export async function listAllDossiersWithClient({
       firstName: users.firstName,
       lastName: users.lastName,
       email: users.email,
+      reservedBy: dossiers.reservedBy,
+      reservedByName: sql<
+        string | null
+      >`nullif(trim(concat(${reserver.firstName}, ' ', ${reserver.lastName})), '')`,
       // Counted in the same query so the table can flag which dossiers carry
       // files without a follow-up round trip per row. Mirrors the filter in
       // listDocumentsForDossier: uploaded and not soft-deleted.
@@ -140,6 +152,7 @@ export async function listAllDossiersWithClient({
     })
     .from(dossiers)
     .innerJoin(users, eq(users.id, dossiers.clientId))
+    .leftJoin(reserver, eq(reserver.id, dossiers.reservedBy))
     .where(
       and(
         taxYear ? eq(dossiers.taxYear, taxYear) : undefined,
@@ -272,6 +285,124 @@ export async function setDossierStatus(
     .set({ status: newStatus, updatedAt: new Date() })
     .where(eq(dossiers.id, dossierId));
   return { ok: true, previousStatus };
+}
+
+export type ReserveResult =
+  | { ok: true; dossier: Dossier }
+  | { ok: false; error: "not_found" | "already_reserved" };
+
+/**
+ * Claims a dossier for an administrator — the mockup's "Réserver".
+ *
+ * A free dossier is claimed by anyone with admin rights. One already held by a
+ * colleague is only reassigned by a super admin (an ordinary admin cannot take
+ * a peer's work); asking to reserve a dossier you already hold is a no-op that
+ * returns it. The write is guarded on the previous holder so two admins racing
+ * for the same free dossier cannot both win.
+ */
+export async function reserveDossier(
+  dossierId: string,
+  admin: { id: string; role: Role },
+): Promise<ReserveResult> {
+  const [dossier] = await db
+    .select()
+    .from(dossiers)
+    .where(eq(dossiers.id, dossierId));
+  if (!dossier) return { ok: false, error: "not_found" };
+
+  if (dossier.reservedBy === admin.id) return { ok: true, dossier };
+  if (dossier.reservedBy && admin.role !== "super_admin") {
+    return { ok: false, error: "already_reserved" };
+  }
+
+  const [updated] = await db
+    .update(dossiers)
+    .set({ reservedBy: admin.id, reservedAt: new Date(), updatedAt: new Date() })
+    .where(
+      and(
+        eq(dossiers.id, dossierId),
+        // Guard on the holder we read: null for a free claim, the current
+        // holder for a super-admin reassignment. A concurrent claim shifts it
+        // and this update matches nothing.
+        dossier.reservedBy
+          ? eq(dossiers.reservedBy, dossier.reservedBy)
+          : isNull(dossiers.reservedBy),
+      ),
+    )
+    .returning();
+
+  if (!updated) return { ok: false, error: "already_reserved" };
+  return { ok: true, dossier: updated };
+}
+
+/**
+ * Releases a dossier back to the unassigned pool — the mockup's "Libérer".
+ * The holder may release their own; a super admin may release anyone's.
+ */
+export async function releaseDossier(
+  dossierId: string,
+  admin: { id: string; role: Role },
+): Promise<{ ok: true } | { ok: false; error: "not_found" | "forbidden" }> {
+  const [dossier] = await db
+    .select()
+    .from(dossiers)
+    .where(eq(dossiers.id, dossierId));
+  if (!dossier) return { ok: false, error: "not_found" };
+  if (!dossier.reservedBy) return { ok: true };
+  if (dossier.reservedBy !== admin.id && admin.role !== "super_admin") {
+    return { ok: false, error: "forbidden" };
+  }
+
+  await db
+    .update(dossiers)
+    .set({ reservedBy: null, reservedAt: null, updatedAt: new Date() })
+    .where(eq(dossiers.id, dossierId));
+  return { ok: true };
+}
+
+/**
+ * Spreads every unreserved dossier of a period evenly across the active
+ * administrators — the mockup's "Distribution automatique". Round-robin over
+ * the admins sorted by id so the split is deterministic, oldest dossiers first.
+ * Returns how many were assigned. A no-op (returns 0) when there is nothing to
+ * distribute or no one to distribute to.
+ */
+export async function autoDistributeDossiers(
+  taxYear: number,
+): Promise<{ assigned: number }> {
+  const admins = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(
+      and(
+        sql`${users.role} in ('admin', 'super_admin')`,
+        isNull(users.disabledAt),
+      ),
+    )
+    .orderBy(asc(users.id));
+  if (admins.length === 0) return { assigned: 0 };
+
+  const free = await db
+    .select({ id: dossiers.id })
+    .from(dossiers)
+    .where(and(eq(dossiers.taxYear, taxYear), isNull(dossiers.reservedBy)))
+    .orderBy(asc(dossiers.createdAt));
+  if (free.length === 0) return { assigned: 0 };
+
+  const now = new Date();
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < free.length; i++) {
+      const adminId = admins[i % admins.length].id;
+      await tx
+        .update(dossiers)
+        .set({ reservedBy: adminId, reservedAt: now, updatedAt: now })
+        // Still guard on "free" so a concurrent manual reservation is not
+        // clobbered by the batch.
+        .where(and(eq(dossiers.id, free[i].id), isNull(dossiers.reservedBy)));
+    }
+  });
+
+  return { assigned: free.length };
 }
 
 /**

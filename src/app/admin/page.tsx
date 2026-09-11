@@ -1,11 +1,13 @@
-import { getAdminDashboardStats } from "@/lib/adminStats";
+import { getAdminHomeStats } from "@/lib/adminStats";
 import { listTaxYears } from "@/lib/dossiers";
+import { getCurrentUser } from "@/lib/auth/guards";
 import { StatCard } from "@/components/ui/StatCard";
 import { STATUS_ORDER } from "@/lib/dossierStatus";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
+import { serviceLabel, type ServiceType } from "@/lib/serviceTypes";
 import type { DossierStatus } from "@/db/schema";
 
 const STATUS_BAR: Record<DossierStatus, string> = {
@@ -18,52 +20,53 @@ const STATUS_BAR: Record<DossierStatus, string> = {
   completed: "bg-status-completed",
 };
 
-/** The mockup's `aPalette` (`Fiduvia.dc.html:2966`). */
-const PALETTE = [
-  "var(--brand)",
-  "var(--petrol-800)",
-  "var(--green-600)",
-  "var(--teal-500)",
-  "var(--amber-600)",
+/**
+ * The prestations the mockup's admin home charts, in its order and colours
+ * (`Fiduvia.dc.html`): declaration, departure, capital, death, simulation,
+ * instalments — relectures are absent from this breakdown in the mockup.
+ */
+const HOME_PRESTATIONS: { type: ServiceType; color: string }[] = [
+  { type: "declaration", color: "var(--brand)" },
+  { type: "departure", color: "var(--petrol-800)" },
+  { type: "capital", color: "var(--green-600)" },
+  { type: "deces", color: "var(--teal-500)" },
+  { type: "simulation", color: "var(--amber-600)" },
+  { type: "acompte", color: "var(--petrol-600)" },
 ];
 
 /**
- * Admin dashboard, matching the mockup's "ADMIN ACCUEIL" artboard
- * (`Fiduvia.dc.html:2884`): KPIs, a status distribution strip and per-prestation
- * bars, all scoped to the période picker.
- *
- * Two deliberate departures, both for want of a backend: the mockup's third KPI
- * is the signed-in admin's personal revenue, shown here as active clients; and
- * its figures cover only the dossiers that admin has reserved, which this
- * platform has no concept of, so they are global.
+ * Admin home, matching the mockup's "Espace administrateur" artboard. Per-agent
+ * by design: the signed-in administrator's reserved dossiers, how many they have
+ * closed, and the revenue those bring in — the firm-wide view lives under
+ * Statistiques. Every figure is scoped to the période picker.
  */
 export default async function AdminHomePage({
   searchParams,
 }: {
   searchParams: Promise<{ periode?: string }>;
 }) {
-  const [{ periode }, periods, { t }] = await Promise.all([
+  const [{ periode }, periods, user, { t, locale }] = await Promise.all([
     searchParams,
     listTaxYears(),
+    getCurrentUser(),
     getT(),
   ]);
 
   const options = await listPeriodOptions(periods);
   const selected = resolvePeriod(options, periode);
 
-  const stats = await getAdminDashboardStats(selected);
+  const stats = await getAdminHomeStats(user?.id ?? "", selected);
   const statusTotal = STATUS_ORDER.reduce((a, s) => a + stats.byStatus[s], 0);
 
-  // Only tax returns exist; the mockup lists every prestation, so the others
-  // appear at zero rather than being hidden.
-  const h = t.admin.hub;
-  const prestations = [
-    { label: h.declarations, count: stats.totalDossiers },
-    { label: h.capital, count: 0 },
-    { label: h.simulations, count: 0 },
-    { label: h.instalments, count: 0 },
-    { label: h.reviews, count: 0 },
-  ];
+  const money = new Intl.NumberFormat(locale === "fr" ? "fr-CH" : "en-CH", {
+    maximumFractionDigits: 0,
+  });
+
+  const prestations = HOME_PRESTATIONS.map((p) => ({
+    label: serviceLabel(t, p.type),
+    count: stats.byService[p.type] ?? 0,
+    color: p.color,
+  }));
   const maxPrestation = Math.max(1, ...prestations.map((p) => p.count));
 
   return (
@@ -82,19 +85,19 @@ export default async function AdminHomePage({
 
       <section className="mt-[22px] grid gap-3.5 sm:grid-cols-3">
         <StatCard
-          label={t.admin.kpiDossiers}
-          value={stats.totalDossiers}
-          hint={t.admin.kpiDossiersSub}
+          label={t.admin.kpiReserved}
+          value={stats.reservedTotal}
+          hint={t.admin.kpiReservedSub}
         />
         <StatCard
           label={t.admin.kpiCompleted}
-          value={stats.completedDossiers}
+          value={stats.reservedCompleted}
           hint={t.admin.kpiCompletedSub}
         />
         <StatCard
-          label={t.admin.kpiClients}
-          value={stats.totalClients}
-          hint={t.admin.kpiClientsSub}
+          label={t.admin.kpiRevenue}
+          value={`CHF ${money.format(stats.personalRevenueChf)}`}
+          hint={t.admin.kpiRevenueSub}
           accent
         />
       </section>
@@ -139,9 +142,9 @@ export default async function AdminHomePage({
         </span>
 
         <div className="mt-3.5 flex flex-col gap-3">
-          {prestations.map((p, i) => (
+          {prestations.map((p) => (
             <div key={p.label} className="flex items-center gap-3">
-              <span className="disp w-[120px] shrink-0 text-[15px] font-bold sm:w-[190px]">
+              <span className="disp w-[120px] shrink-0 text-[15px] font-bold sm:w-[170px]">
                 {p.label}
               </span>
 
@@ -150,7 +153,7 @@ export default async function AdminHomePage({
                   className="h-full rounded-full"
                   style={{
                     width: `${(p.count / maxPrestation) * 100}%`,
-                    background: PALETTE[i % PALETTE.length],
+                    background: p.color,
                   }}
                 />
               </div>
