@@ -836,7 +836,7 @@ export default async function HomePage({
                     {t.pricing.from}
                   </span>
                   <span
-                    className="disp fx-figure text-[34px] font-extrabold leading-none"
+                    className="disp fx-figure text-[38px] font-extrabold leading-none"
                     style={{ color: "var(--brand)" }}
                   >
                     {plan.price}

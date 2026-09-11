@@ -159,17 +159,20 @@ export function PriceSimulator({ t }: { t: Messages }) {
       <div className="mt-2 border-t border-[var(--border-subtle)] pt-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="font-[var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--text-muted)]">
+            <p className="fx-eyebrow text-[var(--text-muted)]">
               {s.total}
             </p>
-            <p className="mt-1 text-[30px] font-semibold tracking-[-0.03em] text-[var(--petrol-900)]">
+            <p
+              className="disp fx-figure mt-1 text-[38px] font-extrabold leading-none"
+              style={{ color: "var(--brand)" }}
+            >
               {empty ? "CHF —" : `CHF ${total}`}
             </p>
           </div>
 
           <Link
             href="/signup"
-            className="shrink-0 rounded-[10px] bg-[var(--brand)] px-5 py-3 text-[13px] font-semibold transition hover:bg-[var(--brand-hover)]"
+            className="shrink-0 rounded-[10px] bg-[var(--brand)] px-5 py-3 text-[14.5px] font-semibold transition hover:bg-[var(--brand-hover)]"
             style={{ color: "#fff" }}
           >
             {s.create}
