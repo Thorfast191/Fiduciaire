@@ -73,6 +73,7 @@ function DocRow({
   doc,
   busy,
   labels,
+  accent = { bg: "#D9EFEC", color: "var(--brand)" },
   onUpload,
   onDownload,
   onRemove,
@@ -82,31 +83,46 @@ function DocRow({
   doc: PrestationDoc | undefined;
   busy: boolean;
   labels: { upload: string; download: string; remove: string };
+  /** Icon-tile colour; the prestation's accent (teal by default, amber for acomptes). */
+  accent?: { bg: string; color: string };
   onUpload: (file: File) => void;
   onDownload: (id: string) => void;
   onRemove: (id: string) => void;
 }) {
+  const outlineBtn =
+    "flex-shrink-0 inline-flex items-center gap-[7px] rounded-[10px] border px-[15px] py-[10px] text-[14px] font-semibold";
+  const outlineStyle = { borderColor: "#CCC8BD", background: "#fff", color: "#145863" };
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-md)] border border-line bg-sunken px-4 py-3.5">
-      <span className="flex min-w-[180px] flex-1 items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-100 text-brand">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            className="h-[17px] w-[17px]"
-            aria-hidden="true"
-          >
-            <path d="M6 3h9l3 3v15H6z" />
-            <path d="M14 3v4h4" />
-          </svg>
-        </span>
-        <span className="flex flex-col">
-          <span className="text-[14px] font-semibold text-strong">{title}</span>
-          <span className="text-[12.5px] text-muted">
-            {doc ? doc.filename : hint}
-          </span>
+    <div
+      className="flex flex-wrap items-center gap-[14px] rounded-[12px] border p-4"
+      style={{ background: "#FBFCFD", borderColor: "#EEF0F4" }}
+    >
+      <span
+        className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px]"
+        style={{ background: accent.bg, color: accent.color }}
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <path d="M14 2v6h6" />
+          <line x1="9" y1="13" x2="15" y2="13" />
+          <line x1="9" y1="17" x2="13" y2="17" />
+        </svg>
+      </span>
+
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-[14.5px] font-semibold text-strong">{title}</span>
+        <span className="truncate text-[12.5px] text-[#8B97A8]">
+          {doc ? doc.filename : hint}
         </span>
       </span>
 
@@ -115,7 +131,8 @@ function DocRow({
           <button
             type="button"
             onClick={() => onDownload(doc.id)}
-            className="rounded-lg border border-line-default px-3 py-1.5 text-[12px] font-medium text-brand transition hover:bg-card"
+            className={outlineBtn}
+            style={outlineStyle}
           >
             {labels.download}
           </button>
@@ -123,13 +140,14 @@ function DocRow({
             type="button"
             disabled={busy}
             onClick={() => onRemove(doc.id)}
-            className="rounded-lg border border-line-default px-3 py-1.5 text-[12px] font-medium text-muted transition hover:bg-card disabled:opacity-60"
+            className="inline-flex flex-shrink-0 items-center rounded-[10px] border px-[15px] py-[10px] text-[14px] font-semibold disabled:opacity-60"
+            style={{ borderColor: "#ECC9C9", background: "#fff", color: "#C0584A" }}
           >
             {labels.remove}
           </button>
         </span>
       ) : (
-        <label className="cursor-pointer rounded-lg bg-brand px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-brand-hover">
+        <label className={`cursor-pointer ${outlineBtn}`} style={outlineStyle}>
           {labels.upload}
           <input
             type="file"
@@ -497,6 +515,7 @@ export function AcomptesForm({
   const f = t.acomptesForm;
   const p = usePrestation(dossierId);
 
+  const [periode, setPeriode] = useState(String(taxYear));
   const [canton, setCanton] = useState("");
   const [express, setExpress] = useState(false);
   const [revenu, setRevenu] = useState("");
@@ -506,6 +525,7 @@ export function AcomptesForm({
 
   useEffect(() => {
     if (!p.loaded) return;
+    setPeriode(str(p.answers.acoPeriode) || String(taxYear));
     setCanton(str(p.answers.canton));
     setExpress(bool(p.answers.express));
     setRevenu(str(p.answers.acoRevenu));
@@ -520,32 +540,49 @@ export function AcomptesForm({
     return <Transmitted title={f.transmittedTitle} body={f.transmittedBody} />;
 
   const doc = p.docs.find((d) => d.category === "formulaireAcomptes");
+  const cy = new Date().getFullYear();
+  const periodOpts = [cy - 3, cy - 2, cy - 1, cy].map((y) => ({
+    value: String(y),
+    label: String(y),
+  }));
 
   return (
     <div className="flex flex-col gap-4">
-      <Card>
-        <SelectField
-          label={f.periodLabel}
-          value={String(taxYear)}
-          onChange={() => {}}
-          options={[{ value: String(taxYear), label: String(taxYear) }]}
-        />
+      <Card title={f.periodLabel}>
+        <div className="max-w-[200px]">
+          <SelectField
+            label=""
+            value={periode}
+            onChange={setPeriode}
+            options={periodOpts}
+          />
+        </div>
+      </Card>
+
+      <Card title={f.cantonLabel}>
+        <div className="max-w-[340px]">
+          <SelectField
+            label=""
+            value={canton}
+            onChange={setCanton}
+            options={[
+              { value: "", label: f.cantonPlaceholder },
+              ...CANTONS.map((c) => ({ value: c, label: c })),
+            ]}
+          />
+        </div>
       </Card>
 
       <Card>
-        <SelectField
-          label={f.cantonLabel}
-          value={canton}
-          onChange={setCanton}
-          options={[
-            { value: "", label: f.cantonPlaceholder },
-            ...CANTONS.map((c) => ({ value: c, label: c })),
-          ]}
-        />
-      </Card>
-
-      <Card>
-        <CheckRow checked={express} onChange={setExpress} label={f.express} />
+        <div className="flex items-start justify-between gap-3">
+          <CheckRow checked={express} onChange={setExpress} label={f.express} />
+          <span
+            className="shrink-0 whitespace-nowrap rounded-full px-[10px] py-[4px] text-[12.5px] font-bold"
+            style={{ background: "#D9EFEC", color: "#145863" }}
+          >
+            {f.expressPill}
+          </span>
+        </div>
       </Card>
 
       <Card title={f.rfTitle}>
@@ -557,11 +594,17 @@ export function AcomptesForm({
         </div>
       </Card>
 
-      <div className="rounded-[var(--radius-lg)] border border-[var(--amber-600)]/30 bg-[var(--amber-100)] p-5">
-        <p className="disp m-0 text-[16px] font-bold text-strong">
+      <div
+        className="rounded-[16px] border p-6"
+        style={{ background: "#FFF8EF", borderColor: "#F2D9A9" }}
+      >
+        <p className="m-0 text-[16px] font-bold" style={{ color: "#8E5500" }}>
           {f.transmitTitle}
         </p>
-        <p className="mt-1 text-[13.5px] leading-[1.45] text-muted">
+        <p
+          className="mt-2 text-[14px] leading-[1.55]"
+          style={{ color: "#8E6220" }}
+        >
           {f.transmitNote}
         </p>
         <div className="mt-4">
@@ -570,6 +613,7 @@ export function AcomptesForm({
             hint={f.docHint}
             doc={doc}
             busy={p.busy}
+            accent={{ bg: "#FBEFE3", color: "#B26A00" }}
             labels={{ upload: f.upload, download: f.download, remove: f.remove }}
             onUpload={(file) =>
               p.upload(file, "formulaireAcomptes", {
@@ -600,6 +644,7 @@ export function AcomptesForm({
               }
               p.finalize(
                 {
+                  acoPeriode: periode,
                   canton,
                   express,
                   acoRevenu: revenu,

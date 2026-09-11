@@ -1012,6 +1012,7 @@ export const fr = {
     cantonLabel: "Canton de domicile au 31.12",
     cantonPlaceholder: "— Sélectionner —",
     express: "Je souhaite un traitement express en 48h",
+    expressPill: "+ CHF 50",
     rfTitle: "Revenus et fortune",
     revenu: "Revenu annuel attendu (CHF)",
     fortune: "Fortune attendue au 31.12 (CHF)",

@@ -1008,6 +1008,7 @@ export const en: Messages = {
     cantonLabel: "Canton of residence as at 31.12",
     cantonPlaceholder: "— Select —",
     express: "I would like 48h express processing",
+    expressPill: "+ CHF 50",
     rfTitle: "Income and wealth",
     revenu: "Expected annual income (CHF)",
     fortune: "Expected wealth as at 31.12 (CHF)",
