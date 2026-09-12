@@ -107,6 +107,28 @@ export async function getObjectMetadata(
   }
 }
 
+/**
+ * Reads a stored object into memory.
+ *
+ * Only used to merge a dossier's uploads into one PDF, where the bytes have to
+ * pass through the app anyway. Uploads are capped at `MAX_SIZE_BYTES`, so the
+ * buffer is bounded. Returns null when the object is absent.
+ */
+export async function getObjectBytes(key: string): Promise<Uint8Array | null> {
+  try {
+    const res = await client.send(
+      new GetObjectCommand({ Bucket: env.STORAGE_BUCKET, Key: key }),
+    );
+    const body = res.Body;
+    if (!body) return null;
+    return await body.transformToByteArray();
+  } catch (err) {
+    const name = (err as { name?: string }).name;
+    if (name === "NotFound" || name === "NoSuchKey") return null;
+    throw err;
+  }
+}
+
 export async function objectExists(key: string): Promise<boolean> {
   return (await getObjectMetadata(key)) !== null;
 }

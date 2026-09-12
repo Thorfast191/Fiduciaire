@@ -12,12 +12,12 @@ import { listComments } from "@/lib/comments";
 import { getClientById } from "@/lib/adminUsers";
 import { CLOSURE_CATEGORIES } from "@/lib/documentCategories";
 import {
-  DOCUMENT_CATALOGUE,
   computePrice,
   normaliseAnswers,
   requiredDocuments,
   summariseAnswers,
 } from "@/lib/declaration";
+import { documentTitle } from "@/lib/documentTitle";
 import { SLUG_TO_SERVICE, serviceLabel } from "@/lib/serviceTypes";
 import { DocumentLink } from "./DocumentLink";
 import DossierAdminActions from "./DossierAdminActions";
@@ -25,6 +25,7 @@ import InternalComments from "./InternalComments";
 import ClosureDocuments from "./ClosureDocuments";
 import NotifyClient from "../NotifyClient";
 import MarkReceivedButton from "./MarkReceivedButton";
+import DownloadButtons from "./DownloadButtons";
 
 /**
  * What the firm receives when a client submits.
@@ -196,6 +197,15 @@ export default async function AdminDossierDetailPage({
         </p>
       ) : null}
 
+      {/* The reference stacks both downloads full-width above the document
+          count. The form PDF only exists for a declaration; every prestation
+          can have its uploaded pieces merged. */}
+      <DownloadButtons
+        dossierId={id}
+        clientName={client ? `${client.firstName} ${client.lastName}` : ""}
+        isDeclaration={isDeclaration}
+      />
+
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-md)] border border-line bg-card px-5 py-4 shadow-[var(--shadow-xs)]">
         <div className="flex items-baseline gap-2.5">
           <h2 className="text-[16px] font-bold text-strong">
@@ -357,7 +367,6 @@ export default async function AdminDossierDetailPage({
               {(isDeclaration ? required : clientDocs.map((doc) => doc.category)).map(
                 (key) => {
                   const doc = uploaded.get(key);
-                  const meta = DOCUMENT_CATALOGUE[key];
                   return (
                     <div
                       key={key}
@@ -365,7 +374,7 @@ export default async function AdminDossierDetailPage({
                     >
                       <span className="min-w-[150px] flex-1">
                         <span className="block text-[14px] font-medium text-strong">
-                          {meta?.title ?? key}
+                          {documentTitle(t, key)}
                         </span>
                         {doc ? (
                           <span className="mt-0.5 block text-[12px] text-muted">
