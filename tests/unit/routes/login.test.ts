@@ -28,7 +28,7 @@ function req(path: string, body: unknown, ip = "127.0.0.1") {
 
 async function makeAccount(ip: string) {
   const email = `login-${Date.now()}-${Math.random()}@example.test`;
-  const password = "a-long-enough-p4ssword!";
+  const password = "LocalDev2026!";
   await signup(
     req(
       "/api/auth/signup",

@@ -27,7 +27,7 @@ cp .env.example .env          # defaults already match docker-compose
 npm ci
 docker compose up -d          # postgres + minio + minio-init + mailhog
 npm run db:migrate            # applies migrations 0000–0008
-npm run seed:admin -- admin@fiduvia.test 'a-long-enough-p4ssword!'
+npm run seed:admin -- admin@fiduvia.test 'LocalDev2026!'
 ```
 
 `seed:admin` creates a **super_admin** with its email pre-verified. Run it again
@@ -55,8 +55,24 @@ Both accounts below are verified working in the local database.
 
 | Role | Email | Password |
 |---|---|---|
-| Super admin | `admin@fiduvia.test` | `a-long-enough-p4ssword!` |
-| Client | `client@fiduvia.test` | `a-long-enough-p4ssword!` |
+| Super admin | `admin@fiduvia.test` | `LocalDev2026!` |
+| Admin | `veasna.leas@fiduvia.test` | `LocalDev2026!` |
+| Admin | `jeremy.ruchet@fiduvia.test` | `LocalDev2026!` |
+| Client | `client@fiduvia.test` | `LocalDev2026!` |
+
+Create the two ordinary admins with:
+
+```bash
+npm run seed:admin -- veasna.leas@fiduvia.test 'LocalDev2026!' admin Veasna Leas
+npm run seed:admin -- jeremy.ruchet@fiduvia.test 'LocalDev2026!' admin Jérémy Ruchet
+```
+
+Then fill the admin screens with the reference's four clients and their
+declarations, so the tables are not empty:
+
+```bash
+npx tsx scripts/seed-demo-clients.ts 2025 'LocalDev2026!'
+```
 
 These are **local development fixtures only**. Never use them anywhere else.
 

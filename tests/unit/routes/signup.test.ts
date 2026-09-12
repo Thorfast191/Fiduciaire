@@ -5,7 +5,7 @@ import { users } from "../../../src/db/schema";
 import { eq } from "drizzle-orm";
 import { POST } from "../../../src/app/api/auth/signup/route";
 
-const PASSWORD = "a-long-enough-p4ssword!";
+const PASSWORD = "LocalDev2026!";
 
 function req(body: unknown) {
   return new NextRequest("http://localhost/api/auth/signup", {

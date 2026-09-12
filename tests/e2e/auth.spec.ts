@@ -19,10 +19,10 @@ test("signup → verify → reaches the client portal", async ({ page }) => {
   // "Confirmer le mot de passe" as well.
   await page
     .getByLabel("Mot de passe", { exact: true })
-    .fill("a-long-enough-p4ssword!");
+    .fill("LocalDev2026!");
   await page
     .getByLabel("Confirmer le mot de passe")
-    .fill("a-long-enough-p4ssword!");
+    .fill("LocalDev2026!");
   // Matches the current copy, "J'ai lu et j'accepte les conditions générales".
   await page.getByLabel(/j'accepte les conditions/i).check();
 
@@ -49,7 +49,7 @@ test("login → verify → reaches the client portal", async ({ page, request })
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-p4ssword!",
+      password: "LocalDev2026!",
       firstName: "A",
       lastName: "B",
       phone: "+41 79 000 00 00",
@@ -63,7 +63,7 @@ test("login → verify → reaches the client portal", async ({ page, request })
 
   await page.goto("/login");
   await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByLabel("Mot de passe").fill("a-long-enough-p4ssword!");
+  await page.getByLabel("Mot de passe").fill("LocalDev2026!");
   await page.getByRole("button", { name: "Se connecter" }).click();
 
   await page.waitForURL(/\/verify/);
@@ -78,7 +78,7 @@ test("wrong password shows a generic error and does not proceed", async ({ page,
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-p4ssword!",
+      password: "LocalDev2026!",
       firstName: "A",
       lastName: "B",
       phone: "+41 79 000 00 00",
@@ -103,7 +103,7 @@ test("locks out after 5 wrong OTP attempts", async ({ page, request }) => {
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-p4ssword!",
+      password: "LocalDev2026!",
       firstName: "A",
       lastName: "B",
       phone: "+41 79 000 00 00",
@@ -129,7 +129,7 @@ test("locks out after 5 failed login attempts from the same browser", async ({ p
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-p4ssword!",
+      password: "LocalDev2026!",
       firstName: "A",
       lastName: "B",
       phone: "+41 79 000 00 00",
@@ -158,7 +158,7 @@ test("admin login reaches the admin dashboard, not the client portal", async ({ 
   const email = "admin@fiduvia.test";
   await page.goto("/login");
   await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByLabel("Mot de passe").fill("a-long-enough-p4ssword!");
+  await page.getByLabel("Mot de passe").fill("LocalDev2026!");
   await page.getByRole("button", { name: "Se connecter" }).click();
 
   await page.waitForURL(/\/verify/);
@@ -189,7 +189,7 @@ test("the marketing site logs in through a modal, without leaving the page", asy
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-p4ssword!",
+      password: "LocalDev2026!",
       firstName: "A",
       lastName: "B",
       phone: "+41 79 000 00 00",
@@ -236,7 +236,7 @@ test("the marketing site logs in through a modal, without leaving the page", asy
   );
   await expect(page).toHaveURL("/");
 
-  await dialog.getByLabel("Mot de passe").fill("a-long-enough-p4ssword!");
+  await dialog.getByLabel("Mot de passe").fill("LocalDev2026!");
   await dialog.getByRole("button", { name: "Se connecter" }).click();
 
   await page.waitForURL(/\/verify/);
