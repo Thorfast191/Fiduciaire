@@ -1106,6 +1106,7 @@ export const en: Messages = {
       pilier3: "Pillar 3a",
       justificatifs: "Miscellaneous supporting documents",
       autre: "Other",
+      attestationCapital: "Insurer / bank statement",
       closureCopieDecl: "Copy of the tax return",
       closureQuittancement: "Assessment receipt",
       closureDossierSuivant: "Next year's dossier",
@@ -1194,6 +1195,23 @@ export const en: Messages = {
       mergedPdf: {
         pieceCount: "{count} document(s)",
         unreadable: "Unreadable document — please re-upload it from the dossier.",
+      },
+      capitalFeeLabel: "Capital benefit flat fee",
+      capitalDocTitle: "Statement provided by the client",
+      capitalDownloadDoc: "Download the document",
+      closed: "Dossier closed",
+      moduleStatus: {
+        todo: "To handle",
+        doing: "In progress",
+        done: "Handled",
+      },
+      simuCells: {
+        etatCivil: "Family situation",
+        enfants: "Dependent children",
+        totalRevenus: "Total annual income (CHF)",
+        totalFortune: "Total wealth (CHF)",
+        proprietaire: "Owns one or more properties",
+        immeubles: "Declared properties",
       },
       closureTitle: "Closing documents",
       closureHint: "Visible to the client once the file is closed",
@@ -1375,6 +1393,19 @@ export const en: Messages = {
       thSituation: "Situation",
       filterLabel: "Filter",
       filterAllCantons: "All cantons",
+      // The admin list heading per prestation. Plural and slightly different
+      // from the client-facing service name (`services.types.*.name`), as the
+      // reference has them.
+      listTitles: {
+        declaration: "Tax returns",
+        capital: "Capital benefits",
+        departure: "Moves abroad",
+        deces: "Deaths",
+        simulation: "Tax simulations",
+        acompte: "Instalment assessments",
+        relecture: "Tax return reviews",
+      },
+      emptyCapital: "No capital benefit submitted yet.",
       sortPriority: "Sort by priority (express first, then oldest)",
       thWithdrawalYear: "Withdrawal year",
       thDeclaredYear: "Declared year",

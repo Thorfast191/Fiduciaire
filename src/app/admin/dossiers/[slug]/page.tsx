@@ -9,11 +9,7 @@ import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
 import DossiersTable from "./DossiersTable";
 import DossierAdminForms from "../DossierAdminForms";
-import {
-  SLUG_TO_SERVICE,
-  serviceDescription,
-  serviceLabel,
-} from "@/lib/serviceTypes";
+import { SLUG_TO_SERVICE, serviceDescription } from "@/lib/serviceTypes";
 
 /**
  * One prestation's dossiers for one period, reached from the hub — the mockup's
@@ -42,8 +38,18 @@ export default async function AdminPrestationPage({
   const selected = resolvePeriod(options, periode);
 
   const isSuper = user?.role === "super_admin";
+
+  // The reference gives the four "module" prestations no period selector: they
+  // list every year at once, filtered only by who reserved them. The
+  // declaration, departure and décès lists stay scoped to one period.
+  const isModule =
+    serviceType === "simulation" ||
+    serviceType === "acompte" ||
+    serviceType === "relecture" ||
+    serviceType === "capital";
+
   const rows = await listAllDossiersWithClient({
-    taxYear: selected,
+    taxYear: isModule ? undefined : selected,
     serviceType,
     // Ordinary admins only see dossiers assigned to them.
     reservedBy: isSuper ? undefined : user?.id,
@@ -70,17 +76,19 @@ export default async function AdminPrestationPage({
       <div className="mt-2.5 flex flex-wrap items-end justify-between gap-5">
         <div>
           <h1 className="disp text-[clamp(28px,3.4vw,34px)] font-extrabold leading-[1.05]">
-            {serviceLabel(t, serviceType)}
+            {t.admin.dossiers.listTitles[serviceType]}
           </h1>
 
-          <p className="mt-1.5 max-w-[560px] text-[15px] text-muted">
-            {serviceType === "declaration"
-              ? t.admin.dossiers.sub
-              : serviceDescription(t, serviceType)}
-          </p>
+          {!isModule ? (
+            <p className="mt-1.5 max-w-[560px] text-[15px] text-muted">
+              {serviceType === "declaration"
+                ? t.admin.dossiers.sub
+                : serviceDescription(t, serviceType)}
+            </p>
+          ) : null}
         </div>
 
-        <PeriodPicker years={options} current={selected} />
+        {!isModule ? <PeriodPicker years={options} current={selected} /> : null}
       </div>
 
       <DossiersTable

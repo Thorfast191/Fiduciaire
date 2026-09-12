@@ -1115,6 +1115,7 @@ export const fr = {
       pilier3: "3e pilier",
       justificatifs: "Justificatifs divers",
       autre: "Autre",
+      attestationCapital: "Attestation de l'assurance / banque",
       closureCopieDecl: "Copie de la déclaration d'impôts",
       closureQuittancement: "Quittancement",
       closureDossierSuivant: "Dossier pour l'année prochaine",
@@ -1206,6 +1207,23 @@ export const fr = {
       mergedPdf: {
         pieceCount: "{count} pièce(s)",
         unreadable: "Pièce illisible — à retélécharger depuis le dossier.",
+      },
+      capitalFeeLabel: "Forfait prestation en capital",
+      capitalDocTitle: "Attestation transmise par le client",
+      capitalDownloadDoc: "Télécharger le document",
+      closed: "Dossier clôturé",
+      moduleStatus: {
+        todo: "À traiter",
+        doing: "En traitement",
+        done: "Traité",
+      },
+      simuCells: {
+        etatCivil: "Situation familiale",
+        enfants: "Nombre d'enfants à charge",
+        totalRevenus: "Total des revenus annuels (CHF)",
+        totalFortune: "Total de la fortune (CHF)",
+        proprietaire: "Propriétaire d'un ou plusieurs biens",
+        immeubles: "Biens immobiliers déclarés",
       },
       closureTitle: "Documents de clôture",
       closureHint: "Visibles par le client une fois le dossier clôturé",
@@ -1387,6 +1405,19 @@ export const fr = {
       thSituation: "Situation",
       filterLabel: "Filtrer",
       filterAllCantons: "Tous les cantons",
+      // The admin list heading per prestation. Plural and slightly different
+      // from the client-facing service name (`services.types.*.name`), as the
+      // reference has them.
+      listTitles: {
+        declaration: "Déclarations d'impôts",
+        capital: "Prestations en capital",
+        departure: "Départs à l'étranger",
+        deces: "Décès",
+        simulation: "Simulations d'impôt",
+        acompte: "Déterminations d'acomptes",
+        relecture: "Relectures de déclaration",
+      },
+      emptyCapital: "Aucune prestation en capital transmise.",
       sortPriority: "Trier par priorité (express puis plus anciens)",
       thWithdrawalYear: "Année du retrait",
       thDeclaredYear: "Année déclarée",

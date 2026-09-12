@@ -48,6 +48,12 @@ export const DOCUMENT_CATEGORIES = [
   "ficheTransmission",
   "copiePrecedente",
   "divers",
+  // The capital prestation's single piece: the insurer's or bank's statement
+  // of the payout. `CapitalForm` has always uploaded under this key, but it
+  // was never listed here, so every such upload was rejected as an invalid
+  // category. The column is plain text with a TypeScript-level enum, so
+  // adding it needs no migration.
+  "attestationCapital",
   // Closure documents — uploaded by the firm and shown to the client once the
   // dossier is closed (the mockup's "Documents de clôture").
   "closureCopieDecl",

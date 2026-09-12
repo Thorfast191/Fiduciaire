@@ -25,6 +25,8 @@ import InternalComments from "./InternalComments";
 import ClosureDocuments from "./ClosureDocuments";
 import NotifyClient from "../NotifyClient";
 import MarkReceivedButton from "./MarkReceivedButton";
+import CapitalDetail from "./CapitalDetail";
+import SimulationDetail from "./SimulationDetail";
 import DownloadButtons from "./DownloadButtons";
 
 /**
@@ -82,8 +84,96 @@ export default async function AdminDossierDetailPage({
     ? `${reserver.firstName} ${reserver.lastName}`.trim()
     : null;
 
-  const s = t.declaration.summary;
   const d = t.declaration;
+  const clientName = client
+    ? `${client.firstName} ${client.lastName}`.trim()
+    : "—";
+  // Simulation and capital answers are written straight into the JSONB by the
+  // portal forms; they are not part of the declaration `Answers` shape.
+  const raw = (access.dossier.answers ?? {}) as Record<string, unknown>;
+  const str = (key: string): string => {
+    const v = raw[key];
+    return v == null || v === "" ? "" : String(v);
+  };
+
+  // ---- Capital: the reference replaces the workspace with its own card ----
+  if (serviceType === "capital") {
+    const attestation = documents.find(
+      (doc) => doc.category === "attestationCapital",
+    );
+    return (
+      <CapitalDetail
+        t={t}
+        slug={slug}
+        dossierId={id}
+        clientName={clientName}
+        clientEmail={client?.email ?? ""}
+        status={access.dossier.status}
+        withdrawalYear={Number(str("retraitYear")) || access.dossier.taxYear}
+        canton={str("canton")}
+        attestation={
+          attestation
+            ? { id: attestation.id, filename: attestation.filename }
+            : null
+        }
+      />
+    );
+  }
+
+  // ---- Simulation: figures, not documents; a read-only card ----
+  if (serviceType === "simulation") {
+    const chf = (key: string): string => {
+      const v = str(key);
+      if (!v) return "—";
+      const n = Number(v);
+      return Number.isNaN(n) ? v : `CHF ${n.toLocaleString("fr-CH")}`;
+    };
+    const marital = str("etatCivil");
+    const maritalLabel =
+      marital && marital in t.declaration.famille
+        ? (t.declaration.famille as unknown as Record<string, string>)[marital]
+        : "—";
+    const owner = str("simProprietaire") === "true" || raw.simProprietaire === true;
+    const properties = Array.isArray(raw.simImmeubles)
+      ? (raw.simImmeubles as unknown[])
+      : [];
+    const c = t.admin.detail.simuCells;
+
+    return (
+      <SimulationDetail
+        t={t}
+        slug={slug}
+        dossierId={id}
+        clientName={clientName}
+        clientEmail={client?.email ?? ""}
+        status={access.dossier.status}
+        express={raw.express === true || str("express") === "true"}
+        cells={[
+          { label: t.admin.dossiers.thCanton, value: str("canton") || "—" },
+          {
+            label: t.admin.dossiers.thReceived,
+            value: new Intl.DateTimeFormat("fr-CH", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }).format(access.dossier.createdAt),
+          },
+          { label: c.etatCivil, value: maritalLabel },
+          { label: c.enfants, value: str("simChildren") || "0" },
+          { label: c.totalRevenus, value: chf("simRevenus") },
+          { label: c.totalFortune, value: chf("simFortune") },
+          { label: c.proprietaire, value: owner ? d.yes : d.no },
+          {
+            label: c.immeubles,
+            value: owner ? String(properties.length) : "—",
+          },
+        ]}
+        deductions={str("simDeductions")}
+      />
+    );
+  }
+
+  const s = t.declaration.summary;
   const answers = normaliseAnswers(access.dossier.answers);
   const price = computePrice(answers);
   const required = requiredDocuments(answers);
