@@ -85,6 +85,7 @@ export default async function AdminPrestationPage({
 
       <DossiersTable
         slug={slug}
+        serviceType={serviceType}
         currentAdminId={user?.id ?? ""}
         isSuperAdmin={isSuper}
         assignableAdmins={assignableAdmins}
