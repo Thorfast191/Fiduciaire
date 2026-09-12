@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/auth/guards";
 import { getT } from "@/lib/i18n";
-import { BUSINESS, addressLine } from "@/lib/business";
+import { BUSINESS } from "@/lib/business";
 import ContactForm from "./ContactForm";
 
 /**
@@ -10,18 +10,13 @@ import ContactForm from "./ContactForm";
 export default async function PortalContactsPage() {
   const [user, { t }] = await Promise.all([getCurrentUser(), getT()]);
 
-  // Phone is intentionally omitted until a real number exists (BUSINESS.phone);
-  // showing a placeholder number on a live contact card is worse than none.
+  // Email and phone only — the client asked for no postal address on this card.
+  // Phone is still guarded so a placeholder never shows if the number is unset.
   const coordinates = [
     { glyph: "@", label: t.portal.contactsEmail, value: BUSINESS.email },
     ...(BUSINESS.phone
       ? [{ glyph: "☎", label: t.portal.contactsPhone, value: BUSINESS.phone }]
       : []),
-    {
-      glyph: "⌂",
-      label: t.portal.contactsAddress,
-      value: addressLine(),
-    },
   ];
 
   return (
