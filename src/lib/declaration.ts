@@ -75,22 +75,42 @@ export function emptySuccessionEntry(): SuccessionEntry {
   return { firstName: "", lastName: "", lien: "", montant: "" };
 }
 
+/**
+ * One child, and the cascade of questions the reference asks about them:
+ * dependant → the two ménage questions → maintenance → either the amount paid
+ * or parental authority and childcare costs. Each answer opens the next, so a
+ * shared household never asks about maintenance.
+ */
 export interface Child {
   firstName: string;
   lastName: string;
   birthDate: string;
   avs: string;
   situation: string;
+  /** Free text, shown only when `situation` is "autre". */
+  autreTexte: string;
   /**
    * Whether the child (minor, or an adult in training/studies) is a dependant.
-   * Named `contributions` for historical reasons; it drives the maintenance
-   * document ("L'enfant … est-il à votre charge ?").
+   * Named `contributions` for historical reasons — the key is what live
+   * dossiers already store, so renaming it would orphan their answers.
    */
   contributions: "oui" | "non" | "";
   /** "Cet enfant fait-il ménage commun avec vous ?" */
   menageCommun: "oui" | "non" | "";
   /** "Faites-vous ménage commun avec l'autre parent de cet enfant ?" */
   menageAutreParent: "oui" | "non" | "";
+  /**
+   * "Versez-vous des contributions d'entretien pour cet enfant ?" — asked only
+   * for a dependant whose other parent lives elsewhere, and the answer that
+   * actually calls for the maintenance document.
+   */
+  pensionVersee: "oui" | "non" | "";
+  /** Maintenance actually paid, asked when `pensionVersee` is "oui". */
+  montantContrib: string;
+  /** Who holds parental authority, asked when `pensionVersee` is "non". */
+  autorite: "exclusive" | "autreParent" | "conjointe" | "";
+  /** Childcare costs actually paid, asked alongside `autorite`. */
+  montantGarde: string;
 }
 
 export interface Property {
@@ -319,7 +339,9 @@ export function requiredDocuments(a: Answers): string[] {
   d.push("primesMaladie", "fraisMedicaux");
 
   if ((a.children ?? []).length > 0) d.push("fraisGarde");
-  if ((a.children ?? []).some((c) => c.contributions === "oui"))
+  // The maintenance document follows maintenance actually being paid, not the
+  // child merely being a dependant — same rule as the reference.
+  if ((a.children ?? []).some((c) => c.pensionVersee === "oui"))
     d.push("pensionAlim");
   if (a.etatCivil === "divorce") d.push("jugementDivorce");
 

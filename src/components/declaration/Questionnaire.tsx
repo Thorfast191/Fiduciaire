@@ -462,7 +462,7 @@ export function Questionnaire({
                         />
                       </div>
 
-                      <div className="mt-3">
+                      <div className="mt-3 flex flex-wrap gap-3">
                         <SelectField
                           label={d.famille.childSituation}
                           value={child.situation}
@@ -473,6 +473,13 @@ export function Questionnaire({
                             { value: "autre", label: d.famille.situationAutre },
                           ]}
                         />
+                        {child.situation === "autre" ? (
+                          <TextField
+                            label={d.famille.autreComment}
+                            value={child.autreTexte ?? ""}
+                            onChange={(v) => patchChild(i, { autreTexte: v })}
+                          />
+                        ) : null}
                       </div>
 
                       <div className="mt-4 flex flex-col gap-3 border-t border-line pt-4">
@@ -534,6 +541,94 @@ export function Questionnaire({
                                 />
                               </div>
                             </div>
+
+                            {/* Answering "non" above — the parents live apart —
+                                is what opens the maintenance question, and
+                                answering "non" to that opens parental authority
+                                and childcare costs. Sharing a household with
+                                the other parent ends the cascade here. */}
+                            {child.menageAutreParent === "non" ? (
+                              <>
+                                <div>
+                                  <p className="text-[13.5px] text-body">
+                                    {d.famille.pensionVersee}
+                                  </p>
+                                  <div className="mt-2">
+                                    <RadioRow
+                                      name={`pension-${i}`}
+                                      value={child.pensionVersee ?? ""}
+                                      onChange={(v) =>
+                                        patchChild(i, {
+                                          pensionVersee:
+                                            v as Child["pensionVersee"],
+                                        })
+                                      }
+                                      options={yesNo}
+                                    />
+                                  </div>
+                                </div>
+
+                                {child.pensionVersee === "oui" ? (
+                                  <div className="flex flex-wrap gap-3">
+                                    <TextField
+                                      label={d.famille.montantContrib}
+                                      placeholder="CHF"
+                                      value={child.montantContrib ?? ""}
+                                      onChange={(v) =>
+                                        patchChild(i, { montantContrib: v })
+                                      }
+                                    />
+                                  </div>
+                                ) : null}
+
+                                {child.pensionVersee === "non" ? (
+                                  <>
+                                    <div>
+                                      <p className="text-[13.5px] text-body">
+                                        {d.famille.autorite}
+                                      </p>
+                                      <div className="mt-2">
+                                        <RadioRow
+                                          name={`autorite-${i}`}
+                                          value={child.autorite ?? ""}
+                                          onChange={(v) =>
+                                            patchChild(i, {
+                                              autorite: v as Child["autorite"],
+                                            })
+                                          }
+                                          options={[
+                                            {
+                                              value: "exclusive",
+                                              label: d.famille.autoriteExclusive,
+                                            },
+                                            {
+                                              value: "autreParent",
+                                              label:
+                                                d.famille.autoriteAutreParent,
+                                            },
+                                            {
+                                              value: "conjointe",
+                                              label: d.famille.autoriteConjointe,
+                                            },
+                                          ]}
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-3">
+                                      <TextField
+                                        label={d.famille.montantGarde}
+                                        placeholder="CHF"
+                                        value={child.montantGarde ?? ""}
+                                        onChange={(v) =>
+                                          patchChild(i, { montantGarde: v })
+                                        }
+                                      />
+                                    </div>
+                                  </>
+                                ) : null}
+                              </>
+                            ) : null}
                           </>
                         ) : null}
                       </div>
@@ -1228,9 +1323,14 @@ function emptyChild(): Child {
     birthDate: "",
     avs: "",
     situation: "etudiant",
+    autreTexte: "",
     contributions: "",
     menageCommun: "",
     menageAutreParent: "",
+    pensionVersee: "",
+    montantContrib: "",
+    autorite: "",
+    montantGarde: "",
   };
 }
 

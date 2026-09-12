@@ -84,23 +84,29 @@ describe("requiredDocuments", () => {
     );
   });
 
-  it("asks for maintenance proof only when a child receives contributions", () => {
+  it("asks for maintenance proof only when maintenance is actually paid", () => {
     const child = {
       firstName: "",
       lastName: "",
       birthDate: "",
       avs: "",
       situation: "",
+      autreTexte: "",
       contributions: "oui" as const,
       menageCommun: "" as const,
-      menageAutreParent: "" as const,
+      menageAutreParent: "non" as const,
+      pensionVersee: "oui" as const,
+      montantContrib: "",
+      autorite: "" as const,
+      montantGarde: "",
     };
     expect(requiredDocuments(answers({ children: [child] }))).toContain(
       "pensionAlim",
     );
+    // A dependant the parent pays nothing for does not call for the document.
     expect(
       requiredDocuments(
-        answers({ children: [{ ...child, contributions: "non" }] }),
+        answers({ children: [{ ...child, pensionVersee: "non" }] }),
       ),
     ).not.toContain("pensionAlim");
   });
