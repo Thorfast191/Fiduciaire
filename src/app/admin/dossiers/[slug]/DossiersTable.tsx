@@ -44,6 +44,7 @@ export default function DossiersTable({
   slug,
   currentAdminId,
   isSuperAdmin,
+  assignableAdmins = [],
 }: {
   rows: TableRow[];
   /** Prestation segment, so a row can link to its own detail page. */
@@ -52,6 +53,8 @@ export default function DossiersTable({
   currentAdminId: string;
   /** Super admins may release or reassign any colleague's reservation. */
   isSuperAdmin: boolean;
+  /** The admins a super admin can assign a dossier to (empty for ordinary admins). */
+  assignableAdmins?: { id: string; name: string }[];
 }) {
   const { locale, t } = useI18n();
   const router = useRouter();
@@ -138,6 +141,33 @@ export default function DossiersTable({
       const res = await fetch(`/api/dossiers/${id}/reserve`, {
         method: reserve ? "POST" : "DELETE",
       });
+
+      if (!res.ok) {
+        setFailed(t.admin.dossiers.errReserve);
+        return;
+      }
+
+      router.refresh();
+    } catch {
+      setFailed(t.common.genericError);
+    } finally {
+      setReserving(null);
+    }
+  }
+
+  // Super admin assigning a dossier to a specific admin ("" = unassign).
+  async function assign(id: string, adminId: string) {
+    setReserving(id);
+    setFailed(null);
+
+    try {
+      const res = adminId
+        ? await fetch(`/api/dossiers/${id}/reserve`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ adminId }),
+          })
+        : await fetch(`/api/dossiers/${id}/reserve`, { method: "DELETE" });
 
       if (!res.ok) {
         setFailed(t.admin.dossiers.errReserve);
@@ -288,7 +318,24 @@ export default function DossiersTable({
                     </span>
 
                     <span className="w-[160px] shrink-0">
-                      {!r.reservedBy ? (
+                      {isSuperAdmin && assignableAdmins.length > 0 ? (
+                        <select
+                          value={r.reservedBy ?? ""}
+                          disabled={reserving === r.id}
+                          onChange={(e) => assign(r.id, e.target.value)}
+                          aria-label={t.admin.dossiers.thReservedBy}
+                          className="w-full cursor-pointer rounded-[9px] border border-line-default bg-card px-2.5 py-1.5 text-[12.5px] font-semibold text-strong outline-none transition-colors hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10 disabled:opacity-60"
+                        >
+                          <option value="">
+                            {t.admin.dossiers.filterUnreserved}
+                          </option>
+                          {assignableAdmins.map((a) => (
+                            <option key={a.id} value={a.id}>
+                              {a.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : !r.reservedBy ? (
                         <button
                           type="button"
                           disabled={reserving === r.id}

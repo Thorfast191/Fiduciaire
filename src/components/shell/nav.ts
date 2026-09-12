@@ -36,8 +36,21 @@ export function clientNav(t: Messages): NavEntry[] {
   ];
 }
 
-export function adminNav(t: Messages): NavEntry[] {
+export function adminNav(
+  t: Messages,
+  role: "admin" | "super_admin",
+): NavEntry[] {
   const n = t.admin.nav;
+
+  // An ordinary admin is a case worker: only their personal statistics and the
+  // dossiers assigned to them. The firm-wide screens (global stats, periods,
+  // payments, user management) are the super admin's.
+  if (role === "admin") {
+    return [
+      { kind: "link", label: n.personalStats, href: "/admin" },
+      { kind: "link", label: n.dossiers, href: "/admin/dossiers" },
+    ];
+  }
 
   return [
     { kind: "link", label: n.home, href: "/admin" },

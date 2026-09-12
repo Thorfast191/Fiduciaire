@@ -1252,6 +1252,7 @@ export const fr = {
     nav: {
       home: "Accueil",
       dossiers: "Dossiers",
+      personalStats: "Statistique personnelle",
       stats: "Statistiques",
       periods: "Périodes",
       users: "Utilisateurs",

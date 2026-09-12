@@ -107,7 +107,10 @@ export default async function AdminDossiersHubPage({
 
   const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
-  const counts = await countDossiersByService(selected);
+  // An ordinary admin only sees the dossiers assigned to them; the super admin
+  // sees the whole firm.
+  const scope = user?.role === "super_admin" ? undefined : user?.id;
+  const counts = await countDossiersByService(selected, scope);
 
   return (
     <div className="max-w-[1040px]">

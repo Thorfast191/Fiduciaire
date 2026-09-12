@@ -23,7 +23,7 @@ export default async function AdminLayout({
       <div lang={locale}>
         <AppShell
           variant="admin"
-          nav={adminNav(t)}
+          nav={adminNav(t, user?.role === "super_admin" ? "super_admin" : "admin")}
           title={t.admin.title}
           meta={`${t.admin.fiscalPeriod} ${new Date().getFullYear() - 1}`}
           account={{

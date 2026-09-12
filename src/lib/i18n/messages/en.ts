@@ -1245,6 +1245,7 @@ export const en: Messages = {
     nav: {
       home: "Home",
       dossiers: "Files",
+      personalStats: "Personal statistics",
       stats: "Statistics",
       periods: "Periods",
       users: "Users",

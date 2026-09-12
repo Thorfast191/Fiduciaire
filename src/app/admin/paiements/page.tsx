@@ -3,6 +3,7 @@ import { listAllPayments, listAllSubscriptions } from "@/lib/assistance";
 import { listClientAccounts } from "@/lib/adminUsers";
 import { listTaxYears } from "@/lib/dossiers";
 import { listPeriodOptions } from "@/lib/taxPeriods";
+import { requireSuperAdmin } from "@/lib/auth/guards";
 import { PaymentsAdmin } from "./PaymentsAdmin";
 
 /**
@@ -13,6 +14,8 @@ import { PaymentsAdmin } from "./PaymentsAdmin";
  * only way to get a payment into the system.
  */
 export default async function AdminPaymentsPage() {
+  await requireSuperAdmin();
+
   const [{ t }, locale, rows, subscriptions, clients, years] = await Promise.all([
     getT(),
     getLocale(),

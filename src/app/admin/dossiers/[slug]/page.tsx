@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { listAllDossiersWithClient, listTaxYears } from "@/lib/dossiers";
 import { getCurrentUser } from "@/lib/auth/guards";
+import { listAdminAccounts } from "@/lib/adminUsers";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
@@ -40,10 +41,22 @@ export default async function AdminPrestationPage({
   const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
 
+  const isSuper = user?.role === "super_admin";
   const rows = await listAllDossiersWithClient({
     taxYear: selected,
     serviceType,
+    // Ordinary admins only see dossiers assigned to them.
+    reservedBy: isSuper ? undefined : user?.id,
   });
+
+  // The super admin assigns dossiers to admins from the table, so it needs the
+  // roster; ordinary admins get an empty list (they only self-claim).
+  const assignableAdmins = isSuper
+    ? (await listAdminAccounts()).map((a) => ({
+        id: a.id,
+        name: `${a.firstName} ${a.lastName}`.trim(),
+      }))
+    : [];
 
   return (
     <div className="max-w-[1040px]">
@@ -73,7 +86,8 @@ export default async function AdminPrestationPage({
       <DossiersTable
         slug={slug}
         currentAdminId={user?.id ?? ""}
-        isSuperAdmin={user?.role === "super_admin"}
+        isSuperAdmin={isSuper}
+        assignableAdmins={assignableAdmins}
         rows={rows.map((r) => ({
           id: r.id,
           taxYear: r.taxYear,

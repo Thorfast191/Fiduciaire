@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth/guards";
+import { getCurrentUser, requireSuperAdmin } from "@/lib/auth/guards";
 import { listAdminAccounts, listClientAccounts } from "@/lib/adminUsers";
 import { getT } from "@/lib/i18n";
 import AdminAccounts from "./AdminAccounts";
@@ -12,6 +12,8 @@ import ClientAccounts from "./ClientAccounts";
  * lists read-only.
  */
 export default async function AdminUsersPage() {
+  await requireSuperAdmin();
+
   const [user, admins, clients, { t }] = await Promise.all([
     getCurrentUser(),
     listAdminAccounts(),

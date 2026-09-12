@@ -12,6 +12,7 @@ import {
   type ServiceType,
 } from "@/lib/serviceTypes";
 import type { DossierStatus } from "@/db/schema";
+import { requireSuperAdmin } from "@/lib/auth/guards";
 import AdminStatCards from "./AdminStatCards";
 
 const STATUS_BAR: Record<DossierStatus, string> = {
@@ -46,6 +47,8 @@ export default async function AdminStatsPage({
 }: {
   searchParams: Promise<{ periode?: string }>;
 }) {
+  await requireSuperAdmin();
+
   const [{ periode }, years, { t, locale }] = await Promise.all([
     searchParams,
     listTaxYears(),

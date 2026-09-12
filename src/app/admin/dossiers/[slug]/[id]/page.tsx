@@ -50,6 +50,12 @@ export default async function AdminDossierDetailPage({
   const access = await getAccessibleDossier(id, { id: user.id, role: user.role });
   if (!access.ok) notFound();
 
+  // An ordinary admin may only open a dossier assigned to them; the super admin
+  // opens any. A mismatch reads as "not found" rather than a forbidden page.
+  if (user.role === "admin" && access.dossier.reservedBy !== user.id) {
+    notFound();
+  }
+
   const [documents, client, siblings, payment, comments, reserver] =
     await Promise.all([
       listDocumentsForDossier(id),

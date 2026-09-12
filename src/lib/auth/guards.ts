@@ -20,3 +20,16 @@ export async function requireRole(allowed: Role[]): Promise<SessionUser> {
   if (!allowed.includes(user.role)) redirect("/");
   return user;
 }
+
+/**
+ * Guards a firm-wide admin screen (global stats, periods, payments, user
+ * management). An ordinary admin is a case worker: they get their personal
+ * home and their dossiers, and are sent back there rather than to the marketing
+ * page if they reach a super-admin route.
+ */
+export async function requireSuperAdmin(): Promise<SessionUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (user.role !== "super_admin") redirect("/admin");
+  return user;
+}

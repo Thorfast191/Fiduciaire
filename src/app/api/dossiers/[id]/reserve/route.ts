@@ -3,7 +3,10 @@ import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { reserveDossier, releaseDossier } from "@/lib/dossiers";
 import { writeAuditLog } from "@/lib/audit";
-import { getClientIp } from "@/lib/http";
+import { getClientIp, readJsonBody } from "@/lib/http";
+
+/** Optional `{ adminId }` — a super admin assigning the dossier to that admin. */
+const assignSchema = z.object({ adminId: z.string().uuid() }).partial();
 
 async function requireAdmin(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
@@ -33,10 +36,14 @@ export async function POST(
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
 
-  const result = await reserveDossier(id, {
-    id: auth.user.id,
-    role: auth.user.role,
-  });
+  const parsed = assignSchema.safeParse((await readJsonBody(request)) ?? {});
+  const targetAdminId = parsed.success ? parsed.data.adminId : undefined;
+
+  const result = await reserveDossier(
+    id,
+    { id: auth.user.id, role: auth.user.role },
+    targetAdminId,
+  );
   if (!result.ok) {
     return NextResponse.json(
       { ok: false, error: result.error },

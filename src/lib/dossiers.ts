@@ -119,12 +119,15 @@ export async function listAllDossiersWithClient({
   taxYear,
   serviceType,
   clientId,
+  reservedBy,
 }: {
   limit?: number;
   taxYear?: number;
   serviceType?: ServiceType;
   /** Narrow to one client, for a per-client admin view. */
   clientId?: string;
+  /** Narrow to the dossiers one admin has reserved — an ordinary admin's view. */
+  reservedBy?: string;
 } = {}): Promise<AdminDossierRow[]> {
   // Self-join on `users` to resolve the reserving admin's name alongside the
   // client's, in the one query the table already runs.
@@ -167,6 +170,7 @@ export async function listAllDossiersWithClient({
         taxYear ? eq(dossiers.taxYear, taxYear) : undefined,
         serviceType ? eq(dossiers.serviceType, serviceType) : undefined,
         clientId ? eq(dossiers.clientId, clientId) : undefined,
+        reservedBy ? eq(dossiers.reservedBy, reservedBy) : undefined,
       ),
     )
     .orderBy(desc(dossiers.taxYear), desc(dossiers.createdAt))
@@ -236,6 +240,8 @@ export async function countAllDossiers(
  */
 export async function countDossiersByService(
   taxYear?: number,
+  /** Narrow to one admin's reserved dossiers — an ordinary admin's hub. */
+  reservedBy?: string,
 ): Promise<Record<string, number>> {
   const rows = await db
     .select({
@@ -243,7 +249,12 @@ export async function countDossiersByService(
       value: sql<number>`count(*)`,
     })
     .from(dossiers)
-    .where(taxYear ? eq(dossiers.taxYear, taxYear) : undefined)
+    .where(
+      and(
+        taxYear ? eq(dossiers.taxYear, taxYear) : undefined,
+        reservedBy ? eq(dossiers.reservedBy, reservedBy) : undefined,
+      ),
+    )
     .groupBy(dossiers.serviceType);
 
   return Object.fromEntries(rows.map((r) => [r.serviceType, Number(r.value)]));
@@ -344,31 +355,34 @@ export type ReserveResult =
 export async function reserveDossier(
   dossierId: string,
   admin: { id: string; role: Role },
+  /** A super admin may assign to another admin; ignored for ordinary admins. */
+  targetAdminId?: string,
 ): Promise<ReserveResult> {
+  const assignTo =
+    targetAdminId && admin.role === "super_admin" ? targetAdminId : admin.id;
+
   const [dossier] = await db
     .select()
     .from(dossiers)
     .where(eq(dossiers.id, dossierId));
   if (!dossier) return { ok: false, error: "not_found" };
 
-  if (dossier.reservedBy === admin.id) return { ok: true, dossier };
+  if (dossier.reservedBy === assignTo) return { ok: true, dossier };
+  // An ordinary admin can only claim a free dossier for themselves; a super
+  // admin may (re)assign any dossier to any admin.
   if (dossier.reservedBy && admin.role !== "super_admin") {
     return { ok: false, error: "already_reserved" };
   }
 
   const [updated] = await db
     .update(dossiers)
-    .set({ reservedBy: admin.id, reservedAt: new Date(), updatedAt: new Date() })
+    .set({ reservedBy: assignTo, reservedAt: new Date(), updatedAt: new Date() })
     .where(
-      and(
-        eq(dossiers.id, dossierId),
-        // Guard on the holder we read: null for a free claim, the current
-        // holder for a super-admin reassignment. A concurrent claim shifts it
-        // and this update matches nothing.
-        dossier.reservedBy
-          ? eq(dossiers.reservedBy, dossier.reservedBy)
-          : isNull(dossiers.reservedBy),
-      ),
+      admin.role === "super_admin"
+        ? eq(dossiers.id, dossierId)
+        : // Guard on "free" so two admins racing for the same dossier can't
+          // both win.
+          and(eq(dossiers.id, dossierId), isNull(dossiers.reservedBy)),
     )
     .returning();
 
