@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
   if (!user) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
-  if (user.role !== "client") {
-    return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
-  }
+  // Access is enforced by getAccessibleDossier below (owner or admin). We do not
+  // gate on role here: an admin — including a former client whose account was
+  // promoted — must still be able to upload to a dossier they can reach.
 
   let form: FormData;
   try {
@@ -66,7 +66,9 @@ export async function POST(request: NextRequest) {
 
   const body = new Uint8Array(await file.arrayBuffer());
   const result = await uploadDocumentDirect({
-    ownerId: user.id,
+    // The document belongs to the dossier's client, whoever uploaded it, so a
+    // client always finds it in their own space.
+    ownerId: dossierCheck.dossier.clientId,
     uploadedBy: user.id,
     dossierId,
     filename: file.name || "document",

@@ -180,7 +180,11 @@ export default async function PortalHomePage({
           </h2>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <HelpDoc label={t.portal.helpDoc1} format={t.portal.helpDocFormat} />
+            <HelpDoc
+              label={t.portal.helpDoc1}
+              format={t.portal.helpDocFormat}
+              href="/documents/liste-documents-a-fournir.pdf"
+            />
             <HelpDoc label={t.portal.helpDoc2} format={t.portal.helpDocFormat} />
           </div>
         </div>
@@ -213,9 +217,20 @@ export default async function PortalHomePage({
   );
 }
 
-function HelpDoc({ label, format }: { label: string; format: string }) {
-  return (
-    <div className="flex min-h-[112px] flex-col gap-2 rounded-[var(--radius-md)] border border-line bg-card p-4 shadow-[var(--shadow-xs)] transition-colors hover:border-line-strong">
+function HelpDoc({
+  label,
+  format,
+  href,
+}: {
+  label: string;
+  format: string;
+  /** When set, the card downloads this file; otherwise it is a plain placeholder. */
+  href?: string;
+}) {
+  const className =
+    "flex min-h-[112px] flex-col gap-2 rounded-[var(--radius-md)] border border-line bg-card p-4 shadow-[var(--shadow-xs)] transition-colors hover:border-line-strong";
+  const inner = (
+    <>
       <span className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-teal-100 text-brand">
         <svg
           viewBox="0 0 24 24"
@@ -248,7 +263,22 @@ function HelpDoc({ label, format }: { label: string; format: string }) {
           <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16" />
         </svg>
       </span>
-    </div>
+    </>
+  );
+
+  // A real file downloads in a new tab; a card without one stays a placeholder.
+  return href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      download
+      className={className}
+    >
+      {inner}
+    </a>
+  ) : (
+    <div className={className}>{inner}</div>
   );
 }
 
