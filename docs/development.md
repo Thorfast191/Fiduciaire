@@ -65,13 +65,14 @@ Create the two ordinary admins with:
 ```bash
 npm run seed:admin -- veasna.leas@fiduvia.test 'LocalDev2026!' admin Veasna Leas
 npm run seed:admin -- jeremy.ruchet@fiduvia.test 'LocalDev2026!' admin Jérémy Ruchet
+npm run seed:client -- client@fiduvia.test 'LocalDev2026!'
 ```
 
 Then fill the admin screens with the reference's four clients and their
 declarations, so the tables are not empty:
 
 ```bash
-npx tsx scripts/seed-demo-clients.ts 2025 'LocalDev2026!'
+npm run seed:demo -- 2025 'LocalDev2026!'
 ```
 
 These are **local development fixtures only**. Never use them anywhere else.

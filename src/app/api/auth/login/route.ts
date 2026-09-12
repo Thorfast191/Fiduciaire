@@ -64,9 +64,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // A distinct message from the failed-password limit above. The password was
+  // right; the account has simply asked for too many codes. Saying "too many
+  // attempts" here sends people hunting for a wrong password that is not wrong.
   if (await isOtpIssuanceRateLimited(user.id, "login")) {
     return NextResponse.json(
-      { ok: false, error: e.tooManyLogins },
+      { ok: false, error: e.tooManyCodeRequests },
       { status: 429 },
     );
   }
