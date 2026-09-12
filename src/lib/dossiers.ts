@@ -104,6 +104,8 @@ export interface AdminDossierRow {
   reservedByName: string | null;
   /** Canton of domicile from the questionnaire answers, or "" when not set. */
   canton: string;
+  /** The client paid for express (48h) handling — the mockup's red badge. */
+  express: boolean;
 }
 
 /**
@@ -145,6 +147,8 @@ export async function listAllDossiersWithClient({
       // Canton lives in the questionnaire answers (declarations set it); other
       // prestations may leave it blank, which the table renders as "—".
       canton: sql<string>`coalesce(${dossiers.answers} ->> 'canton', '')`,
+      // The express (48h) upgrade, from the same answers blob.
+      express: sql<boolean>`coalesce((${dossiers.answers} ->> 'express')::boolean, false)`,
       // Counted in the same query so the table can flag which dossiers carry
       // files without a follow-up round trip per row. Mirrors the filter in
       // listDocumentsForDossier: uploaded and not soft-deleted.

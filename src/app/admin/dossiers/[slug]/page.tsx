@@ -86,6 +86,7 @@ export default async function AdminPrestationPage({
           reservedBy: r.reservedBy,
           reservedByName: r.reservedByName,
           canton: r.canton,
+          express: r.express,
         }))}
       />
 

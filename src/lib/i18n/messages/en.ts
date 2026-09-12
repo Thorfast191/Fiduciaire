@@ -1267,6 +1267,7 @@ export const en: Messages = {
       reservedFilterLabel: "Reserved by:",
       filterAllReservers: "All",
       filterUnreserved: "Unassigned",
+      expressBadge: "Express 48h",
     },
   },
 
@@ -1277,6 +1278,7 @@ export const en: Messages = {
     documents_requested: "Documents requested",
     documents_received: "Documents received",
     completed: "Completed",
+    reclamation: "Complaint",
   },
 
   consent: {

@@ -1273,6 +1273,7 @@ export const fr = {
       reservedFilterLabel: "Réservé par :",
       filterAllReservers: "Tous",
       filterUnreserved: "Aucune réservation",
+      expressBadge: "Express 48h",
     },
   },
 
@@ -1283,6 +1284,7 @@ export const fr = {
     documents_requested: "Pièces demandées",
     documents_received: "Pièces reçues",
     completed: "Terminé",
+    reclamation: "Réclamation",
   },
 
   consent: {

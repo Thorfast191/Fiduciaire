@@ -29,6 +29,7 @@ describe("getAdminDashboardStats", () => {
         "documents_requested",
         "in_review",
         "not_started",
+        "reclamation",
         "submitted",
       ],
     );

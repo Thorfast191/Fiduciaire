@@ -7,7 +7,17 @@ import { getClientIp, readJsonBody } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
 
 const bodySchema = z.object({
-  status: z.enum(["not_started", "submitted", "in_review", "completed"]),
+  // Every status an admin can set from the dossier table. A non-admin is still
+  // held to not_started → submitted by `setDossierStatus`, whatever they send.
+  status: z.enum([
+    "not_started",
+    "submitted",
+    "in_review",
+    "documents_requested",
+    "documents_received",
+    "completed",
+    "reclamation",
+  ]),
 });
 
 export async function PATCH(

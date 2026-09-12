@@ -23,6 +23,7 @@ const ALL_STATUSES: DossierStatus[] = [
   "documents_requested",
   "documents_received",
   "completed",
+  "reclamation",
 ];
 
 function emptyByStatus(): Record<DossierStatus, number> {

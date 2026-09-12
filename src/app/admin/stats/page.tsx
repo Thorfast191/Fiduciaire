@@ -17,6 +17,7 @@ const STATUS_BAR: Record<DossierStatus, string> = {
   documents_requested: "bg-[#B26A00]",
   documents_received: "bg-status-submitted",
   completed: "bg-status-completed",
+  reclamation: "bg-[#C0453B]",
 };
 
 /** The mockup's admin breakdown order and colours (see the home artboard). */

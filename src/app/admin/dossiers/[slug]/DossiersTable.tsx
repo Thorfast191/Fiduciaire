@@ -20,6 +20,7 @@ export interface TableRow {
   reservedBy: string | null;
   reservedByName: string | null;
   canton: string;
+  express: boolean;
 }
 
 /** First name only — how the mockup labels a reservation ("Réservé par Veasna"). */
@@ -336,8 +337,15 @@ export default function DossiersTable({
                       {r.canton || "—"}
                     </span>
 
-                    <span className="fx-figure w-[110px] shrink-0 text-[13px] text-muted">
-                      {dateFmt.format(new Date(r.createdAt))}
+                    <span className="flex w-[110px] shrink-0 flex-col gap-1">
+                      <span className="fx-figure text-[13px] text-muted">
+                        {dateFmt.format(new Date(r.createdAt))}
+                      </span>
+                      {r.express ? (
+                        <span className="inline-flex w-fit items-center rounded-full bg-[#FBE7E4] px-2 py-0.5 text-[10.5px] font-bold text-[#C0453B]">
+                          {t.admin.dossiers.expressBadge}
+                        </span>
+                      ) : null}
                     </span>
                   </div>
 

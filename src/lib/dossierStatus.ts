@@ -13,6 +13,7 @@ export const STATUS_ORDER: DossierStatus[] = [
   "documents_requested",
   "documents_received",
   "completed",
+  "reclamation",
 ];
 
 export const STATUS_CLASS: Record<DossierStatus, string> = {
@@ -24,4 +25,6 @@ export const STATUS_CLASS: Record<DossierStatus, string> = {
   documents_requested: "bg-[#FBF0DD] text-[#B26A00]",
   documents_received: "bg-status-submitted-soft text-status-submitted",
   completed: "bg-status-completed-soft text-status-completed",
+  // A contested dossier reads as a warning-red, the mockup's réclamation colour.
+  reclamation: "bg-[#FBE7E4] text-[#C0453B]",
 };

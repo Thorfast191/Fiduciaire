@@ -151,6 +151,9 @@ export const dossiers = pgTable(
         "documents_requested",
         "documents_received",
         "completed",
+        // A settled dossier the client has contested — the mockup's
+        // "Réclamation". Reached from `completed`, admin-set only.
+        "reclamation",
       ],
     })
       .notNull()
