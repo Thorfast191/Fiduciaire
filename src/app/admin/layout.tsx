@@ -26,9 +26,7 @@ export default async function AdminLayout({
           nav={adminNav(t, user?.role === "super_admin" ? "super_admin" : "admin")}
           title={t.admin.title}
           account={{
-            name: user
-              ? `${user.firstName} ${user.lastName}`
-              : t.admin.roleAdmin,
+            name: user ? `${user.firstName} ${user.lastName}` : t.admin.title,
             initials,
             profile: {
               firstName: user?.firstName ?? "",

@@ -52,12 +52,15 @@ export function adminNav(
     ];
   }
 
+  // The reference's `aNavDefs` for a super admin, exactly: four entries, and no
+  // "Accueil" — the personal dashboard is a case worker's screen, and a super
+  // admin holds no dossiers of their own. `/admin` redirects them to Dossiers.
+  // "Paiements" is ours, not the reference's, so it is not listed either; the
+  // page still answers at /admin/paiements.
   return [
-    { kind: "link", label: n.home, href: "/admin" },
     { kind: "link", label: n.dossiers, href: "/admin/dossiers" },
     { kind: "link", label: n.stats, href: "/admin/stats" },
     { kind: "link", label: n.periods, href: "/admin/periodes" },
-    { kind: "link", label: t.admin.payments.navLabel, href: "/admin/paiements" },
     { kind: "link", label: n.users, href: "/admin/utilisateurs" },
   ];
 }

@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getAdminHomeStats } from "@/lib/adminStats";
 import { listTaxYears } from "@/lib/dossiers";
 import { getCurrentUser } from "@/lib/auth/guards";
@@ -52,6 +53,11 @@ export default async function AdminHomePage({
     getCurrentUser(),
     getT(),
   ]);
+
+  // This screen is a case worker's own workload. The reference drops it from
+  // the super admin's sidebar entirely, so send them to Dossiers instead of
+  // showing them a personal dashboard that is always empty.
+  if (user?.role === "super_admin") redirect("/admin/dossiers");
 
   const options = await listPeriodOptions(periods);
   const selected = resolvePeriod(options, periode);
