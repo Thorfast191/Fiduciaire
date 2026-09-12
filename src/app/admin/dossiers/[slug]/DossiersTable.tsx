@@ -1,11 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { STATUS_CLASS, STATUS_ORDER } from "@/lib/dossierStatus";
 import { useI18n } from "@/lib/i18n/I18nProvider";
-import NotifyClient from "./NotifyClient";
 import type { DossierStatus } from "@/db/schema";
 
 export interface TableRow {
@@ -21,6 +19,7 @@ export interface TableRow {
   reservedByName: string | null;
   canton: string;
   express: boolean;
+  situation: string;
 }
 
 /** First name only — how the mockup labels a reservation ("Réservé par Veasna"). */
@@ -39,6 +38,19 @@ function firstNameOf(fullName: string | null): string {
  * Search and filtering are client-side: the server already bounds the result
  * set to one tax period, which is small enough to hold in the page.
  */
+/**
+ * The pill under a client's name. Anything other than the five known
+ * situations falls back to "Normale", which is what an unanswered declaration
+ * amounts to.
+ */
+const SITUATION_KEYS = [
+  "standard",
+  "arrivee",
+  "taxation_office",
+  "deces",
+  "depart",
+] as const;
+
 export default function DossiersTable({
   rows,
   slug,
@@ -58,6 +70,13 @@ export default function DossiersTable({
 }) {
   const { locale, t } = useI18n();
   const router = useRouter();
+
+  const situationLabel = (key: string) => {
+    const known = (SITUATION_KEYS as readonly string[]).includes(key)
+      ? (key as (typeof SITUATION_KEYS)[number])
+      : "standard";
+    return t.declaration.situations[known];
+  };
 
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<DossierStatus | "">("");
@@ -246,10 +265,11 @@ export default function DossiersTable({
             <span className="w-[160px] shrink-0">
               {t.admin.dossiers.thReservedBy}
             </span>
-            <span className="w-[70px] shrink-0">{t.admin.dossiers.thCanton}</span>
+            {/* Date before canton, as the reference orders them. */}
             <span className="w-[110px] shrink-0">
               {t.admin.dossiers.thReceived}
             </span>
+            <span className="w-[70px] shrink-0">{t.admin.dossiers.thCanton}</span>
           </div>
 
           {visible.length === 0 ? (
@@ -266,7 +286,29 @@ export default function DossiersTable({
               return (
                 <div
                   key={r.id}
-                  className="border-b border-line px-5 py-3.5 last:border-b-0 hover:bg-sunken/50"
+                  role="link"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    // The row opens the dossier, as in the reference. Clicks
+                    // that land on the status or reservation control are that
+                    // control's, not the row's.
+                    if (
+                      (e.target as HTMLElement).closest(
+                        "select, button, a, input, label",
+                      )
+                    ) {
+                      return;
+                    }
+                    router.push(`/admin/dossiers/${slug}/${r.id}`);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push(`/admin/dossiers/${slug}/${r.id}`);
+                    }
+                  }}
+                  className="cursor-pointer border-b border-line px-5 py-3.5 last:border-b-0 hover:bg-sunken/50 focus:bg-sunken/50 focus:outline-none"
                 >
                   <div className="flex items-center gap-3.5">
                     <span className="flex min-w-0 flex-1 items-center gap-[11px]">
@@ -274,12 +316,14 @@ export default function DossiersTable({
                         {(r.firstName[0] ?? "") + (r.lastName[0] ?? "")}
                       </span>
 
-                      <span className="flex min-w-0 flex-col">
+                      <span className="flex min-w-0 flex-col gap-0.5">
                         <span className="truncate text-[14.5px] font-semibold text-strong">
                           {r.firstName} {r.lastName}
                         </span>
-                        <span className="truncate text-[12.5px] text-muted">
-                          {r.email}
+                        {/* The declaration's situation, as the reference shows
+                            it under the name in place of the email. */}
+                        <span className="max-w-full self-start truncate rounded-full bg-teal-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.04em] text-teal-700">
+                          {situationLabel(r.situation)}
                         </span>
                       </span>
                     </span>
@@ -380,10 +424,6 @@ export default function DossiersTable({
                       )}
                     </span>
 
-                    <span className="w-[70px] shrink-0 text-[13px] font-medium text-body">
-                      {r.canton || "—"}
-                    </span>
-
                     <span className="flex w-[110px] shrink-0 flex-col gap-1">
                       <span className="fx-figure text-[13px] text-muted">
                         {dateFmt.format(new Date(r.createdAt))}
@@ -394,64 +434,12 @@ export default function DossiersTable({
                         </span>
                       ) : null}
                     </span>
+
+                    <span className="w-[70px] shrink-0 text-[13px] font-medium text-body">
+                      {r.canton || "—"}
+                    </span>
                   </div>
 
-                  <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                    <Link
-                      href={`/admin/dossiers/${slug}/${r.id}`}
-                      className="rounded-lg border border-line-default px-3 py-1.5 text-[12.5px] font-medium text-brand transition hover:border-line-strong hover:bg-sunken"
-                    >
-                      {t.declaration.summary.open} →
-                    </Link>
-
-                    <span className="fx-figure text-[12px] text-muted">
-                      {r.taxYear}
-                    </span>
-
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium ${
-                        r.documentCount > 0
-                          ? "bg-teal-100 text-brand"
-                          : "text-subtle"
-                      }`}
-                      title={
-                        r.documentCount > 0
-                          ? `${r.documentCount} ${
-                              r.documentCount === 1
-                                ? t.admin.dossiers.docsUnit
-                                : t.admin.dossiers.docsUnitPlural
-                            }`
-                          : t.admin.dossiers.docsNone
-                      }
-                    >
-                      <svg
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        aria-hidden="true"
-                        className="h-3.5 w-3.5"
-                      >
-                        <path
-                          d="M13.5 6.5 8 12a2 2 0 0 1-2.83-2.83l5.66-5.66a3.5 3.5 0 0 1 4.95 4.95l-5.66 5.66a5 5 0 0 1-7.07-7.07l5.3-5.3"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      {r.documentCount > 0
-                        ? `${r.documentCount} ${
-                            r.documentCount === 1
-                              ? t.admin.dossiers.docsUnit
-                              : t.admin.dossiers.docsUnitPlural
-                          }`
-                        : t.admin.dossiers.docsNone}
-                    </span>
-
-                    <NotifyClient
-                      dossierId={r.id}
-                      clientName={`${r.firstName} ${r.lastName}`}
-                    />
-                  </div>
                 </div>
               );
             })

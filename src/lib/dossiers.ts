@@ -102,6 +102,8 @@ export interface AdminDossierRow {
   reservedBy: string | null;
   /** That admin's display name, resolved in the same query; null when unassigned. */
   reservedByName: string | null;
+  /** The special situation picked before the declaration ("standard" by default). */
+  situation: string;
   /** Canton of domicile from the questionnaire answers, or "" when not set. */
   canton: string;
   /** The client paid for express (48h) handling — the mockup's red badge. */
@@ -152,6 +154,9 @@ export async function listAllDossiersWithClient({
       canton: sql<string>`coalesce(${dossiers.answers} ->> 'canton', '')`,
       // The express (48h) upgrade, from the same answers blob.
       express: sql<boolean>`coalesce((${dossiers.answers} ->> 'express')::boolean, false)`,
+      // The special situation the client picked, which the row shows as a pill
+      // under their name ("Normale", "Départ à l'étranger", …).
+      situation: sql<string>`coalesce(${dossiers.answers} ->> 'situation', 'standard')`,
       // Counted in the same query so the table can flag which dossiers carry
       // files without a follow-up round trip per row. Mirrors the filter in
       // listDocumentsForDossier: uploaded and not soft-deleted.
