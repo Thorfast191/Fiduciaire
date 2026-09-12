@@ -1,12 +1,22 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { countDossiersByService, listTaxYears } from "@/lib/dossiers";
+import {
+  countDossiersByService,
+  countFreeDossiersByService,
+  listTaxYears,
+} from "@/lib/dossiers";
 import { getCurrentUser } from "@/lib/auth/guards";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
-import { SERVICE_SLUG, type ServiceType } from "@/lib/serviceTypes";
+import {
+  SERVICE_SLUG,
+  SERVICE_TYPES,
+  serviceLabel,
+  type ServiceType,
+} from "@/lib/serviceTypes";
+import { listAdminAccounts } from "@/lib/adminUsers";
 import type { Messages } from "@/lib/i18n/messages/fr";
 import DistributeButton from "./DistributeButton";
 
@@ -110,7 +120,28 @@ export default async function AdminDossiersHubPage({
   // An ordinary admin only sees the dossiers assigned to them; the super admin
   // sees the whole firm.
   const scope = user?.role === "super_admin" ? undefined : user?.id;
-  const counts = await countDossiersByService(selected, scope);
+  const isSuperAdmin = user?.role === "super_admin";
+
+  // Only the super admin distributes, so only they need the roster and the
+  // free pool the wizard hands out from.
+  const [counts, adminRows, free] = await Promise.all([
+    countDossiersByService(selected, scope),
+    isSuperAdmin ? listAdminAccounts() : Promise.resolve([]),
+    isSuperAdmin
+      ? countFreeDossiersByService(selected)
+      : Promise.resolve({} as Record<string, number>),
+  ]);
+
+  const distributeAdmins = adminRows.map((a) => ({
+    id: a.id,
+    name: `${a.firstName} ${a.lastName}`.trim(),
+    email: a.email,
+    initials: `${a.firstName[0] ?? ""}${a.lastName[0] ?? ""}`.toUpperCase(),
+  }));
+
+  const serviceLabels = Object.fromEntries(
+    SERVICE_TYPES.map((svc) => [svc, serviceLabel(t, svc)]),
+  );
 
   return (
     <div className="max-w-[1040px]">
@@ -125,8 +156,13 @@ export default async function AdminDossiersHubPage({
 
         <div className="flex items-center gap-2.5">
           <PeriodPicker years={options} current={selected} />
-          {user?.role === "super_admin" ? (
-            <DistributeButton periode={selected} />
+          {isSuperAdmin ? (
+            <DistributeButton
+              periode={selected}
+              admins={distributeAdmins}
+              free={free}
+              labels={serviceLabels}
+            />
           ) : null}
         </div>
       </div>

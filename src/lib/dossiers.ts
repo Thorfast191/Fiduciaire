@@ -13,7 +13,7 @@ import {
 } from "@/db/schema";
 import { deleteObject } from "@/lib/storage/client";
 import { logger } from "@/lib/logger";
-import type { ServiceType } from "@/lib/serviceTypes";
+import { SERVICE_TYPES, type ServiceType } from "@/lib/serviceTypes";
 
 /**
  * Ensures a client has a dossier of a given prestation for a tax year, and
@@ -458,6 +458,109 @@ export async function autoDistributeDossiers(
   });
 
   return { assigned: free.length };
+}
+
+/**
+ * How many dossiers of a period nobody has reserved, split by prestation.
+ *
+ * Feeds both the "Dossiers libres" card on the statistics screen and the
+ * per-prestation ceilings the distribution wizard offers, so the two can never
+ * disagree about what is actually available.
+ */
+export async function countFreeDossiersByService(
+  taxYear: number,
+): Promise<Record<ServiceType, number>> {
+  const rows = await db
+    .select({
+      serviceType: dossiers.serviceType,
+      value: sql<number>`count(*)`,
+    })
+    .from(dossiers)
+    .where(and(eq(dossiers.taxYear, taxYear), isNull(dossiers.reservedBy)))
+    .groupBy(dossiers.serviceType);
+
+  const counts = Object.fromEntries(
+    SERVICE_TYPES.map((svc) => [svc, 0]),
+  ) as Record<ServiceType, number>;
+  for (const row of rows) counts[row.serviceType] = Number(row.value);
+  return counts;
+}
+
+/** One line of a distribution: give this admin N free dossiers of this type. */
+export interface DistributionAllocation {
+  adminId: string;
+  serviceType: ServiceType;
+  count: number;
+}
+
+/**
+ * Hands out a chosen number of free dossiers per administrator and prestation —
+ * the reference's two-step "Distribuer les dossiers" wizard, as opposed to
+ * {@link autoDistributeDossiers}, which spreads everything evenly in one click.
+ *
+ * Oldest dossiers go first, and each update still guards on the dossier being
+ * free, so a reservation made while the wizard was open is never clobbered.
+ * Asking for more than exist simply assigns what there is.
+ */
+export async function distributeDossiers(
+  taxYear: number,
+  allocations: DistributionAllocation[],
+): Promise<{ assigned: number }> {
+  const wanted = allocations.filter((a) => a.count > 0);
+  if (wanted.length === 0) return { assigned: 0 };
+
+  // Only real, active administrators may receive dossiers. A stale id from the
+  // browser must not park a dossier on a deleted or demoted account.
+  const eligible = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(
+      and(
+        sql`${users.role} in ('admin', 'super_admin')`,
+        isNull(users.disabledAt),
+      ),
+    );
+  const eligibleIds = new Set(eligible.map((a) => a.id));
+
+  const free = await db
+    .select({ id: dossiers.id, serviceType: dossiers.serviceType })
+    .from(dossiers)
+    .where(and(eq(dossiers.taxYear, taxYear), isNull(dossiers.reservedBy)))
+    .orderBy(asc(dossiers.createdAt));
+
+  const pool = new Map<ServiceType, string[]>();
+  for (const row of free) {
+    const list = pool.get(row.serviceType) ?? [];
+    list.push(row.id);
+    pool.set(row.serviceType, list);
+  }
+
+  const now = new Date();
+  let assigned = 0;
+
+  await db.transaction(async (tx) => {
+    for (const allocation of wanted) {
+      if (!eligibleIds.has(allocation.adminId)) continue;
+      const available = pool.get(allocation.serviceType) ?? [];
+
+      for (let i = 0; i < allocation.count; i++) {
+        const dossierId = available.shift();
+        if (!dossierId) break;
+
+        await tx
+          .update(dossiers)
+          .set({
+            reservedBy: allocation.adminId,
+            reservedAt: now,
+            updatedAt: now,
+          })
+          .where(and(eq(dossiers.id, dossierId), isNull(dossiers.reservedBy)));
+        assigned++;
+      }
+    }
+  });
+
+  return { assigned };
 }
 
 /**

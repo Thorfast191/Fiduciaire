@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -2945,7 +2945,7 @@
                 <sc-for list="{{ adminPeriodPicker.options }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.onClick }}" style="{{ o.style }}">Période {{ o.year }} <span>{{ o.check }}</span></button></sc-for>
               </div>
             </sc-if>
-          </div><button onClick="{{ autoDistribute }}" style="display:inline-flex;align-items:center;gap:9px;background:var(--petrol-800);color:#fff;border:none;padding:11px 18px;border-radius:11px;font-weight:600;font-size:14px;cursor:pointer;font-family:var(--font-text);transition:background .18s" style-hover="background:var(--petrol-900)">{{ t.distribBtn }}</button></div>
+          </div><sc-if value="{{ isSuperAdmin }}"><button onClick="{{ openDistrib }}" style="display:inline-flex;align-items:center;gap:9px;background:var(--petrol-800);color:#fff;border:none;padding:11px 18px;border-radius:11px;font-weight:600;font-size:14px;cursor:pointer;font-family:var(--font-text);transition:background .18s" style-hover="background:var(--petrol-900)">{{ t.distribBtn }}</button></sc-if></div>
         </div>
         <div style="margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
           <sc-for list="{{ aPrestations }}" as="p" hint-placeholder-count="6">
@@ -3863,6 +3863,44 @@
             </sc-for>
           </div>
         </div>
+
+        <sc-if value="{{ isSuperAdmin }}">
+        <div style="margin-top:16px">
+          <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);letter-spacing:.08em">{{ t.statsByAdminTitle }}</span>
+          <div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+            <sc-for list="{{ aStatsByAdmin }}" as="a" hint-placeholder-count="2">
+              <button onClick="{{ a.onClick }}" style="{{ a.cardStyle }}" style-hover="border-color:var(--teal-300);box-shadow:var(--shadow-sm)">
+                <span style="display:flex;align-items:center;gap:11px">
+                  <span style="{{ a.avatarStyle }}">{{ a.initials }}</span>
+                  <span class="disp" style="font-weight:700;font-size:17px;color:var(--text-strong)">{{ a.name }}</span>
+                </span>
+                <span style="display:flex;align-items:baseline;gap:6px">
+                  <span class="disp fx-figure" style="font-weight:800;font-size:26px;color:var(--brand)">{{ a.total }}</span>
+                  <span style="font-size:12.5px;color:var(--text-muted)">{{ a.totalWord }} · {{ a.ca }}</span>
+                </span>
+                <span style="display:flex;flex-direction:column;gap:4px">
+                  <sc-for list="{{ a.lines }}" as="l" hint-placeholder-count="4">
+                    <span style="display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--text-body)"><span>{{ l.label }}</span><span style="font-weight:700">{{ l.count }}</span></span>
+                  </sc-for>
+                </span>
+                <span style="font-size:12.5px;font-weight:700;color:var(--brand)">{{ t.statsAdminSee }} →</span>
+              </button>
+            </sc-for>
+            <div style="border:1px dashed var(--border-default);border-radius:var(--radius-md);padding:18px;background:var(--surface-sunken);display:flex;flex-direction:column;gap:12px">
+              <span class="disp" style="font-weight:700;font-size:17px;color:var(--text-strong)">{{ t.statsFreeLabel }}</span>
+              <span style="display:flex;align-items:baseline;gap:6px">
+                <span class="disp fx-figure" style="font-weight:800;font-size:26px;color:var(--text-strong)">{{ aStatsFree.total }}</span>
+                <span style="font-size:12.5px;color:var(--text-muted)">{{ t.statsFreeSub }}</span>
+              </span>
+              <span style="display:flex;flex-direction:column;gap:4px">
+                <sc-for list="{{ aStatsFree.lines }}" as="l" hint-placeholder-count="4">
+                  <span style="display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--text-body)"><span>{{ l.label }}</span><span style="font-weight:700">{{ l.count }}</span></span>
+                </sc-for>
+              </span>
+            </div>
+          </div>
+        </div>
+        </sc-if>
       </div>
       </sc-if>
 
@@ -4035,6 +4073,96 @@
       <button onClick="{{ cancelCloseConfirm }}" style="flex:1;background:#fff;border:1px solid #E0E5EC;color:#46515F;padding:12px;border-radius:11px;font-weight:600;font-size:15px;cursor:pointer" style-hover="border-color:#79C5BD">{{ t.confirmNo }}</button>
       <button onClick="{{ confirmClose }}" style="flex:1;background:#1B6E7E;border:none;color:#fff;padding:12px;border-radius:11px;font-weight:600;font-size:15px;cursor:pointer" style-hover="background:#145863">{{ t.confirmYes }}</button>
     </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ MODALE STATISTIQUES D'UN ADMIN ============ -->
+<sc-if value="{{ aStatsFocusOpen }}">
+<div onClick="{{ closeStatsFocus }}" style="position:fixed;inset:0;z-index:98;background:rgba(13,21,38,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeBg .18s ease">
+  <div onClick="{{ stop }}" style="width:100%;max-width:560px;max-height:82vh;overflow-y:auto;background:#fff;border-radius:20px;padding:28px;box-shadow:0 40px 90px -30px rgba(13,21,38,.6);animation:popIn .22s ease">
+    <h2 class="disp" style="font-size:21px;font-weight:800;margin:0">{{ aStatsFocus.name }}</h2>
+    <div style="margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <sc-for list="{{ aStatsFocus.kpis }}" as="k" hint-placeholder-count="3">
+        <div style="border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px;display:flex;flex-direction:column;gap:8px">
+          <span style="font-family:var(--font-mono);font-size:8.5px;color:var(--text-muted);letter-spacing:.08em">{{ k.label }}</span>
+          <span class="disp fx-figure" style="{{ k.valueStyle }}">{{ k.value }}</span>
+          <span style="font-family:var(--font-text);font-size:11.5px;color:var(--text-muted)">{{ k.sub }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:16px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:18px">
+      <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);letter-spacing:.08em">{{ t.aPrestTitle }}</span>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
+        <sc-for list="{{ aStatsFocus.bars }}" as="b" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="disp" style="width:150px;flex-shrink:0;font-weight:700;font-size:14px">{{ b.label }}</span>
+            <div style="flex:1;height:12px;background:var(--surface-sunken);border-radius:99px;overflow:hidden"><div style="{{ b.barStyle }}"></div></div>
+            <span class="disp fx-figure" style="width:28px;text-align:right;font-weight:700;font-size:16px;color:var(--brand)">{{ b.count }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <button onClick="{{ closeStatsFocus }}" style="margin-top:22px;width:100%;background:var(--brand);border:none;color:#fff;padding:12px;border-radius:11px;font-weight:600;font-size:15px;cursor:pointer;font-family:var(--font-text)" style-hover="background:#145863">{{ t.statsCloseBtn }}</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ MODALE DISTRIBUTION DES DOSSIERS ============ -->
+<sc-if value="{{ distribOpen }}">
+<div onClick="{{ closeDistrib }}" style="position:fixed;inset:0;z-index:98;background:rgba(13,21,38,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeBg .18s ease">
+  <div onClick="{{ stop }}" style="width:100%;max-width:520px;max-height:82vh;overflow-y:auto;background:#fff;border-radius:20px;padding:28px;box-shadow:0 40px 90px -30px rgba(13,21,38,.6);animation:popIn .22s ease">
+    <sc-if value="{{ distribStep1 }}">
+      <h2 class="disp" style="font-size:20px;font-weight:700;margin:0">{{ t.distribTitle1 }}</h2>
+      <p style="font-family:var(--font-text);color:var(--text-muted);font-size:14.5px;line-height:1.55;margin:6px 0 0">{{ t.distribSub1 }}</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+        <sc-for list="{{ distribAdmins }}" as="a" hint-placeholder-count="2">
+          <button onClick="{{ a.onToggle }}" style="{{ a.rowStyle }}">
+            <span style="{{ a.boxStyle }}">{{ a.check }}</span>
+            <span style="{{ a.avatarStyle }}">{{ a.initials }}</span>
+            <span style="flex:1;min-width:0;text-align:left">
+              <span style="display:block;font-weight:600;font-size:15px;color:var(--text-strong)">{{ a.name }}</span>
+              <span style="display:block;font-size:13px;color:var(--text-muted);margin-top:2px">{{ a.email }}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:24px">
+        <button onClick="{{ closeDistrib }}" style="flex:1;background:#fff;border:1px solid #E0E5EC;color:#46515F;padding:12px;border-radius:11px;font-weight:600;font-size:15px;cursor:pointer;font-family:var(--font-text)" style-hover="border-color:#79C5BD">{{ t.distribCancelBtn }}</button>
+        <button onClick="{{ distribNext }}" style="flex:1;background:var(--brand);border:none;color:#fff;padding:12px;border-radius:11px;font-weight:600;font-size:15px;cursor:pointer;font-family:var(--font-text)" style-hover="background:#145863">{{ t.distribNextBtn }}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ distribStep2 }}">
+      <h2 class="disp" style="font-size:20px;font-weight:700;margin:0">{{ t.distribTitle2 }}</h2>
+      <p style="font-family:var(--font-text);color:var(--text-muted);font-size:14.5px;line-height:1.55;margin:6px 0 0">{{ t.distribSub2 }}</p>
+      <div style="display:flex;flex-direction:column;gap:18px;margin-top:20px">
+        <sc-for list="{{ distribBlocks }}" as="b" hint-placeholder-count="1">
+          <div style="border:1px solid var(--border-subtle);border-radius:14px;padding:16px 18px">
+            <span class="disp" style="display:block;font-weight:700;font-size:16px;color:var(--text-strong)">{{ b.name }}</span>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
+              <sc-for list="{{ b.cats }}" as="c" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:14px">
+                  <span style="flex:1;min-width:0;font-family:var(--font-text);font-size:14.5px;color:var(--text-body)">
+                    <span style="display:block;font-weight:600">{{ c.label }}</span>
+                    <span style="display:block;font-size:12.5px;color:var(--text-muted);margin-top:1px">{{ c.avail }}</span>
+                  </span>
+                  <span style="position:relative;display:inline-flex;align-items:center">
+                    <select value="{{ c.value }}" onChange="{{ c.onChange }}" style="{{ distribSelectStyle }}">
+                      <sc-for list="{{ c.options }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+                    </select>
+                    <span style="position:absolute;right:11px;color:#8A93A1;display:flex;pointer-events:none">{{ icChevron }}</span>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:24px">
+        <button onClick="{{ distribBack }}" style="flex:1;background:#fff;border:1px solid #E0E5EC;color:#46515F;padding:12px;border-radius:11px;font-weight:600;font-size:15px;cursor:pointer;font-family:var(--font-text)" style-hover="border-color:#79C5BD">{{ t.distribBackBtn }}</button>
+        <button onClick="{{ applyDistrib }}" style="flex:1;background:var(--brand);border:none;color:#fff;padding:12px;border-radius:11px;font-weight:600;font-size:15px;cursor:pointer;font-family:var(--font-text)" style-hover="background:#145863">{{ t.distribApplyBtn }}</button>
+      </div>
+    </sc-if>
   </div>
 </div>
 </sc-if>
@@ -4534,12 +4662,18 @@ const FR = {
   modOpenBtn:"Consulter", modReadOnlyBadge:"Transmis",
   qPageAccueil:"Accueil", qPageFamily:"Situation familiale", qPageRevenus:"Revenus", qPageFortune:"Fortune/dettes", qPageImmeubles:"Immeubles", qPageDeductions:"Déductions", qPageTransmission:"Transmission documents",
   adminSpace:"Espace administrateur", switchAccount:"Changer de compte",
-  distribBtn:"Distribution automatique", distribToast:"Dossiers répartis entre Veasna et Jérémy.", distribNone:"Aucun dossier libre à distribuer.",
+  distribBtn:"Distribuer les dossiers", distribToast:"Dossiers répartis entre Veasna et Jérémy.", distribNone:"Aucun dossier libre à distribuer.",
+  distribTitle1:"Distribuer les dossiers", distribSub1:"Sélectionnez les administrateurs concernés.",
+  distribTitle2:"Nombre de dossiers à distribuer", distribSub2:"Choisissez le nombre par prestation, dans la limite des dossiers libres.",
+  statsCloseBtn:"Fermer", statsByAdminTitle:"RÉPARTITION PAR ADMINISTRATEUR", statsFreeLabel:"Dossiers libres", statsFreeSub:"non attribués", statsAdminSee:"Voir les statistiques", statsAdminTotal:"dossiers", statsAdminTotal1:"dossier",
+  distribAvail:"libres", distribAvail1:"libre", distribNextBtn:"Continuer", distribBackBtn:"Retour", distribApplyBtn:"Distribuer", distribCancelBtn:"Annuler",
+  distribNothing:"Aucun dossier sélectionné.", distribDoneToast:"{n} dossier(s) distribué(s).",
   makeAdminBtn:"Passer administrateur", removeAdminBtn:"Retirer l'accès admin", adminUserBadge:"Administrateur", filterReservedBy:"Réservé par :",
   adminHomeTitle:"Espace administrateur", adminHomeSub:"Gérez les dossiers, suivez les statistiques et pilotez les périodes fiscales.",
   navDossiers:"Déclarations d'impôts", navStats:"Statistiques", navPeriodes:"Périodes fiscales",
   declTypeBasique:"Normale", declTypeDepart:"Départ à l'étranger", declTypeArrivee:"Arrivée de l'étranger", declTypeDeces:"Décès", declTypeTaxOffice:"Taxation d'office",
   aNavAccueil:"Accueil", aNavDossiers:"Dossiers", aNavStats:"Statistiques", aNavPeriodes:"Périodes", aNavUsers:"Utilisateurs", aNavLogout:"Se déconnecter", aRoleLabel:"GESTIONNAIRE",
+  aNavStatsPerso:"Statistique personnelle", aNavStatsGlobal:"Statistique globale", aNavPeriodesFisc:"Périodes fiscales",
   aDashTitle:"Espace administrateur", aDashSub:"Vos dossiers pour la période fiscale en cours.",
   aKpiDossiers:"DOSSIERS RÉSERVÉS", aKpiDossiersSub:"toutes prestations confondues", aKpiTraites:"DOSSIERS TRAITÉS", aKpiTraitesSub:"clôturés cette période", aKpiCa:"CHIFFRE D'AFFAIRES PERSONNEL", aKpiCaSub:"encaissé cette période",
   aDistTitle:"RÉPARTITION PAR STATUT", aPrestTitle:"DOSSIERS PAR PRESTATION",
@@ -5004,6 +5138,12 @@ const EN = Object.assign({}, FR, {
   navUsers:"User management", cardUsersDesc:"Delete a user from our database on request.",
   declTypeBasique:"Standard", declTypeDepart:"Departure abroad", declTypeArrivee:"Arrival from abroad", declTypeDeces:"Death", declTypeTaxOffice:"Default assessment",
   aNavAccueil:"Home", aNavDossiers:"Files", aNavStats:"Statistics", aNavPeriodes:"Periods", aNavUsers:"Users", aNavLogout:"Log out", aRoleLabel:"MANAGER",
+  aNavStatsPerso:"Personal statistics", aNavStatsGlobal:"Global statistics", aNavPeriodesFisc:"Tax periods",
+  distribTitle1:"Distribute files", distribSub1:"Select the administrators concerned.",
+  distribTitle2:"Number of files to distribute", distribSub2:"Choose a number per service, within the limit of unassigned files.",
+  statsCloseBtn:"Close", statsByAdminTitle:"BREAKDOWN BY ADMINISTRATOR", statsFreeLabel:"Unassigned files", statsFreeSub:"not allocated", statsAdminSee:"View statistics", statsAdminTotal:"files", statsAdminTotal1:"file",
+  distribAvail:"available", distribAvail1:"available", distribNextBtn:"Continue", distribBackBtn:"Back", distribApplyBtn:"Distribute", distribCancelBtn:"Cancel",
+  distribNothing:"No file selected.", distribDoneToast:"{n} file(s) distributed.",
   aDashTitle:"Administrator area", aDashSub:"Your files for the current tax period.",
   aKpiDossiers:"FILES", aKpiDossiersSub:"all services combined", aKpiTraites:"FILES PROCESSED", aKpiTraitesSub:"closed this period", aKpiCa:"REVENUE", aKpiCaSub:"collected this period",
   aDistTitle:"BREAKDOWN BY STATUS", aPrestTitle:"FILES BY SERVICE",
@@ -5239,6 +5379,7 @@ class Component extends DCLogic {
     view:"home", simExpanded:false, role:"client",
     admins:BASE_ADMINS.map(a=>Object.assign({},a)), superAdmin:Object.assign({},SUPER_ADMIN),
     currentAdminEmail:BASE_ADMINS[0].email, isSuper:false,
+    distribOpen:false, distribStep:1, distribSel:[], distribCounts:{},
     loginEmail:"", loginPw:"", loginError:"",
     signup:{first:"",last:"",email:"",phone:"",pw:"",pw2:""}, signupError:"", signupCgu:false,
     declPopOpen:false, extraPayOpen:false, extraPayForm:{amount:"",reason:""}, extraPayments:[],
@@ -5380,7 +5521,7 @@ class Component extends DCLogic {
   toggleEstYN(field){ this.setState(s=>({est:{...s.est,[field]: s.est[field]==="oui"?"non":"oui"}})); }
   toggleEstAssist(k){ this.setState(s=>{ const cur={...(s.est.assistance||{})}; if(k==="ensemble"){ const on=!cur.ensemble; return {est:{...s.est,assistance: on?{ensemble:true}:{}}}; } const nx={...cur,[k]:!cur[k]}; delete nx.ensemble; return {est:{...s.est,assistance:nx}}; }); }
   toggleFormAssist(k){ this.patchYear(yr=>{ const cur={...(yr.answers.assistance||{})}; let nx; if(k==="ensemble"){ nx = cur.ensemble?{}:{ensemble:true}; } else { nx={...cur,[k]:!cur[k]}; delete nx.ensemble; const t=this.state.lang==="EN"?EN:FR; const opts=(t.assistanceOpts||[]).filter(o=>o.k!=="ensemble"); const sum=opts.reduce((tot,o)=>tot+(nx[o.k]?o.price:0),0); if(sum>=75){ nx={ensemble:true}; } } yr.answers={...yr.answers,assistance:nx}; }); }
-  downloadEstDocs(e){ if(e&&e.preventDefault) e.preventDefault(); const tt=this.state.lang==="EN"?EN:FR; this.showToast(tt.dlToast.replace("{name}","documents-requis.pdf")); }
+  downloadEstDocs(e){ this.downloadChecklistPdf(e); }
 
   setChildrenCount(v){
     const n=Number(v);
@@ -5655,6 +5796,194 @@ class Component extends DCLogic {
     pdf.setFont("helvetica","normal"); pdf.setFontSize(10); pdf.setTextColor(128,138,152);
     pdf.text(String(entry.file||t.pdfDocNote||""), PW/2, cardY+96, {align:"center", maxWidth:cardW-36});
   }
+  _checklistData(en){
+    if(en) return {
+      title:"Documents to provide for your tax return",
+      kicker:"Client checklist",
+      intro:"This list covers the documents usually required to prepare your tax return. Not every item applies to your situation: send only what concerns you. If in doubt, send the document anyway and your account manager will sort it out.",
+      always:"To include in all cases: last year's tax return, the latest assessment decision, your cantonal tax access code and your bank details (IBAN).",
+      outro:"A question about a document, or a particular situation (marriage, separation, birth, relocation, retirement, arrival in or departure from Switzerland)? Write to us and we will tell you exactly which documents to gather.",
+      file:"fiduvia-documents-to-provide.pdf",
+      sections:[
+        {n:"1. Income", sub:"Salaries, pensions, benefits, secondary income", items:[
+          "Salary certificates from every employer for the tax year",
+          "Statements of OASI / DI pensions and supplementary benefits",
+          "Statements of 2nd pillar (occupational pension) benefits or lump sums",
+          "Statements of 3rd pillar benefits received",
+          "Benefit statements: unemployment, illness, accident, maternity, military service",
+          "Social assistance or study grant statements",
+          "Self-employment: annual accounts, balance sheet and income statement",
+          "Secondary income: mandates, caretaking, teaching, occasional activities",
+          "Directors' fees and allowances for public office",
+          "Bank tax statement of securities income, interest and dividends",
+          "Alimony received: court decision or agreement and payment records",
+          "Rental income from let property",
+          "Lottery, gambling and competition winnings",
+          "Foreign-source income and related statements"]},
+        {n:"2. Assets and debts", sub:"Position as at 31 December of the tax year", items:[
+          "Statements for all bank and postal accounts: balance and interest as at 31.12",
+          "Securities tax statement: shares, bonds, investment funds, precious metals",
+          "Statement of cryptocurrency holdings as at 31.12",
+          "Tax value statements for life insurance and 3rd pillar B policies",
+          "Statement of 3rd pillar A savings as at 31.12",
+          "Holdings in an unlisted company or sole proprietorship",
+          "Vehicles: type, year of purchase and purchase price",
+          "Accounts, securities and assets held abroad",
+          "Debt statements as at 31.12: private loans, credits, leasing, credit cards",
+          "Statement of interest paid during the year",
+          "Inheritances, advances on inheritance, gifts received or shares in an estate"]},
+        {n:"3. Real estate", sub:"Main residence, second homes and investment property", items:[
+          "Official tax valuation of each property, in Switzerland and abroad",
+          "Statement of the imputed rental value provided by the tax authority",
+          "Bank statement of mortgage interest paid and debt as at 31.12",
+          "Statement of rents received and record of vacant units",
+          "Maintenance and repair invoices, if you claim actual costs",
+          "Invoices for energy-efficiency works and subsidy decisions",
+          "Annual condominium charge statement and renovation fund payments",
+          "Building insurance premiums and property taxes",
+          "Purchase or sale deed in the event of a transaction during the year",
+          "Property gains tax statement, where applicable"]},
+        {n:"4. Deductions", sub:"Deductible costs, premiums and charges", items:[
+          "Annual statement of health and accident insurance premiums, subsidies included",
+          "Unreimbursed medical, dental and pharmacy costs: invoices and statements",
+          "Disability-related costs and supporting statements",
+          "Statement of 3rd pillar A contributions",
+          "Statement of pension buy-ins or voluntary OASI contributions",
+          "Commuting costs: season tickets, mileage, employer statement",
+          "Cost of meals taken away from home",
+          "Professional training and development costs: invoices",
+          "Union or professional association membership fees",
+          "Third-party childcare costs: statement from the facility or carer",
+          "Alimony paid: court decision or agreement and proof of payment",
+          "Maintenance contributions for adult children in education",
+          "Donations to charitable institutions and political party contributions",
+          "Securities management fees and withholding tax deducted",
+          "Proof of support paid to a dependent person in need"]}
+      ]
+    };
+    return {
+      title:"Documents à fournir pour votre déclaration d'impôt",
+      kicker:"Checklist client",
+      intro:"Cette liste regroupe les documents habituellement nécessaires pour établir votre déclaration. Tous les points ne concernent pas chaque situation : transmettez uniquement ce qui vous correspond. En cas de doute, envoyez le document, votre responsable de dossier fera le tri.",
+      always:"À joindre dans tous les cas : la déclaration d'impôt de l'année précédente, la dernière décision de taxation, votre code d'accès fiscal cantonal, ainsi que vos coordonnées bancaires (IBAN).",
+      outro:"Une question sur un document, ou une situation particulière (mariage, séparation, naissance, déménagement, départ à la retraite, arrivée ou départ de Suisse) ? Écrivez-nous : nous vous indiquerons précisément les pièces à réunir.",
+      file:"fiduvia-documents-a-fournir.pdf",
+      sections:[
+        {n:"1. Revenus", sub:"Salaires, rentes, indemnités, revenus accessoires", items:[
+          "Certificats de salaire de tous les employeurs pour l'année fiscale",
+          "Attestations de rentes AVS / AI et de prestations complémentaires",
+          "Attestations de rentes ou de prestations en capital du 2e pilier (LPP)",
+          "Attestations de prestations du 3e pilier perçues",
+          "Décomptes d'indemnités : chômage, maladie, accident, maternité, service militaire",
+          "Attestation d'aide sociale ou de bourses d'études",
+          "Activité indépendante : comptes annuels, bilan et compte de résultat",
+          "Revenus accessoires : mandats, conciergerie, cours, activités occasionnelles",
+          "Jetons de présence, indemnités de conseil d'administration ou de fonctions publiques",
+          "Relevé fiscal bancaire des revenus de titres, intérêts et dividendes",
+          "Pensions alimentaires reçues : jugement ou convention et relevés des versements",
+          "Loyers encaissés pour un bien immobilier loué",
+          "Gains de loterie, jeux et concours",
+          "Revenus provenant de l'étranger et attestations correspondantes"]},
+        {n:"2. Fortune et dettes", sub:"État au 31 décembre de l'année fiscale", items:[
+          "Attestations de tous les comptes bancaires et postaux : solde et intérêts au 31.12",
+          "Relevé fiscal des titres : actions, obligations, fonds de placement, métaux précieux",
+          "Relevé des avoirs en cryptomonnaies au 31.12",
+          "Attestations de valeur fiscale des assurances-vie et du 3e pilier B",
+          "Attestation de l'avoir du 3e pilier A au 31.12",
+          "Participations dans une société non cotée ou une entreprise personnelle",
+          "Véhicules : type, année d'achat et prix d'acquisition",
+          "Comptes, titres et biens détenus à l'étranger",
+          "Attestations de dettes au 31.12 : prêts privés, crédits, leasing, cartes de crédit",
+          "Décompte des intérêts passifs payés durant l'année",
+          "Successions, avances d'hoirie, donations reçues ou parts dans une hoirie"]},
+        {n:"3. Immeubles", sub:"Résidence principale, secondaire et biens de rendement", items:[
+          "Estimation fiscale officielle de chaque bien, en Suisse comme à l'étranger",
+          "Attestation de la valeur locative communiquée par l'autorité fiscale",
+          "Attestation bancaire des intérêts hypothécaires payés et de la dette au 31.12",
+          "Décompte des loyers encaissés et état des locaux vacants",
+          "Factures d'entretien et de réparation, si vous optez pour les frais effectifs",
+          "Factures de travaux d'assainissement énergétique et décisions de subventions",
+          "Décompte annuel de charges de PPE et versements au fonds de rénovation",
+          "Primes d'assurance bâtiment et taxes immobilières",
+          "Acte d'achat ou de vente en cas de transaction durant l'année",
+          "Décompte de l'impôt sur les gains immobiliers, le cas échéant"]},
+        {n:"4. Déductions", sub:"Frais, primes et charges déductibles", items:[
+          "Attestation annuelle des primes d'assurance maladie et accident, subsides inclus",
+          "Frais médicaux, dentaires et pharmaceutiques non remboursés : factures et décomptes",
+          "Frais liés à un handicap et attestations correspondantes",
+          "Attestation de cotisations au 3e pilier A",
+          "Attestation de rachats LPP ou de cotisations AVS facultatives",
+          "Frais de transport domicile-travail : abonnements, kilométrage, attestation employeur",
+          "Frais de repas pris hors du domicile",
+          "Frais de formation et de perfectionnement professionnel : factures",
+          "Cotisations syndicales ou à une association professionnelle",
+          "Frais de garde des enfants par un tiers : attestation de la structure ou de la personne",
+          "Pensions alimentaires versées : jugement ou convention et preuves de paiement",
+          "Contributions d'entretien pour enfants majeurs en formation",
+          "Dons à des institutions d'utilité publique et cotisations à un parti politique",
+          "Frais de gestion de titres et impôt anticipé retenu",
+          "Justificatifs de soutien à une personne nécessiteuse à charge"]}
+      ]
+    };
+  }
+  downloadChecklistPdf(e){
+    if(e&&e.preventDefault) e.preventDefault();
+    const en=this.state.lang==="EN";
+    if(!this._pdfLibsReady()){ this.showToast(en?"PDF generator is loading, please try again.":"Le générateur PDF se charge, merci de réessayer."); return; }
+    const d=this._checklistData(en);
+    const pdf=this._pdfNew();
+    const PW=210, PH=297, M=18, CW=PW-2*M;
+    let y=0;
+    const chrome=()=>{
+      pdf.setFillColor(27,110,126); pdf.rect(0,0,PW,4,"F");
+      pdf.setFont("helvetica","bold"); pdf.setFontSize(8.5); pdf.setTextColor(27,110,126);
+      pdf.text("FIDUVIA", M, 16);
+      pdf.setFont("helvetica","normal"); pdf.setFontSize(8); pdf.setTextColor(150,146,136);
+      pdf.text(String(d.kicker).toUpperCase(), PW-M, 16, {align:"right"});
+      pdf.setDrawColor(227,224,216); pdf.setLineWidth(0.3); pdf.line(M,20,PW-M,20);
+      pdf.setFont("helvetica","normal"); pdf.setFontSize(7.5); pdf.setTextColor(168,164,152);
+      pdf.text(d.title, M, PH-12, {maxWidth:CW-20});
+      pdf.text(String(pdf.getNumberOfPages()), PW-M, PH-12, {align:"right"});
+      return 30;
+    };
+    y=chrome();
+    pdf.setFont("helvetica","bold"); pdf.setFontSize(22); pdf.setTextColor(15,42,63);
+    const tl=pdf.splitTextToSize(d.title, CW-10);
+    pdf.text(tl, M, y+4); y+=4+tl.length*9;
+    pdf.setFillColor(196,162,101); pdf.rect(M, y-2, 20, 1.4, "F"); y+=8;
+    pdf.setFont("helvetica","normal"); pdf.setFontSize(9.5); pdf.setTextColor(44,58,66);
+    const il=pdf.splitTextToSize(d.intro, CW);
+    pdf.text(il, M, y); y+=il.length*4.8+7;
+    const al=pdf.splitTextToSize(d.always, CW-16);
+    const ah=al.length*4.8+12;
+    pdf.setFillColor(244,240,231); pdf.roundedRect(M, y, CW, ah, 3, 3, "F");
+    pdf.setFont("helvetica","normal"); pdf.setFontSize(9.5); pdf.setTextColor(44,58,66);
+    pdf.text(al, M+8, y+8); y+=ah+12;
+    const ensure=(h)=>{ if(y+h>PH-22){ pdf.addPage(); y=chrome(); } };
+    d.sections.forEach(sec=>{
+      ensure(34);
+      pdf.setDrawColor(11,32,48); pdf.setLineWidth(0.8); pdf.line(M,y,PW-M,y); y+=7;
+      pdf.setFont("helvetica","bold"); pdf.setFontSize(14); pdf.setTextColor(15,42,63);
+      pdf.text(sec.n, M, y); y+=5.5;
+      pdf.setFont("helvetica","normal"); pdf.setFontSize(8); pdf.setTextColor(27,110,126);
+      pdf.text(String(sec.sub).toUpperCase(), M, y); y+=8;
+      sec.items.forEach(it=>{
+        const lines=pdf.splitTextToSize(it, CW-9);
+        ensure(lines.length*4.7+3);
+        pdf.setFillColor(196,162,101); pdf.rect(M+0.5, y-1.8, 1.8, 1.8, "F");
+        pdf.setFont("helvetica","normal"); pdf.setFontSize(9.5); pdf.setTextColor(44,58,66);
+        pdf.text(lines, M+6, y); y+=lines.length*4.7+2.6;
+      });
+      y+=9;
+    });
+    ensure(24);
+    pdf.setDrawColor(227,224,216); pdf.setLineWidth(0.3); pdf.line(M,y,PW-M,y); y+=7;
+    pdf.setFont("helvetica","normal"); pdf.setFontSize(9); pdf.setTextColor(128,124,114);
+    const ol=pdf.splitTextToSize(d.outro, CW);
+    pdf.text(ol, M, y);
+    pdf.save(d.file);
+    this.showToast(en?"Document list PDF downloaded.":"Liste des documents téléchargée (PDF).");
+  }
   _pdfLibsReady(){ return !!(window.jspdf && window.jspdf.jsPDF); }
   _pdfSlug(ctx){ return ctx.clientName.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,"-").toLowerCase()+"-"+ctx.cy; }
   _pdfFileName(ctx, kind){ return (kind==="docs"?"pieces-justificatives-":"formulaire-")+this._pdfSlug(ctx)+".pdf"; }
@@ -5902,6 +6231,48 @@ class Component extends DCLogic {
     ADMIN_ACO.forEach(r=>add("aco_"+r.id,100));
     this.state.acomptes.filter(r=>r.submitted).forEach(r=>add("aco_"+r.id,100));
     return units;
+  }
+  _distribCats(){
+    const t=this.state.lang==="EN"?EN:FR;
+    return [
+      {k:"decl",label:t.navDossiers},
+      {k:"cap",label:t.navCapitalAdmin},
+      {k:"simu",label:t.navSimuAdmin},
+      {k:"aco",label:t.navAcoAdmin}
+    ];
+  }
+  _freeUnitsByCat(){
+    const free=this.collectReservableUnits().filter(u=>!this.state.reservations[u.key]);
+    const cats={decl:[],cap:[],simu:[],aco:[]};
+    free.forEach(u=>{ const k=String(u.key);
+      if(k.indexOf("cap_")===0) cats.cap.push(u);
+      else if(k.indexOf("simu_")===0) cats.simu.push(u);
+      else if(k.indexOf("aco_")===0) cats.aco.push(u);
+      else cats.decl.push(u); });
+    return cats;
+  }
+  openDistrib(){ this.setState({distribOpen:true, distribStep:1, distribSel:[], distribCounts:{}}); }
+  closeDistrib(){ this.setState({distribOpen:false}); }
+  toggleDistribAdmin(email){ this.setState(s=>{ const sel=(s.distribSel||[]).slice(); const i=sel.indexOf(email); if(i<0) sel.push(email); else sel.splice(i,1); return {distribSel:sel}; }); }
+  distribNext(){ if(!(this.state.distribSel||[]).length) return; this.setState({distribStep:2}); }
+  distribBack(){ this.setState({distribStep:1}); }
+  setDistribCount(email,cat,v){ this.setState(s=>{ const c={...(s.distribCounts||{})}; c[email]={...(c[email]||{}),[cat]:Number(v)||0}; return {distribCounts:c}; }); }
+  applyDistrib(){
+    const tt=this.state.lang==="EN"?EN:FR;
+    const cats=this._freeUnitsByCat();
+    const res={...this.state.reservations};
+    let n=0;
+    (this.state.distribSel||[]).forEach(email=>{
+      const adm=(this.state.admins||[]).find(a=>a.email===email); if(!adm) return;
+      const counts=(this.state.distribCounts||{})[email]||{};
+      Object.keys(cats).forEach(c=>{
+        const want=Number(counts[c]||0);
+        for(let i=0;i<want;i++){ const u=cats[c].shift(); if(!u) break; res[u.key]=adm.first; n++; }
+      });
+    });
+    if(!n){ this.showToast(tt.distribNothing); return; }
+    this.setState({reservations:res, distribOpen:false});
+    this.showToast(tt.distribDoneToast.replace("{n}",String(n)));
   }
   autoDistribute(){
     const tt=this.state.lang==="EN"?EN:FR;
@@ -6988,7 +7359,7 @@ class Component extends DCLogic {
       {k:"normale",glyph:ICONS.check,label:t.declTypeBasique}
     ].filter(o=>o.k!==curSituation).map(o=>({glyph:o.glyph,label:o.label,onClick:()=>this.declPopChoose(o.k)}));
     const cHelpDocs=[
-      {label:t.cHelpDoc1,sub:t.cHelpDocSub,onClick:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); this.showToast(t.cHelpDocSoonToast); }},
+      {label:t.cHelpDoc1,sub:t.cHelpDocSub,onClick:(e)=>this.downloadChecklistPdf(e)},
       {label:t.cHelpDoc2,sub:t.cHelpDocSub,onClick:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); this.showToast(t.cHelpDocSoonToast); }}
     ];
     const epBadge=(st)=>({display:"inline-flex",alignItems:"center",fontFamily:"var(--font-mono)",fontSize:"9.5px",letterSpacing:".06em",textTransform:"uppercase",fontWeight:700,padding:"4px 10px",borderRadius:"99px",background:st==="paid"?"#E6F6EE":st==="refused"?"#FBE7E4":"#FBEFD9",color:st==="paid"?"#1F8A5B":st==="refused"?"#A2443A":"#B26A00"});
@@ -7054,18 +7425,20 @@ class Component extends DCLogic {
 
     // ===== NOUVEL ESPACE ADMIN — shell maquette =====
     const aPage=this.state.adminPage;
-    const aIsDash=aPage==="home";
+    const aIsDash=aPage==="home"&&!this.state.isSuper;
     const aIsDossHub=aPage==="dosshub";
-    const aIsStats=aPage==="stats";
+    const aIsStats=aPage==="stats"||(aPage==="home"&&this.state.isSuper);
     const aIsPeriodes=aPage==="periodes";
     const aIsUsers=aPage==="users";
     const aInDossiers=["dosshub","dossiers","departure","arrivee","capital","deces","simu","aco","rel","taxoffice"].includes(aPage);
-    const aNavDefs=[
-      {label:t.aNavAccueil,active:aIsDash,onClick:()=>this.setAdminPage("home")},
+    const aNavDefs=this.state.isSuper?[
       {label:t.aNavDossiers,active:aInDossiers,onClick:()=>this.setAdminPage("dosshub")},
-      {label:t.aNavStats,active:aIsStats,onClick:()=>this.setAdminPage("stats")},
-      {label:t.aNavPeriodes,active:aIsPeriodes,onClick:()=>this.setAdminPage("periodes")},
+      {label:t.aNavStatsGlobal,active:aIsStats,onClick:()=>this.setAdminPage("stats")},
+      {label:t.aNavPeriodesFisc,active:aIsPeriodes,onClick:()=>this.setAdminPage("periodes")},
       {label:t.aNavUsers,active:aIsUsers,onClick:()=>this.setAdminPage("users")}
+    ]:[
+      {label:t.aNavStatsPerso,active:aIsDash,onClick:()=>this.setAdminPage("home")},
+      {label:t.aNavDossiers,active:aInDossiers,onClick:()=>this.setAdminPage("dosshub")}
     ];
     const aNavItems=aNavDefs.map(n=>({
       label:n.label, onClick:n.onClick,
@@ -7074,7 +7447,7 @@ class Component extends DCLogic {
       dotStyle:{width:"7px",height:"7px",borderRadius:"50%",flexShrink:0,background:n.active?"var(--teal-400)":"var(--petrol-600)"},
       labelStyle:{fontFamily:"var(--font-text)",fontSize:"14.5px",fontWeight:n.active?600:500,color:n.active?"#fff":"var(--neutral-400)"}
     }));
-    const aPageTitle=aIsDash?t.aNavAccueil:aIsStats?t.navStats:aIsPeriodes?t.navPeriodes:aIsUsers?t.usersTitle:t.aDossiersTitle;
+    const aPageTitle=aIsDash?t.aNavStatsPerso:aIsStats?(this.state.isSuper?t.aNavStatsGlobal:t.navStats):aIsPeriodes?t.aNavPeriodesFisc:aIsUsers?t.usersTitle:t.aDossiersTitle;
     const aPalette=["var(--brand)","var(--petrol-800)","var(--green-600)","var(--teal-500)","var(--amber-600)","var(--petrol-600)"];
 
     // ---- shared "Période 20xx" picker (mockup pill) ----
@@ -7156,6 +7529,80 @@ class Component extends DCLogic {
       label:p.label,glyph:p.glyph,desc:p.desc,count:String(p.count),onClick:p.onClick,
       iconStyle:{width:"38px",height:"38px",flexShrink:0,borderRadius:"10px",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",background:aPalette[i%aPalette.length]}
     }));
+    // ---- répartition par administrateur (super admin) ----
+    const _catOf=(k)=>{ k=String(k); return k.indexOf("cap_")===0?"cap":k.indexOf("simu_")===0?"simu":k.indexOf("aco_")===0?"aco":"decl"; };
+    const _catLabels={decl:t.navDossiers,cap:t.navCapitalAdmin,simu:t.navSimuAdmin,aco:t.navAcoAdmin};
+    const _resv=this.state.reservations||{};
+    const _units=this.collectReservableUnits();
+    const _byAdmin={}; let _freeTot=0; const _freeCats={decl:0,cap:0,simu:0,aco:0};
+    _units.forEach(u=>{
+      const c=_catOf(u.key), owner=_resv[u.key];
+      if(!owner){ _freeTot++; _freeCats[c]++; return; }
+      const e=_byAdmin[owner]=_byAdmin[owner]||{total:0,ca:0,cats:{decl:0,cap:0,simu:0,aco:0}};
+      e.total++; e.cats[c]++; e.ca+=u.price||0;
+    });
+    const _adminCardStyle={border:"1px solid var(--border-subtle)",borderRadius:"var(--radius-md)",padding:"18px",background:"var(--surface-card)",boxShadow:"var(--shadow-xs)",display:"flex",flexDirection:"column",gap:"12px",cursor:"pointer",textAlign:"left",width:"100%",fontFamily:"var(--font-text)",transition:"border-color .18s,box-shadow .18s"};
+    const aStatsByAdmin=(this.state.admins||[]).map(a=>{
+      const e=_byAdmin[a.first]||{total:0,ca:0,cats:{decl:0,cap:0,simu:0,aco:0}};
+      return {
+        name:(a.first+" "+a.last).trim(), initials:((a.first[0]||"?")+(a.last[0]||"")).toUpperCase(),
+        total:String(e.total), totalWord:e.total===1?t.statsAdminTotal1:t.statsAdminTotal, ca:"CHF "+e.ca.toLocaleString("fr-CH"),
+        cardStyle:_adminCardStyle,
+        avatarStyle:{width:"34px",height:"34px",borderRadius:"50%",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",background:"var(--petrol-900)",color:"#fff",fontWeight:700,fontSize:"12.5px"},
+        lines:["decl","cap","simu","aco"].map(k=>({label:_catLabels[k],count:String(e.cats[k])})),
+        onClick:()=>this.setState({statsAdminFocus:a.first})
+      };
+    });
+    const aStatsFree={
+      total:String(_freeTot),
+      lines:["decl","cap","simu","aco"].map(k=>({label:_catLabels[k],count:String(_freeCats[k])}))
+    };
+    const _focus=this.state.statsAdminFocus;
+    const _focusAdmin=(this.state.admins||[]).find(a=>a.first===_focus);
+    let aStatsFocus=null;
+    if(_focusAdmin){
+      const e=_byAdmin[_focus]||{total:0,ca:0,cats:{decl:0,cap:0,simu:0,aco:0}};
+      const mine=allRows.filter(r=>_resv[r.i]===_focus);
+      const done=mine.filter(r=>isDoneSt(r.status)).length;
+      const paid=mine.reduce((s,r)=>paidOf(r)?s+r.price:s,0);
+      const mx=Math.max(1,e.cats.decl,e.cats.cap,e.cats.simu,e.cats.aco);
+      aStatsFocus={
+        name:(_focusAdmin.first+" "+_focusAdmin.last).trim(),
+        kpis:[
+          {label:t.aKpiDossiers,value:String(e.total),sub:t.aKpiDossiersSub,valueStyle:aKpiValStyle},
+          {label:t.aKpiTraites,value:String(done),sub:t.aKpiTraitesSub,valueStyle:aKpiValStyle},
+          {label:t.aKpiCa,value:"CHF "+paid.toLocaleString("fr-CH"),sub:t.aKpiCaSub,valueStyle:{...aKpiValStyle,color:"var(--brand)"}}
+        ],
+        bars:["decl","cap","simu","aco"].map((k,i)=>({label:_catLabels[k],count:String(e.cats[k]),barStyle:{width:(e.cats[k]/mx*100)+"%",height:"100%",background:aPalette[i%aPalette.length],borderRadius:"99px"}}))
+      };
+    }
+
+    // ---- distribution des dossiers (super admin) ----
+    const dCats=this._distribCats(), dFree=this._freeUnitsByCat(), dSel=this.state.distribSel||[], dCounts=this.state.distribCounts||{};
+    const dAdminRows=(this.state.admins||[]).map(a=>{
+      const checked=dSel.indexOf(a.email)>=0;
+      return {
+        email:a.email, name:(a.first+" "+a.last).trim(), initials:((a.first[0]||"?")+(a.last[0]||"")).toUpperCase(),
+        check:checked?"✓":"", onToggle:()=>this.toggleDistribAdmin(a.email),
+        rowStyle:{display:"flex",alignItems:"center",gap:"12px",width:"100%",textAlign:"left",padding:"12px 14px",borderRadius:"12px",cursor:"pointer",fontFamily:"var(--font-text)",background:checked?"rgba(27,110,126,.07)":"#fff",border:"1px solid "+(checked?"var(--brand)":"var(--border-subtle)")},
+        boxStyle:{width:"20px",height:"20px",borderRadius:"6px",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:700,color:"#fff",background:checked?"var(--brand)":"transparent",border:"1px solid "+(checked?"var(--brand)":"#CFD5DD")},
+        avatarStyle:{width:"34px",height:"34px",borderRadius:"50%",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",background:"var(--petrol-900)",color:"#fff",fontWeight:700,fontSize:"12.5px"}
+      };
+    });
+    const dSelectStyle={appearance:"none",WebkitAppearance:"none",background:"#fff",border:"1px solid var(--border-default)",borderRadius:"10px",padding:"9px 34px 9px 12px",fontFamily:"var(--font-text)",fontSize:"14px",fontWeight:600,color:"var(--text-strong)",cursor:"pointer",minWidth:"92px"};
+    const dBlocks=dSel.map(em=>{
+      const a=(this.state.admins||[]).find(x=>x.email===em)||{first:"",last:""};
+      return {
+        name:(a.first+" "+a.last).trim(), email:em,
+        cats:dCats.map(c=>{
+          const max=(dFree[c.k]||[]).length, opts=[];
+          for(let i=0;i<=max;i++) opts.push({v:String(i),l:String(i)});
+          return {label:c.label, avail:String(max)+" "+(max===1?t.distribAvail1:t.distribAvail), options:opts,
+            value:String((dCounts[em]||{})[c.k]||0),
+            onChange:(e)=>this.setDistribCount(em,c.k,e.target.value)};
+        })
+      };
+    });
     const aSidebarStyle={width:"244px",flexShrink:0,background:"var(--petrol-900)",color:"var(--text-on-dark)",display:"flex",flexDirection:"column",padding:"22px 16px",position:"sticky",top:0,height:"100vh",alignSelf:"flex-start",overflowY:"auto"};
 
     return {
@@ -7257,7 +7704,7 @@ class Component extends DCLogic {
       // admin
       adminCur,
       currentAdminName, adminInitial, accountMenuOpen:this.state.accountMenuOpen, toggleAccountMenu:()=>this.toggleAccountMenu(), accountOpts,
-      adminIsHome:this.state.adminPage==="home", adminIsStats:this.state.adminPage==="stats", adminIsPeriodes:this.state.adminPage==="periodes", adminIsUsers:this.state.adminPage==="users",
+      adminIsHome:aIsDash, adminIsStats:aIsStats, adminIsPeriodes:this.state.adminPage==="periodes", adminIsUsers:this.state.adminPage==="users",
       adminIsCapitalList:this.state.adminPage==="capital"&&this.state.adminCapitalKey==null,
       adminIsCapitalDetail:this.state.adminPage==="capital"&&this.state.adminCapitalKey!=null,
       adminIsDeparture:this.state.adminPage==="departure",
@@ -7483,6 +7930,14 @@ class Component extends DCLogic {
       reqComment:this.state.reqComment, setReqComment:(e)=>this.setReqComment(e),
       reserveDossier:()=>this.reserveDossier(acIdx), releaseDossier:()=>this.releaseDossier(acIdx),
       autoDistribute:()=>this.autoDistribute(),
+      openDistrib:()=>this.openDistrib(), closeDistrib:()=>this.closeDistrib(),
+      distribNext:()=>this.distribNext(), distribBack:()=>this.distribBack(), applyDistrib:()=>this.applyDistrib(),
+      distribOpen:!!this.state.distribOpen,
+      distribStep1:!!this.state.distribOpen&&this.state.distribStep!==2,
+      distribStep2:!!this.state.distribOpen&&this.state.distribStep===2,
+      distribAdmins:dAdminRows, distribBlocks:dBlocks, distribSelectStyle:dSelectStyle,
+      aStatsByAdmin, aStatsFree, aStatsFocus, aStatsFocusOpen:!!aStatsFocus,
+      closeStatsFocus:()=>this.setState({statsAdminFocus:null}),
       homeCounts, homeBadge, moduleResFilterOpts, modFilterSelectStyle,
       reservedFilterVal:rfilt, setReservedFilterSel:(e)=>this.setReservedFilterVal(e.target.value),
       markPiecesReceived:()=>this.markPiecesReceived(),
@@ -7498,4 +7953,4 @@ class Component extends DCLogic {
 
 </script>
 </body>
-</html> 
+</html>

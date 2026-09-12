@@ -769,11 +769,20 @@ export default async function HomePage({
           </h2>
         </div>
 
-        <div className="mt-[36px] flex flex-wrap gap-[20px]">
+        {/* Grid with subgrid rows, not a flex row. The three titles wrap to
+            different line counts, so a flex row starts each column's body text
+            at a different height. Sharing rows pins the number, the title and
+            the body across all three. Browsers without subgrid fall back to the
+            old stacked look rather than breaking. */}
+        <div
+          className="mt-[36px] grid gap-x-[20px] gap-y-[12px]"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
+        >
           {t.steps.items.map((step) => (
             <div
               key={step.number}
-              className="flex min-w-[220px] flex-1 flex-col gap-[12px]"
+              className="grid"
+              style={{ gridRow: "span 3", gridTemplateRows: "subgrid" }}
             >
               <div
                 className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[var(--petrol-800)] text-[20px] text-white"

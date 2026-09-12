@@ -8,6 +8,8 @@ import {
   reserveDossier,
   releaseDossier,
   autoDistributeDossiers,
+  countFreeDossiersByService,
+  distributeDossiers,
 } from "../../src/lib/dossiers";
 import { getAdminHomeStats } from "../../src/lib/adminStats";
 import { promoteClient, deactivateClient } from "../../src/lib/adminUsers";
@@ -195,5 +197,156 @@ describe("promoteClient / deactivateClient", () => {
     // Only clients: deactivating a non-client is a no-op.
     const admin = await makeUser("admin");
     expect(await deactivateClient(admin.id)).toBeNull();
+  });
+});
+
+describe("countFreeDossiersByService / distributeDossiers", () => {
+  it("counts only the unreserved dossiers, split by prestation", async () => {
+    const year = uniqueYear();
+    const client = await makeUser();
+    const admin = await makeUser("admin");
+
+    const a = await createDossier({
+      clientId: client.id,
+      taxYear: year,
+      serviceType: "capital",
+    });
+    await createDossier({
+      clientId: client.id,
+      taxYear: year,
+      serviceType: "simulation",
+    });
+    await createDossier({ clientId: client.id, taxYear: year });
+
+    const before = await countFreeDossiersByService(year);
+    expect(before.capital).toBe(1);
+    expect(before.simulation).toBe(1);
+    expect(before.declaration).toBe(1);
+
+    // Reserving one takes it out of the free pool, and only that one.
+    await reserveDossier(a.id, { id: admin.id, role: "admin" });
+
+    const after = await countFreeDossiersByService(year);
+    expect(after.capital).toBe(0);
+    expect(after.simulation).toBe(1);
+    expect(after.declaration).toBe(1);
+  });
+
+  it("hands each admin the number they were allocated, per prestation", async () => {
+    const year = uniqueYear();
+    const first = await makeUser("admin");
+    const second = await makeUser("admin");
+
+    // One client per dossier: `(client_id, tax_year, service_type)` is unique,
+    // so a single client cannot hold four capital dossiers in one year.
+    for (let i = 0; i < 4; i++) {
+      const client = await makeUser();
+      await createDossier({
+        clientId: client.id,
+        taxYear: year,
+        serviceType: "capital",
+      });
+    }
+
+    const { assigned } = await distributeDossiers(year, [
+      { adminId: first.id, serviceType: "capital", count: 3 },
+      { adminId: second.id, serviceType: "capital", count: 1 },
+    ]);
+    expect(assigned).toBe(4);
+
+    const rows = await db
+      .select()
+      .from(dossiers)
+      .where(eq(dossiers.taxYear, year));
+    expect(rows.filter((r) => r.reservedBy === first.id)).toHaveLength(3);
+    expect(rows.filter((r) => r.reservedBy === second.id)).toHaveLength(1);
+    expect(rows.every((r) => r.reservedAt !== null)).toBe(true);
+  });
+
+  it("assigns what exists when asked for more, and never crosses prestations", async () => {
+    const year = uniqueYear();
+    const client = await makeUser();
+    const admin = await makeUser("admin");
+
+    await createDossier({
+      clientId: client.id,
+      taxYear: year,
+      serviceType: "capital",
+    });
+    const other = await createDossier({
+      clientId: client.id,
+      taxYear: year,
+      serviceType: "simulation",
+    });
+
+    // Ten capital dossiers requested, one exists — the simulation dossier is
+    // not a substitute.
+    const { assigned } = await distributeDossiers(year, [
+      { adminId: admin.id, serviceType: "capital", count: 10 },
+    ]);
+    expect(assigned).toBe(1);
+
+    const [untouched] = await db
+      .select()
+      .from(dossiers)
+      .where(eq(dossiers.id, other.id));
+    expect(untouched.reservedBy).toBeNull();
+  });
+
+  it("leaves an already reserved dossier with its holder", async () => {
+    const year = uniqueYear();
+    const client = await makeUser();
+    const holder = await makeUser("admin");
+    const other = await makeUser("admin");
+
+    const taken = await createDossier({
+      clientId: client.id,
+      taxYear: year,
+      serviceType: "capital",
+    });
+    await reserveDossier(taken.id, { id: holder.id, role: "admin" });
+
+    const { assigned } = await distributeDossiers(year, [
+      { adminId: other.id, serviceType: "capital", count: 5 },
+    ]);
+    expect(assigned).toBe(0);
+
+    const [row] = await db
+      .select()
+      .from(dossiers)
+      .where(eq(dossiers.id, taken.id));
+    expect(row.reservedBy).toBe(holder.id);
+  });
+
+  it("refuses to park a dossier on an account that is not an admin", async () => {
+    const year = uniqueYear();
+    const client = await makeUser();
+    const notAnAdmin = await makeUser();
+
+    await createDossier({
+      clientId: client.id,
+      taxYear: year,
+      serviceType: "capital",
+    });
+
+    const { assigned } = await distributeDossiers(year, [
+      { adminId: notAnAdmin.id, serviceType: "capital", count: 1 },
+    ]);
+    expect(assigned).toBe(0);
+
+    const free = await countFreeDossiersByService(year);
+    expect(free.capital).toBe(1);
+  });
+
+  it("does nothing when every allocation is zero", async () => {
+    const year = uniqueYear();
+    const client = await makeUser();
+    const admin = await makeUser("admin");
+    await createDossier({ clientId: client.id, taxYear: year });
+
+    const { assigned } = await distributeDossiers(year, [
+      { adminId: admin.id, serviceType: "declaration", count: 0 },
+    ]);
+    expect(assigned).toBe(0);
   });
 });

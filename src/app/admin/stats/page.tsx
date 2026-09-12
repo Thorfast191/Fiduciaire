@@ -1,5 +1,9 @@
 import { getAdminDashboardStats, getPerAdminStats } from "@/lib/adminStats";
-import { countDossiersByService, listTaxYears } from "@/lib/dossiers";
+import {
+  countDossiersByService,
+  countFreeDossiersByService,
+  listTaxYears,
+} from "@/lib/dossiers";
 import { StatCard } from "@/components/ui/StatCard";
 import { STATUS_ORDER } from "@/lib/dossierStatus";
 import { PeriodPicker } from "@/components/shell/PeriodPicker";
@@ -58,10 +62,11 @@ export default async function AdminStatsPage({
   const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
 
-  const [stats, counts, perAdmin] = await Promise.all([
+  const [stats, counts, perAdmin, free] = await Promise.all([
     getAdminDashboardStats(selected),
     countDossiersByService(selected),
     getPerAdminStats(selected),
+    countFreeDossiersByService(selected),
   ]);
 
   const serviceLabels = Object.fromEntries(
@@ -177,7 +182,7 @@ export default async function AdminStatsPage({
         </div>
       </section>
 
-      <AdminStatCards admins={perAdmin} labels={serviceLabels} />
+      <AdminStatCards admins={perAdmin} labels={serviceLabels} free={free} />
     </div>
   );
 }

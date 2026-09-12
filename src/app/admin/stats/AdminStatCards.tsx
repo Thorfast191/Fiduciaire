@@ -28,10 +28,13 @@ const CARD_SERVICES = [
 export default function AdminStatCards({
   admins,
   labels,
+  free,
 }: {
   admins: AdminCard[];
   /** Service-type → display label, for every prestation. */
   labels: Record<string, string>;
+  /** Unreserved dossiers of the period, per prestation. */
+  free: Record<string, number>;
 }) {
   const { locale, t } = useI18n();
   const [open, setOpen] = useState<AdminCard | null>(null);
@@ -43,6 +46,12 @@ export default function AdminStatCards({
       }),
     [locale],
   );
+
+  /** "1 dossier" but "3 dossiers" — French and English agree on the rule here. */
+  const files = (n: number) =>
+    n === 1 ? t.admin.stats.perAdminFile : t.admin.stats.perAdminFiles;
+
+  const freeTotal = Object.values(free).reduce((a, n) => a + n, 0);
 
   return (
     <section className="mt-4">
@@ -72,7 +81,7 @@ export default function AdminStatCards({
                 {a.total}
               </span>
               <span className="text-[12.5px] text-muted">
-                {t.admin.stats.perAdminFiles} · CHF {money.format(a.revenueChf)}
+                {files(a.total)} · CHF {money.format(a.revenueChf)}
               </span>
             </span>
 
@@ -93,6 +102,35 @@ export default function AdminStatCards({
             </span>
           </button>
         ))}
+
+        {/* The pool nobody holds yet, alongside the agents — it is the number
+            the super admin distributes from, so it belongs in the same row. */}
+        <div className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-dashed border-line-strong bg-sunken p-[18px]">
+          <span className="disp text-[17px] font-bold text-strong">
+            {t.admin.stats.perAdminFreeLabel}
+          </span>
+
+          <span className="flex items-baseline gap-1.5">
+            <span className="fx-figure text-[26px] font-extrabold text-brand">
+              {freeTotal}
+            </span>
+            <span className="text-[12.5px] text-muted">
+              {t.admin.stats.perAdminFreeSub}
+            </span>
+          </span>
+
+          <span className="flex flex-col gap-1">
+            {CARD_SERVICES.map((svc) => (
+              <span
+                key={svc}
+                className="flex justify-between gap-2.5 text-[13px] text-body"
+              >
+                <span>{labels[svc]}</span>
+                <span className="font-bold">{free[svc] ?? 0}</span>
+              </span>
+            ))}
+          </span>
+        </div>
       </div>
 
       {open ? (
@@ -115,7 +153,7 @@ export default function AdminStatCards({
                   {open.name}
                 </h2>
                 <p className="text-[13px] text-muted">
-                  {open.total} {t.admin.stats.perAdminFiles} · CHF{" "}
+                  {open.total} {files(open.total)} · CHF{" "}
                   {money.format(open.revenueChf)}
                 </p>
               </div>
