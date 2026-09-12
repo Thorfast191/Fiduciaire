@@ -601,6 +601,10 @@ export const en: Messages = {
       cancel: "Cancel",
       save: "Save",
       saving: "Saving...",
+      deleteAccount: "Delete my account",
+      deleteConfirm:
+        "Delete your account? You will lose access immediately. This cannot be undone.",
+      deleting: "Deleting...",
     },
 
     prestation: {
@@ -1126,6 +1130,7 @@ export const en: Messages = {
       reviews: "Return reviews",
       reviewsDesc: "Return reviews submitted by clients.",
       distribute: "Distribute files",
+      distributeAuto: "Automatic distribution",
       distributing: "Distributing…",
       distributed: "{n} file(s) shared out across administrators.",
       distributeNone: "No files to distribute.",
@@ -1285,7 +1290,9 @@ export const en: Messages = {
       dossiers: "Files",
       personalStats: "Personal statistics",
       stats: "Global statistics",
+      statsShort: "Statistics",
       periods: "Tax periods",
+      periodsShort: "Periods",
       users: "Users",
     },
     dossiers: {

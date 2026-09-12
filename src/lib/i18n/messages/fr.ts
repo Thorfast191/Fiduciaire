@@ -602,6 +602,10 @@ export const fr = {
       cancel: "Annuler",
       save: "Enregistrer",
       saving: "Enregistrement...",
+      deleteAccount: "Supprimer mon compte",
+      deleteConfirm:
+        "Supprimer votre compte ? Vous perdrez l'accès immédiatement. Cette action est définitive.",
+      deleting: "Suppression...",
     },
 
     prestation: {
@@ -1137,6 +1141,7 @@ export const fr = {
       // The button opens the two-step wizard, so it is named for that. The
       // one-click even split is gone from the reference.
       distribute: "Distribuer les dossiers",
+      distributeAuto: "Distribution automatique",
       distributing: "Distribution…",
       distributed: "{n} dossier(s) répartis entre les administrateurs.",
       distributeNone: "Aucun dossier à répartir.",
@@ -1297,7 +1302,9 @@ export const fr = {
       dossiers: "Dossiers",
       personalStats: "Statistique personnelle",
       stats: "Statistique globale",
+      statsShort: "Statistiques",
       periods: "Périodes fiscales",
+      periodsShort: "Périodes",
       users: "Utilisateurs",
     },
     dossiers: {

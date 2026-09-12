@@ -22,6 +22,8 @@ const ERRORS = {
     weakPassword:
       "Le mot de passe doit contenir au moins 10 caractères, un chiffre et un caractère spécial.",
     emailExists: "Un compte existe déjà avec cette adresse e-mail.",
+    lastSuperAdmin:
+      "Impossible de supprimer le dernier super administrateur.",
     invalidTransition: "Transition de statut non autorisée.",
     paymentRequired:
       "Le paiement est requis pour transmettre cette déclaration.",
@@ -44,6 +46,7 @@ const ERRORS = {
     weakPassword:
       "The password must be at least 10 characters and contain a digit and a special character.",
     emailExists: "An account already exists with this email address.",
+    lastSuperAdmin: "The last super administrator cannot be deleted.",
     invalidTransition: "That status change is not allowed.",
     paymentRequired: "Payment is required to submit this tax return.",
     dossierNotFound: "File not found.",

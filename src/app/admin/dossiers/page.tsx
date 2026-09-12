@@ -124,6 +124,8 @@ export default async function AdminDossiersHubPage({
 
   // Only the super admin distributes, so only they need the roster and the
   // free pool the wizard hands out from.
+  // Only the wizard needs the roster and the free pool; the one-click split
+  // asks the server to work both out.
   const [counts, adminRows, free] = await Promise.all([
     countDossiersByService(selected, scope),
     isSuperAdmin ? listAdminAccounts() : Promise.resolve([]),
@@ -156,14 +158,13 @@ export default async function AdminDossiersHubPage({
 
         <div className="flex items-center gap-2.5">
           <PeriodPicker years={options} current={selected} />
-          {isSuperAdmin ? (
-            <DistributeButton
-              periode={selected}
-              admins={distributeAdmins}
-              free={free}
-              labels={serviceLabels}
-            />
-          ) : null}
+          <DistributeButton
+            periode={selected}
+            admins={distributeAdmins}
+            free={free}
+            labels={serviceLabels}
+            mode={isSuperAdmin ? "wizard" : "auto"}
+          />
         </div>
       </div>
 

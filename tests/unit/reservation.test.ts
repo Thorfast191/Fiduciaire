@@ -239,13 +239,15 @@ describe("countFreeDossiersByService / distributeDossiers", () => {
 
     // One client per dossier: `(client_id, tax_year, service_type)` is unique,
     // so a single client cannot hold four capital dossiers in one year.
+    const created: string[] = [];
     for (let i = 0; i < 4; i++) {
       const client = await makeUser();
-      await createDossier({
+      const d = await createDossier({
         clientId: client.id,
         taxYear: year,
         serviceType: "capital",
       });
+      created.push(d.id);
     }
 
     const { assigned } = await distributeDossiers(year, [
@@ -254,10 +256,14 @@ describe("countFreeDossiersByService / distributeDossiers", () => {
     ]);
     expect(assigned).toBe(4);
 
-    const rows = await db
+    // Only the four this test made: `uniqueYear()` can collide with another
+    // file's year on the shared database, and their rows are not ours to judge.
+    const all = await db
       .select()
       .from(dossiers)
       .where(eq(dossiers.taxYear, year));
+    const rows = all.filter((r) => created.includes(r.id));
+    expect(rows).toHaveLength(4);
     expect(rows.filter((r) => r.reservedBy === first.id)).toHaveLength(3);
     expect(rows.filter((r) => r.reservedBy === second.id)).toHaveLength(1);
     expect(rows.every((r) => r.reservedAt !== null)).toBe(true);

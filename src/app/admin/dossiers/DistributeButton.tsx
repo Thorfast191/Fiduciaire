@@ -36,6 +36,7 @@ export default function DistributeButton({
   admins,
   free,
   labels,
+  mode,
 }: {
   periode: number;
   admins: DistributeAdmin[];
@@ -43,6 +44,12 @@ export default function DistributeButton({
   free: Record<string, number>;
   /** Service-type → display label. */
   labels: Record<string, string>;
+  /**
+   * "wizard" is the super admin's two-step allocation. "auto" is the ordinary
+   * admin's single click, which spreads the free pool evenly — the reference
+   * shows that button for a case worker and the wizard only for a super admin.
+   */
+  mode: "wizard" | "auto";
 }) {
   const t = useT();
   const h = t.admin.hub;
@@ -56,6 +63,37 @@ export default function DistributeButton({
   );
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null);
+
+  /** The one-click even split: no allocations, so the server spreads them. */
+  async function autoDistribute() {
+    setBusy(true);
+    setNote(null);
+    try {
+      const res = await fetch("/api/dossiers/distribute", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ taxYear: periode }),
+      });
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) {
+        setNote({ ok: false, text: h.distributeError });
+        return;
+      }
+      const assigned = Number(payload?.assigned ?? 0);
+      setNote({
+        ok: assigned > 0,
+        text:
+          assigned === 0
+            ? h.distributeNone
+            : h.distributed.replace("{n}", String(assigned)),
+      });
+      router.refresh();
+    } catch {
+      setNote({ ok: false, text: h.distributeError });
+    } finally {
+      setBusy(false);
+    }
+  }
 
   function start() {
     setStep(1);
@@ -143,10 +181,15 @@ export default function DistributeButton({
     <div className="relative">
       <button
         type="button"
-        onClick={start}
-        className="inline-flex items-center gap-2 rounded-[11px] bg-petrol-800 px-[18px] py-[11px] text-[14px] font-semibold text-white transition hover:bg-petrol-900 focus:outline-none focus:ring-4 focus:ring-brand/15"
+        onClick={mode === "auto" ? autoDistribute : start}
+        disabled={mode === "auto" && busy}
+        className="inline-flex items-center gap-2 rounded-[11px] bg-petrol-800 px-[18px] py-[11px] text-[14px] font-semibold text-white transition hover:bg-petrol-900 focus:outline-none focus:ring-4 focus:ring-brand/15 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {h.distribute}
+        {mode === "auto"
+          ? busy
+            ? h.distributing
+            : h.distributeAuto
+          : h.distribute}
       </button>
 
       {note ? (
@@ -162,7 +205,7 @@ export default function DistributeButton({
         </span>
       ) : null}
 
-      {open ? (
+      {open && mode === "wizard" ? (
         <div
           className="fixed inset-0 z-[98] flex items-center justify-center bg-[rgba(13,21,38,0.55)] p-6"
           role="dialog"

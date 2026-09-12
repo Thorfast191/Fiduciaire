@@ -165,7 +165,8 @@ test("admin login reaches the admin dashboard, not the client portal", async ({ 
   const code = await getLatestOtpForEmail(email);
   await page.getByPlaceholder("000000").fill(code);
   await page.getByRole("button", { name: "Vérifier le code" }).click();
-  await page.waitForURL("/admin");
+  // A super admin has no personal dashboard, so /admin sends them to Dossiers.
+  await page.waitForURL(/\/admin(\/dossiers)?$/);
 
   await page.goto("/portal");
   await expect(page).not.toHaveURL("/portal");

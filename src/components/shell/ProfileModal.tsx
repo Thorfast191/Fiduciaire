@@ -40,6 +40,29 @@ export function ProfileModal({
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function deleteAccount() {
+    setDeleting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/account", { method: "DELETE" });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.ok) {
+        setError(body?.error ?? t.common.genericError);
+        setConfirmingDelete(false);
+        return;
+      }
+      // The session is already revoked server-side; a full reload lands
+      // on the public site rather than a dead authenticated screen.
+      window.location.href = "/";
+    } catch {
+      setError(t.common.genericError);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   useEffect(() => {
     firstRef.current?.focus();
@@ -210,6 +233,43 @@ export function ProfileModal({
             </button>
           </div>
         </form>
+
+        {/* "Supprimer mon compte", below a divider, as the reference has it.
+            Two clicks: the first arms it, the second carries it out. */}
+        <div className="mt-[22px] border-t border-line pt-[18px] text-center">
+          {confirmingDelete ? (
+            <div className="flex flex-col gap-3">
+              <p className="text-[13px] leading-5 text-muted">
+                {p.deleteConfirm}
+              </p>
+              <div className="flex justify-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(false)}
+                  className="rounded-[var(--radius-md)] border border-line-default px-4 py-2.5 text-[14px] font-semibold text-body transition-colors hover:border-teal-300"
+                >
+                  {p.cancel}
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteAccount}
+                  disabled={deleting}
+                  className="rounded-[var(--radius-md)] bg-[#C0453B] px-4 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#A2443A] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {deleting ? p.deleting : p.deleteAccount}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              className="p-1.5 text-[14px] font-semibold text-[#C0453B] transition-opacity hover:opacity-80"
+            >
+              {p.deleteAccount}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

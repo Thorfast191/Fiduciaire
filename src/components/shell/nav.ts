@@ -42,13 +42,18 @@ export function adminNav(
 ): NavEntry[] {
   const n = t.admin.nav;
 
-  // An ordinary admin is a case worker: only their personal statistics and the
-  // dossiers assigned to them. The firm-wide screens (global stats, periods,
-  // payments, user management) are the super admin's.
+  // An ordinary admin, exactly as the client's element dump shows it: five
+  // entries, and the shorter "Statistiques" / "Périodes" wording rather than
+  // the super admin's "Statistique globale" / "Périodes fiscales". What they
+  // may *do* on those screens is still narrower — no per-administrator
+  // breakdown, no administrator accounts, no promoting a client.
   if (role === "admin") {
     return [
-      { kind: "link", label: n.personalStats, href: "/admin" },
+      { kind: "link", label: n.home, href: "/admin" },
       { kind: "link", label: n.dossiers, href: "/admin/dossiers" },
+      { kind: "link", label: n.statsShort, href: "/admin/stats" },
+      { kind: "link", label: n.periodsShort, href: "/admin/periodes" },
+      { kind: "link", label: n.users, href: "/admin/utilisateurs" },
     ];
   }
 

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       { status: 401 },
     );
   }
-  if (user.role !== "super_admin") {
+  if (user.role !== "admin" && user.role !== "super_admin") {
     return NextResponse.json(
       { ok: false, error: "forbidden" },
       { status: 403 },
@@ -49,6 +49,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { ok: false, error: "invalid_request" },
       { status: 400 },
+    );
+  }
+
+  // Naming who receives what is the super admin's call. An ordinary admin gets
+  // the even split only, which is the button the reference shows them.
+  if (parsed.data.allocations && user.role !== "super_admin") {
+    return NextResponse.json(
+      { ok: false, error: "forbidden" },
+      { status: 403 },
     );
   }
 

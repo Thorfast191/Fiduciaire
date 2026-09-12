@@ -21,9 +21,12 @@ interface ClientRow {
 export default function ClientAccounts({
   clients,
   canManage,
+  canPromote,
 }: {
   clients: ClientRow[];
   canManage: boolean;
+  /** Promoting a client to administrator is the super admin's alone. */
+  canPromote: boolean;
 }) {
   const t = useT();
   const router = useRouter();
@@ -103,6 +106,7 @@ export default function ClientAccounts({
 
               {canManage ? (
                 <div className="flex shrink-0 items-center gap-2">
+                  {canPromote ? (
                   <button
                     type="button"
                     disabled={busy !== null}
@@ -126,6 +130,7 @@ export default function ClientAccounts({
                       ? t.admin.users.promoting
                       : t.admin.users.promote}
                   </button>
+                  ) : null}
 
                   <button
                     type="button"

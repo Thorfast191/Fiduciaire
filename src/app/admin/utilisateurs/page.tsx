@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser, requireSuperAdmin } from "@/lib/auth/guards";
+import { getCurrentUser, requireRole } from "@/lib/auth/guards";
 import { listAdminAccounts, listClientAccounts } from "@/lib/adminUsers";
 import { getT } from "@/lib/i18n";
 import AdminAccounts from "./AdminAccounts";
@@ -12,7 +12,7 @@ import ClientAccounts from "./ClientAccounts";
  * lists read-only.
  */
 export default async function AdminUsersPage() {
-  await requireSuperAdmin();
+  await requireRole(["admin", "super_admin"]);
 
   const [user, admins, clients, { t }] = await Promise.all([
     getCurrentUser(),
@@ -40,22 +40,31 @@ export default async function AdminUsersPage() {
         <p className="mt-1.5 text-[15px] text-muted">{t.admin.users.sub}</p>
       </div>
 
-      <AdminAccounts
-        admins={admins.map((a) => ({
-          id: a.id,
-          name: `${a.firstName} ${a.lastName}`.trim(),
-          email: a.email,
-          isSuper: a.role === "super_admin",
-        }))}
-        canManage={isSuperAdmin}
-      />
+      {/* The administrator card is the super admin's alone. An ordinary admin
+          sees the client list only, as in the reference. */}
+      {isSuperAdmin ? (
+        <>
+          <AdminAccounts
+            admins={admins.map((a) => ({
+              id: a.id,
+              name: `${a.firstName} ${a.lastName}`.trim(),
+              email: a.email,
+              isSuper: a.role === "super_admin",
+            }))}
+            canManage
+          />
 
-      <h2 className="disp mt-8 text-[19px] font-bold">
-        {t.admin.users.clientsTitle}
-      </h2>
+          <h2 className="disp mt-8 text-[19px] font-bold">
+            {t.admin.users.clientsTitle}
+          </h2>
+        </>
+      ) : null}
 
+      {/* Both roles get "Supprimer" on a client row, as the reference shows;
+          "Passer administrateur" is the super admin's. */}
       <ClientAccounts
-        canManage={isSuperAdmin}
+        canManage
+        canPromote={isSuperAdmin}
         clients={clients.map((c) => ({
           id: c.id,
           firstName: c.firstName,

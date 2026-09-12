@@ -23,7 +23,10 @@ export async function DELETE(
       { status: 401 },
     );
   }
-  if (user.role !== "super_admin") {
+  // Removing a client account is something either administrator does, as the
+  // reference shows. `deactivateClient` only ever touches a client row, so this
+  // cannot be turned on a colleague. Promotion stays the super admin's.
+  if (user.role !== "admin" && user.role !== "super_admin") {
     return NextResponse.json(
       { ok: false, error: "forbidden" },
       { status: 403 },

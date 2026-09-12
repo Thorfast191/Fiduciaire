@@ -16,7 +16,7 @@ import {
   type ServiceType,
 } from "@/lib/serviceTypes";
 import type { DossierStatus } from "@/db/schema";
-import { requireSuperAdmin } from "@/lib/auth/guards";
+import { getCurrentUser, requireRole } from "@/lib/auth/guards";
 import AdminStatCards from "./AdminStatCards";
 
 const STATUS_BAR: Record<DossierStatus, string> = {
@@ -51,7 +51,11 @@ export default async function AdminStatsPage({
 }: {
   searchParams: Promise<{ periode?: string }>;
 }) {
-  await requireSuperAdmin();
+  // Both roles reach this screen, as the reference's sidebar shows. Only the
+  // super admin sees the per-administrator breakdown below.
+  await requireRole(["admin", "super_admin"]);
+  const viewer = await getCurrentUser();
+  const isSuperAdmin = viewer?.role === "super_admin";
 
   const [{ periode }, years, { t, locale }] = await Promise.all([
     searchParams,
@@ -182,7 +186,9 @@ export default async function AdminStatsPage({
         </div>
       </section>
 
-      <AdminStatCards admins={perAdmin} labels={serviceLabels} free={free} />
+      {isSuperAdmin ? (
+        <AdminStatCards admins={perAdmin} labels={serviceLabels} free={free} />
+      ) : null}
     </div>
   );
 }

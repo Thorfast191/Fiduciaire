@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { listTaxPeriods } from "@/lib/taxPeriods";
 import { getT } from "@/lib/i18n";
-import { requireSuperAdmin } from "@/lib/auth/guards";
+import { requireRole } from "@/lib/auth/guards";
 import PeriodsManager from "./PeriodsManager";
 
 /**
@@ -10,7 +10,7 @@ import PeriodsManager from "./PeriodsManager";
  * activate/deactivate control, plus a button that opens the next year.
  */
 export default async function AdminPeriodsPage() {
-  await requireSuperAdmin();
+  await requireRole(["admin", "super_admin"]);
 
   const [periods, { t }] = await Promise.all([listTaxPeriods(), getT()]);
 
