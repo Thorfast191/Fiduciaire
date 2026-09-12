@@ -59,10 +59,10 @@ type ColumnKey =
 
 const COLUMNS: Record<ServiceType, { key: ColumnKey; width: string }[]> = {
   declaration: [
-    { key: "status", width: "w-[200px]" },
-    { key: "reservedBy", width: "w-[160px]" },
-    { key: "received", width: "w-[110px]" },
-    { key: "canton", width: "w-[70px]" },
+    { key: "status", width: "w-[220px]" },
+    { key: "reservedBy", width: "w-[170px]" },
+    { key: "received", width: "w-[150px]" },
+    { key: "canton", width: "w-[100px]" },
   ],
   capital: [
     { key: "status", width: "w-[195px]" },
@@ -134,6 +134,11 @@ export default function DossiersTable({
   const { locale, t } = useI18n();
   const router = useRouter();
 
+  const cantons = useMemo(
+    () => [...new Set(rows.map((r) => r.canton).filter(Boolean))].sort(),
+    [rows],
+  );
+
   const columns = COLUMNS[serviceType] ?? COLUMNS.declaration;
   const isDeclaration = serviceType === "declaration";
 
@@ -165,6 +170,9 @@ export default function DossiersTable({
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<DossierStatus | "">("");
   const [reservedFilter, setReservedFilter] = useState<string>("");
+  const [cantonFilter, setCantonFilter] = useState<string>("");
+  const [prioritySort, setPrioritySort] = useState(false);
+  const [openMenu, setOpenMenu] = useState<ColumnKey | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [reserving, setReserving] = useState<string | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
@@ -194,8 +202,9 @@ export default function DossiersTable({
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    return rows.filter((r) => {
+    const matched = rows.filter((r) => {
       if (statusFilter && r.status !== statusFilter) return false;
+      if (cantonFilter && (r.canton || "") !== cantonFilter) return false;
       if (reservedFilter === "__none__" && r.reservedBy) return false;
       if (
         reservedFilter &&
@@ -209,7 +218,15 @@ export default function DossiersTable({
         .toLowerCase()
         .includes(q);
     });
-  }, [rows, query, statusFilter, reservedFilter]);
+
+    if (!prioritySort) return matched;
+
+    // "Trier par priorité": express first, then the longest-waiting.
+    return [...matched].sort((a, b) => {
+      if (a.express !== b.express) return a.express ? -1 : 1;
+      return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+    });
+  }, [rows, query, statusFilter, reservedFilter, cantonFilter, prioritySort]);
 
   async function changeStatus(id: string, status: DossierStatus) {
     setSaving(id);
@@ -421,61 +438,189 @@ export default function DossiersTable({
     }
   }
 
+  /** The little filter icon the reference puts inside a column header. */
+  function FilterIcon() {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        aria-hidden="true"
+        className="h-[15px] w-[15px]"
+      >
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <line x1="8" y1="12" x2="16" y2="12" />
+        <line x1="11" y1="18" x2="13" y2="18" />
+      </svg>
+    );
+  }
+
+  function headerMenu(
+    key: ColumnKey,
+    active: boolean,
+    options: { value: string; label: string }[],
+    selected: string,
+    onPick: (v: string) => void,
+  ) {
+    return (
+      <span className="relative inline-flex">
+        <button
+          type="button"
+          onClick={() => setOpenMenu(openMenu === key ? null : key)}
+          aria-label={`${columnLabel(key)} — ${t.admin.dossiers.filterLabel}`}
+          aria-expanded={openMenu === key}
+          className={`flex p-0.5 transition-colors ${
+            active ? "text-brand" : "text-subtle hover:text-body"
+          }`}
+        >
+          <FilterIcon />
+        </button>
+
+        {openMenu === key ? (
+          <span
+            className="absolute left-0 top-[calc(100%+6px)] z-20 flex max-h-[280px] w-[210px] flex-col overflow-y-auto rounded-xl border border-line-default bg-card p-1.5 shadow-[0_20px_44px_-18px_rgba(11,32,48,0.5)]"
+            onMouseLeave={() => setOpenMenu(null)}
+          >
+            {options.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                onClick={() => {
+                  onPick(o.value);
+                  setOpenMenu(null);
+                }}
+                className={`rounded-lg px-2.5 py-2 text-left text-[13px] font-medium normal-case tracking-normal transition-colors hover:bg-sunken ${
+                  selected === o.value ? "text-brand" : "text-body"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </span>
+        ) : null}
+      </span>
+    );
+  }
+
+  function headerControl(key: ColumnKey) {
+    const d = t.admin.dossiers;
+
+    if (key === "status") {
+      return headerMenu(
+        key,
+        statusFilter !== "",
+        [
+          { value: "", label: d.allStatuses },
+          ...STATUS_ORDER.map((v) => ({ value: v, label: t.status[v] })),
+        ],
+        statusFilter,
+        (v) => setStatusFilter(v as DossierStatus | ""),
+      );
+    }
+
+    if (key === "reservedBy") {
+      return headerMenu(
+        key,
+        reservedFilter !== "",
+        [
+          { value: "", label: d.filterAllReservers },
+          ...reservers.map((r) => ({ value: r.id, label: r.name })),
+          { value: "__none__", label: d.filterUnreserved },
+        ],
+        reservedFilter,
+        setReservedFilter,
+      );
+    }
+
+    if (key === "canton") {
+      return headerMenu(
+        key,
+        cantonFilter !== "",
+        [
+          { value: "", label: d.filterAllCantons },
+          ...cantons.map((c) => ({ value: c, label: c })),
+        ],
+        cantonFilter,
+        setCantonFilter,
+      );
+    }
+
+    if (key === "received") {
+      return (
+        <button
+          type="button"
+          onClick={() => setPrioritySort((v) => !v)}
+          title={d.sortPriority}
+          aria-label={d.sortPriority}
+          aria-pressed={prioritySort}
+          className={`flex p-0.5 transition-colors ${
+            prioritySort ? "text-brand" : "text-subtle hover:text-body"
+          }`}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="h-[15px] w-[15px]"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+        </button>
+      );
+    }
+
+    return null;
+  }
+
   const selectCls =
     "h-[46px] rounded-xl border border-line-default bg-card px-4 text-[14px] text-strong outline-none transition-colors hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10";
 
   return (
     <>
+      {/* A declaration filters from its column headers, so only the search box
+          sits above the table. The other prestations have no header menus, so
+          they keep the "Réservé par :" select the reference gives them. */}
       <div className="mt-[18px] flex flex-wrap items-center gap-3">
-        {/* The reference gives a declaration a search box and a status filter;
-            the other prestations show only "Réservé par :". */}
-        {!isDeclaration ? (
-          <span className="text-[13.5px] font-semibold text-body">
-            {t.admin.dossiers.reservedFilterLabel}
-          </span>
-        ) : null}
-
         {isDeclaration ? (
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t.admin.dossiers.searchPlaceholder}
-          aria-label={t.admin.dossiers.searchPlaceholder}
-          className="h-[46px] min-w-[220px] flex-1 rounded-xl border border-line-default bg-card px-4 text-[14.5px] text-strong outline-none transition-colors placeholder:text-subtle hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10"
-        />
-        ) : null}
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t.admin.dossiers.searchPlaceholder}
+            aria-label={t.admin.dossiers.searchPlaceholder}
+            className="h-[46px] min-w-[220px] flex-1 rounded-xl border border-line-default bg-card px-4 text-[14.5px] text-strong outline-none transition-colors placeholder:text-subtle hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10"
+          />
+        ) : (
+          <>
+            <span className="text-[13.5px] font-semibold text-body">
+              {t.admin.dossiers.reservedFilterLabel}
+            </span>
 
-        {isDeclaration ? (
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as DossierStatus | "")}
-          aria-label={t.admin.dossiers.thStatus}
-          className={selectCls}
-        >
-          <option value="">{t.admin.dossiers.allStatuses}</option>
-          {STATUS_ORDER.map((s) => (
-            <option key={s} value={s}>
-              {t.status[s]}
-            </option>
-          ))}
-        </select>
-        ) : null}
-
-        <select
-          value={reservedFilter}
-          onChange={(e) => setReservedFilter(e.target.value)}
-          aria-label={t.admin.dossiers.reservedFilterLabel}
-          className={selectCls}
-        >
-          <option value="">{t.admin.dossiers.filterAllReservers}</option>
-          {reservers.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name}
-            </option>
-          ))}
-          <option value="__none__">{t.admin.dossiers.filterUnreserved}</option>
-        </select>
+            <select
+              value={reservedFilter}
+              onChange={(e) => setReservedFilter(e.target.value)}
+              aria-label={t.admin.dossiers.reservedFilterLabel}
+              className={selectCls}
+            >
+              <option value="">{t.admin.dossiers.filterAllReservers}</option>
+              {reservers.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+              <option value="__none__">
+                {t.admin.dossiers.filterUnreserved}
+              </option>
+            </select>
+          </>
+        )}
       </div>
 
       {failed ? (
@@ -492,8 +637,12 @@ export default function DossiersTable({
           <div className="flex items-center gap-3.5 border-b border-line px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.05em] text-muted">
             <span className="min-w-0 flex-1">{t.admin.dossiers.thClient}</span>
             {columns.map((c) => (
-              <span key={c.key} className={`${c.width} shrink-0`}>
+              <span
+                key={c.key}
+                className={`${c.width} flex shrink-0 items-center gap-1.5`}
+              >
                 {columnLabel(c.key)}
+                {headerControl(c.key)}
               </span>
             ))}
           </div>
