@@ -403,6 +403,12 @@ export const fr = {
         "Le suivi de votre dossier jusqu'à la taxation",
       ],
       backHome: "Retour à l'accueil",
+      requiredNote: "Tous les champs sont obligatoires.",
+      passwordTitle: "Votre mot de passe doit contenir :",
+      ruleLength: "Au moins 10 caractères",
+      ruleDigit: "Au moins un chiffre",
+      ruleSymbol: "Au moins un caractère spécial (! ? @ # …)",
+      ruleMatch: "Les deux mots de passe correspondent",
       submit: "Créer mon compte",
       loading: "Création du compte...",
       passwordMismatch: "Les deux mots de passe ne correspondent pas.",
@@ -459,7 +465,8 @@ export const fr = {
         "Consultez votre boîte de réception et votre dossier courrier indésirable.",
       passwordTitle: "Votre mot de passe doit contenir :",
       rule1: "Au moins 10 caractères",
-      rule2: "Une combinaison difficile à deviner",
+      rule2: "Au moins un chiffre",
+      rule3: "Au moins un caractère spécial (! ? @ # …)",
       secureTitle: "Réinitialisation sécurisée",
       secureBody:
         "Votre code de vérification est nécessaire pour modifier votre mot de passe.",
@@ -474,6 +481,12 @@ export const fr = {
       emailPlaceholder: "prenom.nom@exemple.ch",
       phone: "Téléphone",
       phonePlaceholder: "+41 79 000 00 00",
+      street: "Rue et numéro",
+      streetPlaceholder: "Rue du Lac 12",
+      postalCode: "Code postal",
+      postalCodePlaceholder: "1003",
+      city: "Localité",
+      cityPlaceholder: "Lausanne",
       password: "Mot de passe",
       passwordPlaceholder: "Votre mot de passe",
       newPassword: "Nouveau mot de passe",
@@ -585,7 +598,7 @@ export const fr = {
       phone: "Téléphone",
       newPassword: "Nouveau mot de passe",
       passwordHint:
-        "Laissez vide pour conserver le mot de passe actuel. Minimum 10 caractères.",
+        "Laissez vide pour conserver le mot de passe actuel. Minimum 10 caractères, dont un chiffre et un caractère spécial.",
       cancel: "Annuler",
       save: "Enregistrer",
       saving: "Enregistrement...",
@@ -701,11 +714,22 @@ export const fr = {
       situationAutre: "Autre",
       situationApprenti: "Apprenti",
       situationActif: "Actif",
+      autreComment: "Précisez",
       contributions:
         "L'enfant mineur, majeur en apprentissage ou aux études est-il à votre charge ?",
       menageCommun: "Cet enfant fait-il ménage commun avec vous ?",
       menageAutreParent:
         "Faites-vous ménage commun avec l'autre parent de cet enfant ?",
+      pensionVersee:
+        "Versez-vous des contributions d'entretien pour cet enfant ?",
+      montantContrib:
+        "Montant effectif des contributions d'entretien versées",
+      autorite: "Qui a l'autorité parentale sur cet enfant ?",
+      autoriteExclusive: "J'ai l'autorité parentale exclusive",
+      autoriteAutreParent: "L'autre parent exclusivement",
+      autoriteConjointe: "Autorité parentale conjointe",
+      montantGarde:
+        "Montant effectif des frais de garde versés pour cet enfant",
     },
 
     revenus: {

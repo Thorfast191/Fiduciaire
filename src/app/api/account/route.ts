@@ -5,6 +5,7 @@ import { db } from "@/db/client";
 import { users } from "@/db/schema";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { hashPassword } from "@/lib/auth/password";
+import { isStrongPassword } from "@/lib/auth/passwordPolicy";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp, readJsonBody } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
@@ -15,7 +16,11 @@ const bodySchema = z.object({
   phone: z.string().trim().max(50).optional().default(""),
   // Blank means "keep the current password", which is what the form's hint
   // promises. Anything else has to clear the same bar as signup.
-  password: z.string().min(10).max(200).optional().or(z.literal("")),
+  password: z
+    .string()
+    .max(200)
+    .refine((v) => v === "" || isStrongPassword(v))
+    .optional(),
 });
 
 /**

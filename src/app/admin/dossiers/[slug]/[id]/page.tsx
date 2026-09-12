@@ -131,6 +131,13 @@ export default async function AdminDossierDetailPage({
 
   const isDeclaration = serviceType === "declaration";
 
+  const clientAddress = [
+    client?.street,
+    [client?.postalCode, client?.city].filter(Boolean).join(" "),
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   return (
     <div className="max-w-[1040px]">
       <Link
@@ -155,6 +162,15 @@ export default async function AdminDossierDetailPage({
               <>
                 <span className="text-line-strong">·</span>
                 <span>{client.phone}</span>
+              </>
+            ) : null}
+            {/* The postal address is collected at signup; accounts that predate
+                that carry none, so the whole row is dropped rather than shown
+                half-empty. */}
+            {clientAddress ? (
+              <>
+                <span className="text-line-strong">·</span>
+                <span>{clientAddress}</span>
               </>
             ) : null}
           </p>

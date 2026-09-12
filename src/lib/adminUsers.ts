@@ -8,6 +8,10 @@ export interface AccountRow {
   lastName: string;
   email: string;
   phone: string | null;
+  /** Collected at signup. Null on accounts created before it was asked for. */
+  street: string | null;
+  postalCode: string | null;
+  city: string | null;
   role: Role;
   createdAt: Date;
 }
@@ -18,6 +22,9 @@ const COLUMNS = {
   lastName: users.lastName,
   email: users.email,
   phone: users.phone,
+  street: users.street,
+  postalCode: users.postalCode,
+  city: users.city,
   role: users.role,
   createdAt: users.createdAt,
 };

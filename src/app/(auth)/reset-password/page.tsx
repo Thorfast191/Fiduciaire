@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Field, FormAlert } from "@/components/ui/Field";
 import { useT } from "@/lib/i18n/I18nProvider";
+import { PASSWORD_MIN_LENGTH } from "@/lib/auth/passwordPolicy";
 
 export default function ResetPasswordPage() {
   const t = useT();
@@ -186,7 +187,7 @@ export default function ResetPasswordPage() {
                 placeholder={t.auth.fields.resetPasswordPlaceholder}
                 autoComplete="new-password"
                 required
-                minLength={10}
+                minLength={PASSWORD_MIN_LENGTH}
                 value={form.newPassword}
                 onChange={(e) =>
                   setForm({ ...form, newPassword: e.target.value })
@@ -208,6 +209,11 @@ export default function ResetPasswordPage() {
                   <p className="flex items-center gap-2">
                     <span className="h-1 w-1 rounded-full bg-subtle" />
                     {t.auth.reset.rule2}
+                  </p>
+
+                  <p className="flex items-center gap-2">
+                    <span className="h-1 w-1 rounded-full bg-subtle" />
+                    {t.auth.reset.rule3}
                   </p>
                 </div>
               </div>

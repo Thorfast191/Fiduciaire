@@ -23,6 +23,10 @@ export const users = pgTable("users", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   phone: text("phone"),
+  /** Postal address collected at signup — street + number, postal code, town. */
+  street: text("street"),
+  postalCode: text("postal_code"),
+  city: text("city"),
   // Language for transactional email. The UI reads a cookie, which a mail
   // job has no access to, so the preference is persisted per user.
   locale: text("locale", { enum: ["fr", "en"] })

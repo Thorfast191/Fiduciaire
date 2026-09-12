@@ -19,6 +19,8 @@ const ERRORS = {
     badCode: "Code incorrect ou expiré.",
     tooManyCodes: "Trop de tentatives. Demandez un nouveau code.",
     checkInput: "Merci de vérifier les informations saisies.",
+    weakPassword:
+      "Le mot de passe doit contenir au moins 10 caractères, un chiffre et un caractère spécial.",
     emailExists: "Un compte existe déjà avec cette adresse e-mail.",
     invalidTransition: "Transition de statut non autorisée.",
     paymentRequired:
@@ -39,6 +41,8 @@ const ERRORS = {
     badCode: "Incorrect or expired code.",
     tooManyCodes: "Too many attempts. Please request a new code.",
     checkInput: "Please check the information you entered.",
+    weakPassword:
+      "The password must be at least 10 characters and contain a digit and a special character.",
     emailExists: "An account already exists with this email address.",
     invalidTransition: "That status change is not allowed.",
     paymentRequired: "Payment is required to submit this tax return.",

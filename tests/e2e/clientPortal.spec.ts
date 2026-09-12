@@ -15,9 +15,13 @@ async function loginAsNewClient(page: Page, request: APIRequestContext, prefix: 
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-password",
+      password: "a-long-enough-p4ssword!",
       firstName: "A",
       lastName: "B",
+      phone: "+41 79 000 00 00",
+      street: "Rue du Lac 12",
+      postalCode: "1003",
+      city: "Lausanne",
       acceptTerms: true,
     },
   });
@@ -25,7 +29,7 @@ async function loginAsNewClient(page: Page, request: APIRequestContext, prefix: 
 
   await page.goto("/login");
   await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByLabel("Mot de passe").fill("a-long-enough-password");
+  await page.getByLabel("Mot de passe").fill("a-long-enough-p4ssword!");
   await page.getByRole("button", { name: "Se connecter" }).click();
   await page.waitForURL(/\/verify/);
   const code = await getLatestOtpForEmail(email);
@@ -49,7 +53,7 @@ async function getUserIdByEmail(email: string): Promise<string> {
 async function loginAsAdmin(context: { request: APIRequestContext }) {
   const email = "admin@fiduvia.test"; // seeded by `npm run seed:admin`, see tests/e2e/auth.spec.ts
   await context.request.post("/api/auth/login", {
-    data: { email, password: "a-long-enough-password" },
+    data: { email, password: "a-long-enough-p4ssword!" },
   });
   const code = await getLatestOtpForEmail(email);
   await context.request.post("/api/auth/verify-otp", {

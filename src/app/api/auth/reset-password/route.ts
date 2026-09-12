@@ -5,6 +5,7 @@ import { db } from "@/db/client";
 import { users } from "@/db/schema";
 import { consumeOtp } from "@/lib/auth/otp";
 import { hashPassword } from "@/lib/auth/password";
+import { isStrongPassword } from "@/lib/auth/passwordPolicy";
 import { revokeAllSessionsForUser } from "@/lib/auth/session";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp, readJsonBody } from "@/lib/http";
@@ -13,7 +14,8 @@ import { apiErrors } from "@/lib/i18n/apiErrors";
 const bodySchema = z.object({
   email: z.string().email(),
   code: z.string().length(6),
-  newPassword: z.string().min(10),
+  // The same bar as signup: a reset must not be a way to weaken a password.
+  newPassword: z.string().max(200).refine(isStrongPassword),
 });
 
 export async function POST(request: NextRequest) {

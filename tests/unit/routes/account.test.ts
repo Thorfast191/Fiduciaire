@@ -86,14 +86,14 @@ describe("PATCH /api/account", () => {
 
     const res = await updateAccount(
       patch(
-        { firstName: "A", lastName: "B", password: "a-brand-new-password" },
+        { firstName: "A", lastName: "B", password: "a-brand-new-p4ssword!" },
         token,
       ),
     );
     expect(res.status).toBe(200);
 
     const row = await reload(user.id);
-    expect(await verifyPassword(row.passwordHash, "a-brand-new-password")).toBe(
+    expect(await verifyPassword(row.passwordHash, "a-brand-new-p4ssword!")).toBe(
       true,
     );
     expect(await verifyPassword(row.passwordHash, "the-original-password")).toBe(
@@ -110,6 +110,23 @@ describe("PATCH /api/account", () => {
     );
 
     expect(res.status).toBe(400);
+    const row = await reload(user.id);
+    expect(await verifyPassword(row.passwordHash, "the-original-password")).toBe(
+      true,
+    );
+  });
+
+  it("refuses a password that misses the digit or symbol rule", async () => {
+    const user = await makeUser();
+    const { token } = await createSession(user.id, {});
+
+    for (const password of ["no-digits-at-all!", "n0symbolsatall123"]) {
+      const res = await updateAccount(
+        patch({ firstName: "A", lastName: "B", password }, token),
+      );
+      expect(res.status).toBe(400);
+    }
+
     const row = await reload(user.id);
     expect(await verifyPassword(row.passwordHash, "the-original-password")).toBe(
       true,

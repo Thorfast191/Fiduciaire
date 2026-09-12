@@ -5,13 +5,20 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Field, FormAlert } from "@/components/ui/Field";
 import { useT } from "@/lib/i18n/I18nProvider";
+import {
+  PASSWORD_MIN_LENGTH,
+  isStrongPassword,
+  passwordChecks,
+} from "@/lib/auth/passwordPolicy";
 
 /**
  * "Créez votre espace Fiduvia" — the mockup's account-creation screen
  * (`Fiduvia.dc.html`): a minimal logo header, then two columns — the pitch and
- * its three perks on the left, the form on the right (name, email, phone,
- * password ×2, terms). Reached from "Créer mon dossier" and "Remplir ma
- * déclaration".
+ * its three perks on the left, the form on the right. Reached from "Créer mon
+ * dossier" and "Remplir ma déclaration".
+ *
+ * Every field is mandatory: the fiduciary files a return from this data, so the
+ * postal address is collected here rather than chased later.
  */
 export default function SignupPage() {
   const t = useT();
@@ -21,6 +28,9 @@ export default function SignupPage() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
+    street: "",
+    postalCode: "",
+    city: "",
     email: "",
     phone: "",
     password: "",
@@ -30,10 +40,26 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const checks = passwordChecks(form.password);
+  const passwordsMatch =
+    form.password.length > 0 && form.password === form.confirmPassword;
+  // The account button stays inert until every rule on screen is green, which
+  // is what the client asked for: no submit, no error, until it can succeed.
+  const canSubmit =
+    !loading &&
+    acceptTerms &&
+    passwordsMatch &&
+    isStrongPassword(form.password) &&
+    Object.values(form).every((v) => v.trim() !== "");
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
+    if (!isStrongPassword(form.password)) {
+      setError(s.passwordTitle);
+      return;
+    }
     if (form.password !== form.confirmPassword) {
       setError(s.passwordMismatch);
       return;
@@ -53,7 +79,10 @@ export default function SignupPage() {
           password: form.password,
           firstName: form.firstName,
           lastName: form.lastName,
-          phone: form.phone || undefined,
+          phone: form.phone,
+          street: form.street,
+          postalCode: form.postalCode,
+          city: form.city,
           acceptTerms,
         }),
       });
@@ -99,7 +128,7 @@ export default function SignupPage() {
       {/* Body */}
       <div className="mx-auto grid max-w-[1080px] grid-cols-1 items-start gap-[48px] px-6 py-[52px] lg:grid-cols-2 lg:gap-[64px] lg:py-[76px]">
         {/* Left — pitch */}
-        <div className="max-w-[440px]">
+        <div className="max-w-[440px] lg:sticky lg:top-[52px]">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-[13px] font-medium"
@@ -108,7 +137,16 @@ export default function SignupPage() {
             ← {s.backHome}
           </Link>
 
-          <p className="fx-eyebrow mt-6 text-[var(--text-muted)]">{s.eyebrow}</p>
+          {/* Inline styles, not utility classes: `.fx-eyebrow` sets the brand
+              teal and `inline-block` outside Tailwind's layers, so a `text-[…]`
+              class loses to it — the eyebrow then reads as a stray blue line
+              running on from the back link. The mockup overrides both inline. */}
+          <p
+            className="fx-eyebrow mt-6"
+            style={{ color: "var(--text-muted)", display: "block" }}
+          >
+            {s.eyebrow}
+          </p>
 
           <h1 className="disp mt-3 text-[clamp(30px,3.4vw,42px)] font-extrabold leading-[1.06] text-[var(--text-strong)]">
             {s.title}
@@ -145,11 +183,19 @@ export default function SignupPage() {
             </div>
           ) : null}
 
-          <form onSubmit={onSubmit} className="flex flex-col gap-5">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <p className="mb-6 text-[12.5px] leading-5 text-[var(--text-muted)]">
+            <span aria-hidden style={{ color: "var(--gold)" }}>
+              *
+            </span>{" "}
+            {s.requiredNote}
+          </p>
+
+          <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field
                 id="firstName"
                 label={t.auth.fields.firstName}
+                placeholder={t.auth.fields.firstNamePlaceholder}
                 autoComplete="given-name"
                 required
                 value={form.firstName}
@@ -158,10 +204,45 @@ export default function SignupPage() {
               <Field
                 id="lastName"
                 label={t.auth.fields.lastName}
+                placeholder={t.auth.fields.lastNamePlaceholder}
                 autoComplete="family-name"
                 required
                 value={form.lastName}
                 onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              />
+            </div>
+
+            <Field
+              id="street"
+              label={t.auth.fields.street}
+              placeholder={t.auth.fields.streetPlaceholder}
+              autoComplete="street-address"
+              required
+              value={form.street}
+              onChange={(e) => setForm({ ...form, street: e.target.value })}
+            />
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)]">
+              <Field
+                id="postalCode"
+                label={t.auth.fields.postalCode}
+                placeholder={t.auth.fields.postalCodePlaceholder}
+                autoComplete="postal-code"
+                inputMode="numeric"
+                required
+                value={form.postalCode}
+                onChange={(e) =>
+                  setForm({ ...form, postalCode: e.target.value })
+                }
+              />
+              <Field
+                id="city"
+                label={t.auth.fields.city}
+                placeholder={t.auth.fields.cityPlaceholder}
+                autoComplete="address-level2"
+                required
+                value={form.city}
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
               />
             </div>
 
@@ -182,37 +263,54 @@ export default function SignupPage() {
               type="tel"
               placeholder={t.auth.fields.phonePlaceholder}
               autoComplete="tel"
+              required
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <Field
-                id="password"
-                label={t.auth.fields.password}
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={10}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-              />
-              <Field
-                id="confirmPassword"
-                label={t.auth.fields.confirmPassword}
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={10}
-                value={form.confirmPassword}
-                onChange={(e) =>
-                  setForm({ ...form, confirmPassword: e.target.value })
-                }
-              />
+            {/* Stacked, not side by side: the confirmation sits directly under
+                the password it repeats. */}
+            <Field
+              id="password"
+              label={t.auth.fields.password}
+              type="password"
+              placeholder={t.auth.fields.passwordPlaceholder}
+              autoComplete="new-password"
+              required
+              minLength={PASSWORD_MIN_LENGTH}
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+            />
+            <Field
+              id="confirmPassword"
+              label={t.auth.fields.confirmPassword}
+              type="password"
+              placeholder={t.auth.fields.confirmPasswordPlaceholder}
+              autoComplete="new-password"
+              required
+              minLength={PASSWORD_MIN_LENGTH}
+              value={form.confirmPassword}
+              onChange={(e) =>
+                setForm({ ...form, confirmPassword: e.target.value })
+              }
+            />
+
+            {/* Live rules — each one turns green as it is met, and the account
+                button below unlocks only when all four are. */}
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-4 py-3.5">
+              <p className="text-[11.5px] font-semibold text-[var(--text-body)]">
+                {s.passwordTitle}
+              </p>
+              <ul className="mt-2.5 flex flex-col gap-1.5">
+                <PasswordRule met={checks.length} label={s.ruleLength} />
+                <PasswordRule met={checks.digit} label={s.ruleDigit} />
+                <PasswordRule met={checks.symbol} label={s.ruleSymbol} />
+                <PasswordRule met={passwordsMatch} label={s.ruleMatch} />
+              </ul>
             </div>
 
             {/* Terms */}
-            <div className="flex items-start gap-3">
+            <div className="mt-1 flex items-start gap-3">
               <input
                 id="acceptTerms"
                 type="checkbox"
@@ -255,8 +353,8 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              disabled={loading}
-              className="flex h-[50px] w-full items-center justify-center rounded-xl bg-brand px-4 text-[14px] font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={!canSubmit}
+              className="mt-1 flex h-[50px] w-full items-center justify-center rounded-xl bg-brand px-4 text-[14px] font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? s.loading : s.submit}
             </button>
@@ -279,5 +377,27 @@ export default function SignupPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+/** One line of the live password checklist. */
+function PasswordRule({ met, label }: { met: boolean; label: string }) {
+  return (
+    <li
+      className="flex items-center gap-2 text-[11.5px] leading-4"
+      style={{ color: met ? "var(--brand)" : "var(--text-muted)" }}
+    >
+      <span
+        aria-hidden
+        className="flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white"
+        style={{
+          background: met ? "var(--brand)" : "transparent",
+          border: met ? "none" : "1px solid var(--border-default)",
+        }}
+      >
+        {met ? "✓" : ""}
+      </span>
+      <span>{label}</span>
+    </li>
   );
 }

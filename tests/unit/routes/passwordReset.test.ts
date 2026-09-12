@@ -65,6 +65,34 @@ describe("password reset flow", () => {
     expect(await getSessionUserByToken(existingSessionToken)).toBeNull();
   });
 
+  it("refuses to set a password that fails the signup rules", async () => {
+    const email = `reset-weak-${Date.now()}@example.test`;
+    const [user] = await db
+      .insert(users)
+      .values({
+        email,
+        passwordHash: await hashPassword("old-password-123"),
+        firstName: "A",
+        lastName: "B",
+      })
+      .returning();
+    const { createOtp } = await import("../../../src/lib/auth/otp");
+
+    // A reset must not be a back door around the policy the signup form shows.
+    for (const newPassword of ["short1!", "no-digits-here!", "n0symbols12345"]) {
+      const code = await createOtp(user.id, "password_reset");
+      const res = await resetPassword(
+        req("/api/auth/reset-password", { email, code, newPassword }),
+      );
+      expect(res.status).toBe(400);
+    }
+
+    const [row] = await db.select().from(users).where(eq(users.id, user.id));
+    await expect(
+      verifyPassword(row.passwordHash, "old-password-123"),
+    ).resolves.toBe(true);
+  });
+
   it("rejects an invalid code with a generic error", async () => {
     const email = `reset-bad-${Date.now()}@example.test`;
     await db.insert(users).values({

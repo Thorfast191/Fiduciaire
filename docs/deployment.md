@@ -72,7 +72,7 @@ existing rows default to `declaration`.
 
 ```bash
 DATABASE_URL='postgres://USER:PASS@HOST:5432/fiduvia' \
-  npm run seed:admin -- admin@yourdomain.ch 'a-long-enough-password'
+  npm run seed:admin -- admin@yourdomain.ch 'a-long-enough-p4ssword!'
 ```
 
 Creates a `super_admin` with its email pre-verified. Run it again with different

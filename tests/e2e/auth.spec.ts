@@ -10,15 +10,26 @@ test("signup → verify → reaches the client portal", async ({ page }) => {
   await page.goto("/signup");
   await page.getByLabel("Prénom").fill("Camille");
   await page.getByLabel("Nom", { exact: true }).fill("Rochat");
+  await page.getByLabel("Rue et numéro").fill("Rue du Lac 12");
+  await page.getByLabel("Code postal").fill("1003");
+  await page.getByLabel("Localité").fill("Lausanne");
   await page.getByLabel("Adresse e-mail").fill(email);
+  await page.getByLabel("Téléphone").fill("+41 79 000 00 00");
   // Two password labels exist on this page now, so this must not match
   // "Confirmer le mot de passe" as well.
-  await page.getByLabel("Mot de passe", { exact: true }).fill("a-long-enough-password");
+  await page
+    .getByLabel("Mot de passe", { exact: true })
+    .fill("a-long-enough-p4ssword!");
   await page
     .getByLabel("Confirmer le mot de passe")
-    .fill("a-long-enough-password");
-  await page.getByLabel(/J'accepte les conditions/).check();
-  await page.getByRole("button", { name: "Créer mon compte" }).click();
+    .fill("a-long-enough-p4ssword!");
+  // Matches the current copy, "J'ai lu et j'accepte les conditions générales".
+  await page.getByLabel(/j'accepte les conditions/i).check();
+
+  // The button unlocks only once every rule on the checklist is met.
+  const submit = page.getByRole("button", { name: "Créer mon compte" });
+  await expect(submit).toBeEnabled();
+  await submit.click();
 
   await page.waitForURL(/\/verify/);
   const code = await getLatestOtpForEmail(email);
@@ -38,9 +49,13 @@ test("login → verify → reaches the client portal", async ({ page, request })
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-password",
+      password: "a-long-enough-p4ssword!",
       firstName: "A",
       lastName: "B",
+      phone: "+41 79 000 00 00",
+      street: "Rue du Lac 12",
+      postalCode: "1003",
+      city: "Lausanne",
       acceptTerms: true,
     },
   });
@@ -48,7 +63,7 @@ test("login → verify → reaches the client portal", async ({ page, request })
 
   await page.goto("/login");
   await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByLabel("Mot de passe").fill("a-long-enough-password");
+  await page.getByLabel("Mot de passe").fill("a-long-enough-p4ssword!");
   await page.getByRole("button", { name: "Se connecter" }).click();
 
   await page.waitForURL(/\/verify/);
@@ -63,9 +78,13 @@ test("wrong password shows a generic error and does not proceed", async ({ page,
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-password",
+      password: "a-long-enough-p4ssword!",
       firstName: "A",
       lastName: "B",
+      phone: "+41 79 000 00 00",
+      street: "Rue du Lac 12",
+      postalCode: "1003",
+      city: "Lausanne",
       acceptTerms: true,
     },
   });
@@ -84,9 +103,13 @@ test("locks out after 5 wrong OTP attempts", async ({ page, request }) => {
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-password",
+      password: "a-long-enough-p4ssword!",
       firstName: "A",
       lastName: "B",
+      phone: "+41 79 000 00 00",
+      street: "Rue du Lac 12",
+      postalCode: "1003",
+      city: "Lausanne",
       acceptTerms: true,
     },
   });
@@ -106,9 +129,13 @@ test("locks out after 5 failed login attempts from the same browser", async ({ p
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-password",
+      password: "a-long-enough-p4ssword!",
       firstName: "A",
       lastName: "B",
+      phone: "+41 79 000 00 00",
+      street: "Rue du Lac 12",
+      postalCode: "1003",
+      city: "Lausanne",
       acceptTerms: true,
     },
   });
@@ -131,7 +158,7 @@ test("admin login reaches the admin dashboard, not the client portal", async ({ 
   const email = "admin@fiduvia.test";
   await page.goto("/login");
   await page.getByLabel("Adresse e-mail").fill(email);
-  await page.getByLabel("Mot de passe").fill("a-long-enough-password");
+  await page.getByLabel("Mot de passe").fill("a-long-enough-p4ssword!");
   await page.getByRole("button", { name: "Se connecter" }).click();
 
   await page.waitForURL(/\/verify/);
@@ -161,9 +188,13 @@ test("the marketing site logs in through a modal, without leaving the page", asy
   await request.post("/api/auth/signup", {
     data: {
       email,
-      password: "a-long-enough-password",
+      password: "a-long-enough-p4ssword!",
       firstName: "A",
       lastName: "B",
+      phone: "+41 79 000 00 00",
+      street: "Rue du Lac 12",
+      postalCode: "1003",
+      city: "Lausanne",
       acceptTerms: true,
     },
   });
@@ -204,7 +235,7 @@ test("the marketing site logs in through a modal, without leaving the page", asy
   );
   await expect(page).toHaveURL("/");
 
-  await dialog.getByLabel("Mot de passe").fill("a-long-enough-password");
+  await dialog.getByLabel("Mot de passe").fill("a-long-enough-p4ssword!");
   await dialog.getByRole("button", { name: "Se connecter" }).click();
 
   await page.waitForURL(/\/verify/);

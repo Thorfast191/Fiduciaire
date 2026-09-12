@@ -27,7 +27,7 @@ cp .env.example .env          # defaults already match docker-compose
 npm ci
 docker compose up -d          # postgres + minio + minio-init + mailhog
 npm run db:migrate            # applies migrations 0000–0008
-npm run seed:admin -- admin@fiduvia.test a-long-enough-password
+npm run seed:admin -- admin@fiduvia.test 'a-long-enough-p4ssword!'
 ```
 
 `seed:admin` creates a **super_admin** with its email pre-verified. Run it again
@@ -55,8 +55,8 @@ Both accounts below are verified working in the local database.
 
 | Role | Email | Password |
 |---|---|---|
-| Super admin | `admin@fiduvia.test` | `a-long-enough-password` |
-| Client | `client@fiduvia.test` | `a-long-enough-password` |
+| Super admin | `admin@fiduvia.test` | `a-long-enough-p4ssword!` |
+| Client | `client@fiduvia.test` | `a-long-enough-p4ssword!` |
 
 These are **local development fixtures only**. Never use them anywhere else.
 
@@ -81,9 +81,18 @@ single-use — requesting a new one invalidates the previous.
 
 ## Making a new client account
 
-Sign up through the UI at http://localhost:3000/signup. It needs first name,
-last name, email, password (min 10 characters), the password confirmation, and
-the CGVU checkbox. Then collect the verification code from MailHog as above.
+Sign up through the UI at http://localhost:3000/signup. **Every field is
+mandatory**: first name, last name, street and number, postal code, town, email,
+phone, password, and the password confirmation, plus the CGVU checkbox. Then
+collect the verification code from MailHog as above.
+
+The password must clear `src/lib/auth/passwordPolicy.ts` — **at least 10
+characters, one digit and one special character**. The same bar applies to
+`/api/auth/reset-password` and to a password change through `PATCH /api/account`,
+so a reset cannot be used to weaken an account. The signup form shows the rules
+as a live checklist and keeps the submit button disabled until all of them pass,
+which means any script or test posting to `/api/auth/signup` must send a
+compliant password *and* the full postal address.
 
 The terms checkbox is not decorative: `acceptTerms: true` is required by the API
 (`z.literal(true)`), and the acceptance time is stored on `users.terms_accepted_at`.

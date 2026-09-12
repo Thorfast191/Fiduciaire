@@ -28,11 +28,21 @@ function req(path: string, body: unknown, ip = "127.0.0.1") {
 
 async function makeAccount(ip: string) {
   const email = `login-${Date.now()}-${Math.random()}@example.test`;
-  const password = "a-long-enough-password";
+  const password = "a-long-enough-p4ssword!";
   await signup(
     req(
       "/api/auth/signup",
-      { email, password, firstName: "A", lastName: "B", acceptTerms: true },
+      {
+        email,
+        password,
+        firstName: "A",
+        lastName: "B",
+        phone: "+41 79 000 00 00",
+        street: "Rue du Lac 12",
+        postalCode: "1003",
+        city: "Lausanne",
+        acceptTerms: true,
+      },
       ip,
     ),
   );
