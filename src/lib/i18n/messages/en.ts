@@ -1262,6 +1262,11 @@ export const en: Messages = {
       reservedByOther: "Reserved by {name}",
       unassigned: "Unassigned",
       errReserve: "The action could not be completed.",
+      thReservedBy: "Reserved by",
+      thCanton: "Canton",
+      reservedFilterLabel: "Reserved by:",
+      filterAllReservers: "All",
+      filterUnreserved: "Unassigned",
     },
   },
 

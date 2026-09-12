@@ -51,7 +51,7 @@ export default async function AdminPrestationPage({
         href={`/admin/dossiers?periode=${selected}`}
         className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted transition-colors hover:text-strong"
       >
-        ← {t.admin.hub.title}
+        ← {t.admin.backHome}
       </Link>
 
       <div className="mt-2.5 flex flex-wrap items-end justify-between gap-5">
@@ -73,6 +73,7 @@ export default async function AdminPrestationPage({
       <DossiersTable
         slug={slug}
         currentAdminId={user?.id ?? ""}
+        isSuperAdmin={user?.role === "super_admin"}
         rows={rows.map((r) => ({
           id: r.id,
           taxYear: r.taxYear,
@@ -84,6 +85,7 @@ export default async function AdminPrestationPage({
           documentCount: r.documentCount,
           reservedBy: r.reservedBy,
           reservedByName: r.reservedByName,
+          canton: r.canton,
         }))}
       />
 

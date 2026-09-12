@@ -1268,6 +1268,11 @@ export const fr = {
       reservedByOther: "Réservé par {name}",
       unassigned: "Non réservé",
       errReserve: "L'action n'a pas pu être effectuée.",
+      thReservedBy: "Réservé par",
+      thCanton: "Canton",
+      reservedFilterLabel: "Réservé par :",
+      filterAllReservers: "Tous",
+      filterUnreserved: "Aucune réservation",
     },
   },
 

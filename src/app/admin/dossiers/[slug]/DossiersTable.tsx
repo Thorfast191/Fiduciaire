@@ -19,14 +19,21 @@ export interface TableRow {
   documentCount: number;
   reservedBy: string | null;
   reservedByName: string | null;
+  canton: string;
+}
+
+/** First name only — how the mockup labels a reservation ("Réservé par Veasna"). */
+function firstNameOf(fullName: string | null): string {
+  return (fullName ?? "").trim().split(/\s+/)[0] ?? "";
 }
 
 /**
- * The mockup's admin dossier table (`Fiduvia.dc.html:3049`): a search box over
- * a bordered card whose rows carry an initials avatar, the client's name and
- * email, and an inline status control. Editing status from the row is the
- * mockup's own interaction — it replaces having to paste a dossier id into a
- * separate form.
+ * The mockup's admin dossier table: a search box over a bordered card whose rows
+ * carry an initials avatar, the client's name and email, an inline status
+ * control, a canton, and — the heart of the admin space — a "Réservé par"
+ * column. A free dossier shows "Réserver"; a claimed one shows who holds it,
+ * and the holder (or any super admin) can release it. A "Réservé par" filter
+ * narrows the list to one agent, or to the unassigned ones.
  *
  * Search and filtering are client-side: the server already bounds the result
  * set to one tax period, which is small enough to hold in the page.
@@ -35,18 +42,22 @@ export default function DossiersTable({
   rows,
   slug,
   currentAdminId,
+  isSuperAdmin,
 }: {
   rows: TableRow[];
   /** Prestation segment, so a row can link to its own detail page. */
   slug: string;
   /** The signed-in admin, so a row knows whether it can release its reservation. */
   currentAdminId: string;
+  /** Super admins may release or reassign any colleague's reservation. */
+  isSuperAdmin: boolean;
 }) {
   const { locale, t } = useI18n();
   const router = useRouter();
 
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<DossierStatus | "">("");
+  const [reservedFilter, setReservedFilter] = useState<string>("");
   const [saving, setSaving] = useState<string | null>(null);
   const [reserving, setReserving] = useState<string | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
@@ -61,18 +72,37 @@ export default function DossiersTable({
     [locale],
   );
 
+  // The reservers present in this list, for the "Réservé par" filter — id keyed
+  // so two admins who share a first name never collapse into one option.
+  const reservers = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const r of rows) {
+      if (r.reservedBy && !seen.has(r.reservedBy)) {
+        seen.set(r.reservedBy, firstNameOf(r.reservedByName));
+      }
+    }
+    return [...seen.entries()].map(([id, name]) => ({ id, name }));
+  }, [rows]);
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
 
     return rows.filter((r) => {
       if (statusFilter && r.status !== statusFilter) return false;
+      if (reservedFilter === "__none__" && r.reservedBy) return false;
+      if (
+        reservedFilter &&
+        reservedFilter !== "__none__" &&
+        r.reservedBy !== reservedFilter
+      )
+        return false;
       if (!q) return true;
 
       return `${r.firstName} ${r.lastName} ${r.email}`
         .toLowerCase()
         .includes(q);
     });
-  }, [rows, query, statusFilter]);
+  }, [rows, query, statusFilter, reservedFilter]);
 
   async function changeStatus(id: string, status: DossierStatus) {
     setSaving(id);
@@ -121,6 +151,9 @@ export default function DossiersTable({
     }
   }
 
+  const selectCls =
+    "h-[46px] rounded-xl border border-line-default bg-card px-4 text-[14px] text-strong outline-none transition-colors hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10";
+
   return (
     <>
       <div className="mt-[18px] flex flex-wrap gap-3">
@@ -135,11 +168,9 @@ export default function DossiersTable({
 
         <select
           value={statusFilter}
-          onChange={(e) =>
-            setStatusFilter(e.target.value as DossierStatus | "")
-          }
+          onChange={(e) => setStatusFilter(e.target.value as DossierStatus | "")}
           aria-label={t.admin.dossiers.thStatus}
-          className="h-[46px] rounded-xl border border-line-default bg-card px-4 text-[14px] text-strong outline-none transition-colors hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10"
+          className={selectCls}
         >
           <option value="">{t.admin.dossiers.allStatuses}</option>
           {STATUS_ORDER.map((s) => (
@@ -147,6 +178,21 @@ export default function DossiersTable({
               {t.status[s]}
             </option>
           ))}
+        </select>
+
+        <select
+          value={reservedFilter}
+          onChange={(e) => setReservedFilter(e.target.value)}
+          aria-label={t.admin.dossiers.reservedFilterLabel}
+          className={selectCls}
+        >
+          <option value="">{t.admin.dossiers.filterAllReservers}</option>
+          {reservers.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
+          ))}
+          <option value="__none__">{t.admin.dossiers.filterUnreserved}</option>
         </select>
       </div>
 
@@ -160,14 +206,17 @@ export default function DossiersTable({
       ) : null}
 
       <div className="mt-4 overflow-x-auto">
-        <div className="min-w-[760px] rounded-2xl border border-line bg-card">
+        <div className="min-w-[900px] rounded-2xl border border-line bg-card">
           <div className="flex items-center gap-3.5 border-b border-line px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.05em] text-muted">
             <span className="min-w-0 flex-1">{t.admin.dossiers.thClient}</span>
-            <span className="w-[230px] shrink-0">
+            <span className="w-[200px] shrink-0">
               {t.admin.dossiers.thStatus}
             </span>
-            <span className="w-[90px] shrink-0">{t.admin.dossiers.thYear}</span>
-            <span className="w-[120px] shrink-0">
+            <span className="w-[160px] shrink-0">
+              {t.admin.dossiers.thReservedBy}
+            </span>
+            <span className="w-[70px] shrink-0">{t.admin.dossiers.thCanton}</span>
+            <span className="w-[110px] shrink-0">
               {t.admin.dossiers.thReceived}
             </span>
           </div>
@@ -179,171 +228,178 @@ export default function DossiersTable({
                 : t.admin.dossiers.noMatch}
             </p>
           ) : (
-            visible.map((r) => (
-              <div
-                key={r.id}
-                className="border-b border-line px-5 py-3.5 last:border-b-0 hover:bg-sunken/50"
-              >
-                <div className="flex items-center gap-3.5">
-                  <span className="flex min-w-0 flex-1 items-center gap-[11px]">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-100 text-[12px] font-bold text-brand">
-                      {(r.firstName[0] ?? "") + (r.lastName[0] ?? "")}
+            visible.map((r) => {
+              const mine = r.reservedBy === currentAdminId;
+              const canRelease = mine || isSuperAdmin;
+
+              return (
+                <div
+                  key={r.id}
+                  className="border-b border-line px-5 py-3.5 last:border-b-0 hover:bg-sunken/50"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <span className="flex min-w-0 flex-1 items-center gap-[11px]">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-100 text-[12px] font-bold text-brand">
+                        {(r.firstName[0] ?? "") + (r.lastName[0] ?? "")}
+                      </span>
+
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate text-[14.5px] font-semibold text-strong">
+                          {r.firstName} {r.lastName}
+                        </span>
+                        <span className="truncate text-[12.5px] text-muted">
+                          {r.email}
+                        </span>
+                      </span>
                     </span>
 
-                    <span className="flex min-w-0 flex-col">
-                      <span className="truncate text-[14.5px] font-semibold text-strong">
-                        {r.firstName} {r.lastName}
-                      </span>
-                      <span className="truncate text-[12.5px] text-muted">
-                        {r.email}
-                      </span>
-                    </span>
-                  </span>
+                    <span className="relative w-[200px] shrink-0">
+                      <select
+                        value={r.status}
+                        disabled={saving === r.id}
+                        onChange={(e) =>
+                          changeStatus(r.id, e.target.value as DossierStatus)
+                        }
+                        aria-label={`${t.admin.dossiers.thStatus} — ${r.firstName} ${r.lastName}`}
+                        className={`w-full cursor-pointer appearance-none rounded-full border-0 py-1.5 pl-3.5 pr-8 text-[12px] font-semibold outline-none transition-opacity focus:ring-4 focus:ring-brand/15 disabled:opacity-50 ${STATUS_CLASS[r.status]}`}
+                      >
+                        {STATUS_ORDER.map((s) => (
+                          <option key={s} value={s}>
+                            {t.status[s]}
+                          </option>
+                        ))}
+                      </select>
 
-                  <span className="relative w-[230px] shrink-0">
-                    <select
-                      value={r.status}
-                      disabled={saving === r.id}
-                      onChange={(e) =>
-                        changeStatus(r.id, e.target.value as DossierStatus)
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        aria-hidden="true"
+                        className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 opacity-70"
+                      >
+                        <path
+                          d="m6 8 4 4 4-4"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+
+                    <span className="w-[160px] shrink-0">
+                      {!r.reservedBy ? (
+                        <button
+                          type="button"
+                          disabled={reserving === r.id}
+                          onClick={() => toggleReservation(r.id, true)}
+                          className="inline-flex items-center gap-1.5 rounded-[9px] border border-[#CCC8BD] bg-card px-3 py-1.5 text-[12.5px] font-semibold text-[#145863] transition hover:bg-sunken disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.7"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                            className="h-3.5 w-3.5"
+                          >
+                            <path d="M5 3h14a2 2 0 0 1 2 2v16l-9-4-9 4V5a2 2 0 0 1 2-2z" />
+                          </svg>
+                          {reserving === r.id
+                            ? t.admin.dossiers.reserving
+                            : t.admin.dossiers.reserve}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={!canRelease || reserving === r.id}
+                          onClick={() =>
+                            canRelease && toggleReservation(r.id, false)
+                          }
+                          title={canRelease ? t.admin.dossiers.release : undefined}
+                          className={`inline-flex max-w-full items-center truncate rounded-full bg-[#EFEAFB] px-3 py-1.5 text-[12px] font-bold text-[#6B4FC0] ${
+                            canRelease
+                              ? "cursor-pointer hover:brightness-95"
+                              : "cursor-default"
+                          } disabled:opacity-60`}
+                        >
+                          {t.admin.dossiers.reservedByOther.replace(
+                            "{name}",
+                            firstNameOf(r.reservedByName),
+                          )}
+                        </button>
+                      )}
+                    </span>
+
+                    <span className="w-[70px] shrink-0 text-[13px] font-medium text-body">
+                      {r.canton || "—"}
+                    </span>
+
+                    <span className="fx-figure w-[110px] shrink-0 text-[13px] text-muted">
+                      {dateFmt.format(new Date(r.createdAt))}
+                    </span>
+                  </div>
+
+                  <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                    <Link
+                      href={`/admin/dossiers/${slug}/${r.id}`}
+                      className="rounded-lg border border-line-default px-3 py-1.5 text-[12.5px] font-medium text-brand transition hover:border-line-strong hover:bg-sunken"
+                    >
+                      {t.declaration.summary.open} →
+                    </Link>
+
+                    <span className="fx-figure text-[12px] text-muted">
+                      {r.taxYear}
+                    </span>
+
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium ${
+                        r.documentCount > 0
+                          ? "bg-teal-100 text-brand"
+                          : "text-subtle"
+                      }`}
+                      title={
+                        r.documentCount > 0
+                          ? `${r.documentCount} ${
+                              r.documentCount === 1
+                                ? t.admin.dossiers.docsUnit
+                                : t.admin.dossiers.docsUnitPlural
+                            }`
+                          : t.admin.dossiers.docsNone
                       }
-                      aria-label={`${t.admin.dossiers.thStatus} — ${r.firstName} ${r.lastName}`}
-                      className={`w-full cursor-pointer appearance-none rounded-full border-0 py-1.5 pl-3.5 pr-8 text-[12px] font-semibold outline-none transition-opacity focus:ring-4 focus:ring-brand/15 disabled:opacity-50 ${STATUS_CLASS[r.status]}`}
-                    >
-                      {STATUS_ORDER.map((s) => (
-                        <option key={s} value={s}>
-                          {t.status[s]}
-                        </option>
-                      ))}
-                    </select>
-
-                    <svg
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      aria-hidden="true"
-                      className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 opacity-70"
-                    >
-                      <path
-                        d="m6 8 4 4 4-4"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-
-                  <span className="fx-figure w-[90px] shrink-0 text-[14px] text-body">
-                    {r.taxYear}
-                  </span>
-
-                  <span className="fx-figure w-[120px] shrink-0 text-[13px] text-muted">
-                    {dateFmt.format(new Date(r.createdAt))}
-                  </span>
-                </div>
-
-                <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                  <Link
-                    href={`/admin/dossiers/${slug}/${r.id}`}
-                    className="rounded-lg border border-line-default px-3 py-1.5 text-[12.5px] font-medium text-brand transition hover:border-line-strong hover:bg-sunken"
-                  >
-                    {t.declaration.summary.open} →
-                  </Link>
-
-                  {!r.reservedBy ? (
-                    <button
-                      type="button"
-                      disabled={reserving === r.id}
-                      onClick={() => toggleReservation(r.id, true)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-teal-300 px-3 py-1.5 text-[12.5px] font-medium text-brand transition hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <svg
-                        viewBox="0 0 24 24"
+                        viewBox="0 0 20 20"
                         fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
                         aria-hidden="true"
                         className="h-3.5 w-3.5"
                       >
-                        <path d="M5 3h14a2 2 0 0 1 2 2v16l-9-4-9 4V5a2 2 0 0 1 2-2z" />
+                        <path
+                          d="M13.5 6.5 8 12a2 2 0 0 1-2.83-2.83l5.66-5.66a3.5 3.5 0 0 1 4.95 4.95l-5.66 5.66a5 5 0 0 1-7.07-7.07l5.3-5.3"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
-                      {reserving === r.id
-                        ? t.admin.dossiers.reserving
-                        : t.admin.dossiers.reserve}
-                    </button>
-                  ) : r.reservedBy === currentAdminId ? (
-                    <>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-100 px-2.5 py-1 text-[12px] font-medium text-brand">
-                        {t.admin.dossiers.reservedByYou}
-                      </span>
-                      <button
-                        type="button"
-                        disabled={reserving === r.id}
-                        onClick={() => toggleReservation(r.id, false)}
-                        className="rounded-lg border border-line-default px-3 py-1.5 text-[12.5px] font-medium text-muted transition hover:border-line-strong hover:bg-sunken disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {reserving === r.id
-                          ? t.admin.dossiers.reserving
-                          : t.admin.dossiers.release}
-                      </button>
-                    </>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-sunken px-2.5 py-1 text-[12px] font-medium text-muted">
-                      {t.admin.dossiers.reservedByOther.replace(
-                        "{name}",
-                        r.reservedByName ?? "—",
-                      )}
-                    </span>
-                  )}
-
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium ${
-                      r.documentCount > 0
-                        ? "bg-teal-100 text-brand"
-                        : "text-subtle"
-                    }`}
-                    title={
-                      r.documentCount > 0
+                      {r.documentCount > 0
                         ? `${r.documentCount} ${
                             r.documentCount === 1
                               ? t.admin.dossiers.docsUnit
                               : t.admin.dossiers.docsUnitPlural
                           }`
-                        : t.admin.dossiers.docsNone
-                    }
-                  >
-                    <svg
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      aria-hidden="true"
-                      className="h-3.5 w-3.5"
-                    >
-                      <path
-                        d="M13.5 6.5 8 12a2 2 0 0 1-2.83-2.83l5.66-5.66a3.5 3.5 0 0 1 4.95 4.95l-5.66 5.66a5 5 0 0 1-7.07-7.07l5.3-5.3"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {r.documentCount > 0
-                      ? `${r.documentCount} ${
-                          r.documentCount === 1
-                            ? t.admin.dossiers.docsUnit
-                            : t.admin.dossiers.docsUnitPlural
-                        }`
-                      : t.admin.dossiers.docsNone}
-                  </span>
+                        : t.admin.dossiers.docsNone}
+                    </span>
 
-                  <NotifyClient
-                    dossierId={r.id}
-                    clientName={`${r.firstName} ${r.lastName}`}
-                  />
+                    <NotifyClient
+                      dossierId={r.id}
+                      clientName={`${r.firstName} ${r.lastName}`}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

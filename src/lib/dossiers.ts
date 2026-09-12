@@ -102,6 +102,8 @@ export interface AdminDossierRow {
   reservedBy: string | null;
   /** That admin's display name, resolved in the same query; null when unassigned. */
   reservedByName: string | null;
+  /** Canton of domicile from the questionnaire answers, or "" when not set. */
+  canton: string;
 }
 
 /**
@@ -140,6 +142,9 @@ export async function listAllDossiersWithClient({
       reservedByName: sql<
         string | null
       >`nullif(trim(concat(${reserver.firstName}, ' ', ${reserver.lastName})), '')`,
+      // Canton lives in the questionnaire answers (declarations set it); other
+      // prestations may leave it blank, which the table renders as "—".
+      canton: sql<string>`coalesce(${dossiers.answers} ->> 'canton', '')`,
       // Counted in the same query so the table can flag which dossiers carry
       // files without a follow-up round trip per row. Mirrors the filter in
       // listDocumentsForDossier: uploaded and not soft-deleted.
