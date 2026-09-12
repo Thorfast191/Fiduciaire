@@ -120,7 +120,7 @@ export default function DossierAdminActions({
         )}
 
         {/* Tax period switch across this client's dossiers */}
-        {periodOptions.length > 1 ? (
+        {periodOptions.length > 0 ? (
           <label className="inline-flex items-center gap-2 text-[13px] font-semibold text-body">
             {t.admin.detail.periodLabel}
             <select

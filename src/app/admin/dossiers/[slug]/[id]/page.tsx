@@ -24,6 +24,7 @@ import DossierAdminActions from "./DossierAdminActions";
 import InternalComments from "./InternalComments";
 import ClosureDocuments from "./ClosureDocuments";
 import NotifyClient from "../NotifyClient";
+import MarkReceivedButton from "./MarkReceivedButton";
 
 /**
  * What the firm receives when a client submits.
@@ -205,12 +206,19 @@ export default async function AdminDossierDetailPage({
           </span>
         </div>
 
-        <NotifyClient
-          dossierId={id}
-          clientName={
-            client ? `${client.firstName} ${client.lastName}` : ""
-          }
-        />
+        <div className="flex flex-wrap items-center gap-2.5">
+          {access.dossier.status !== "documents_received" &&
+          access.dossier.status !== "completed" ? (
+            <MarkReceivedButton dossierId={id} />
+          ) : null}
+
+          <NotifyClient
+            dossierId={id}
+            clientName={
+              client ? `${client.firstName} ${client.lastName}` : ""
+            }
+          />
+        </div>
       </div>
 
       <div className="mt-4 flex flex-wrap items-start gap-4">
@@ -265,9 +273,22 @@ export default async function AdminDossierDetailPage({
         <div className="flex min-w-[300px] flex-1 flex-col gap-4">
           {isDeclaration ? (
             <section className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
-              <span className="fx-eyebrow text-[var(--text-muted)]">
-                {s.priceTitle}
-              </span>
+              <div className="flex items-center justify-between gap-3">
+                <span className="fx-eyebrow text-[var(--text-muted)]">
+                  {t.admin.detail.priceTitle}
+                </span>
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-bold ${
+                    payment?.status === "paid"
+                      ? "bg-[#E6F6EE] text-[#1F8A5B]"
+                      : "bg-[#FBF0DD] text-[#B26A00]"
+                  }`}
+                >
+                  {payment?.status === "paid"
+                    ? t.admin.detail.paid
+                    : t.admin.detail.pending}
+                </span>
+              </div>
 
               <div className="mt-3 flex flex-col gap-2">
                 {price.lines.map((line) => (
@@ -294,40 +315,27 @@ export default async function AdminDossierDetailPage({
                   className="fx-figure text-[24px] font-extrabold leading-none"
                   style={{ color: "var(--brand)" }}
                 >
-                  CHF {price.total}
+                  CHF {payment ? payment.amountChf : price.total}
                 </span>
               </div>
-            </section>
-          ) : null}
 
-          {payment ? (
-            <section className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
-              <div className="flex items-center justify-between gap-3">
-                <span className="fx-eyebrow text-[var(--text-muted)]">
-                  {t.admin.detail.paymentTitle}
+              {/* Payment sits inside the tariff card and shows before a payment
+                  row exists, as the reference does — an unpaid dossier reads
+                  "En attente de paiement" rather than hiding the block. */}
+              <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-line pt-3.5">
+                <span className="text-[13.5px] font-semibold text-muted">
+                  {t.admin.detail.paymentStatusLabel}
                 </span>
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-bold ${
-                    payment.status === "paid"
+                    payment?.status === "paid"
                       ? "bg-[#E6F6EE] text-[#1F8A5B]"
                       : "bg-[#FBF0DD] text-[#B26A00]"
                   }`}
                 >
-                  {payment.status === "paid"
+                  {payment?.status === "paid"
                     ? t.admin.detail.paid
                     : t.admin.detail.pending}
-                </span>
-              </div>
-
-              <div className="mt-3 flex items-baseline justify-between gap-3">
-                <span className="text-[13px] text-muted">
-                  {payment.invoiceNumber ?? ""}
-                </span>
-                <span
-                  className="fx-figure text-[18px] font-extrabold"
-                  style={{ color: "var(--brand)" }}
-                >
-                  CHF {payment.amountChf}
                 </span>
               </div>
 
