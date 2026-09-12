@@ -309,16 +309,27 @@ h3,
 h4,
 h5,
 h6 {
-  margin: 0;
-
   font-family: var(--font-display);
   color: var(--text-strong);
 
   text-wrap: balance;
 }
 
-p {
-  margin: 0;
+/* The margin reset sits in Tailwind's `base` layer rather than unlayered.
+   Unlayered rules outrank every layer, so as a plain rule this one silently
+   zeroed every `mt-*` / `mb-*` a heading or paragraph carries — around 120 of
+   them across the portal, the admin area and the auth screens, which is why
+   those columns read as cramped. In `base` the utilities win again. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
+  }
 }
 
 /* =========================================================
@@ -389,8 +400,18 @@ img {
   letter-spacing: -0.018em;
 }
 
+/* Marks a mandatory form label. Drawn as generated content so it never lands
+   in the label's text content, where end-to-end selectors read from. */
+.fx-required::after {
+  content: " *";
+  color: var(--gold);
+  font-weight: 700;
+}
+
 .fx-figure {
-  font-family: var(--font-mono);
+  /* The display face (Schibsted Grotesk), like the mockup's figures — it has a
+     plain zero, where the mono face draws a slashed one. */
+  font-family: var(--font-display);
 
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.018em;

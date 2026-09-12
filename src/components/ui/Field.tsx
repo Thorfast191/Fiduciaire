@@ -26,9 +26,15 @@ interface FieldProps {
 export function Field({ id, label, name, type = "text", ...rest }: FieldProps) {
   return (
     <div>
+      {/* Mandatory fields say so on the label — the browser only reveals it
+          once the form is submitted, which is too late to be useful. The star
+          is drawn with ::after so it stays out of the label's text content,
+          which is what `getByLabel` matches on. */}
       <label
         htmlFor={id}
-        className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-muted"
+        className={`mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-muted${
+          rest.required ? " fx-required" : ""
+        }`}
       >
         {label}
       </label>
