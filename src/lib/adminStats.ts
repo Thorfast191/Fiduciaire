@@ -1,4 +1,4 @@
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { dossiers, payments, users, type DossierStatus } from "@/db/schema";
 import { SERVICE_TYPES, type ServiceType } from "@/lib/serviceTypes";
@@ -173,4 +173,98 @@ export async function getAdminHomeStats(
     byStatus,
     byService,
   };
+}
+
+export interface AdminCardStats {
+  id: string;
+  name: string;
+  initials: string;
+  /** Dossiers this admin has reserved for the period. */
+  total: number;
+  /** Revenue settled on those dossiers, in CHF. */
+  revenueChf: number;
+  byService: Record<ServiceType, number>;
+}
+
+/**
+ * One summary card per administrator — the mockup's Statistiques agent cards.
+ * Each admin's reserved dossiers for the period, split by prestation, plus the
+ * revenue those brought in. Admins with nothing reserved still appear (at zero),
+ * so the team is always fully listed.
+ */
+export async function getPerAdminStats(
+  taxYear?: number,
+): Promise<AdminCardStats[]> {
+  const period = taxYear ? eq(dossiers.taxYear, taxYear) : undefined;
+
+  const [admins, serviceRows, revenueRows] = await Promise.all([
+    db
+      .select({
+        id: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+      })
+      .from(users)
+      .where(
+        and(
+          sql`${users.role} in ('admin', 'super_admin')`,
+          isNull(users.disabledAt),
+        ),
+      )
+      .orderBy(asc(users.firstName), asc(users.lastName)),
+    db
+      .select({
+        reservedBy: dossiers.reservedBy,
+        serviceType: dossiers.serviceType,
+        value: sql<number>`count(*)`,
+      })
+      .from(dossiers)
+      .where(and(sql`${dossiers.reservedBy} is not null`, period))
+      .groupBy(dossiers.reservedBy, dossiers.serviceType),
+    db
+      .select({
+        reservedBy: dossiers.reservedBy,
+        value: sql<number>`coalesce(sum(${payments.amountChf}), 0)`,
+      })
+      .from(payments)
+      .innerJoin(dossiers, eq(dossiers.id, payments.dossierId))
+      .where(
+        and(
+          eq(payments.status, "paid"),
+          sql`${dossiers.reservedBy} is not null`,
+          period,
+        ),
+      )
+      .groupBy(dossiers.reservedBy),
+  ]);
+
+  const revenueByAdmin = new Map<string, number>();
+  for (const r of revenueRows) {
+    if (r.reservedBy) revenueByAdmin.set(r.reservedBy, Number(r.value));
+  }
+
+  const serviceByAdmin = new Map<string, Record<ServiceType, number>>();
+  const totalByAdmin = new Map<string, number>();
+  for (const r of serviceRows) {
+    if (!r.reservedBy) continue;
+    const bucket = serviceByAdmin.get(r.reservedBy) ?? emptyByService();
+    bucket[r.serviceType as ServiceType] = Number(r.value);
+    serviceByAdmin.set(r.reservedBy, bucket);
+    totalByAdmin.set(
+      r.reservedBy,
+      (totalByAdmin.get(r.reservedBy) ?? 0) + Number(r.value),
+    );
+  }
+
+  return admins.map((a) => {
+    const name = `${a.firstName} ${a.lastName}`.trim();
+    return {
+      id: a.id,
+      name,
+      initials: ((a.firstName[0] ?? "") + (a.lastName[0] ?? "")).toUpperCase(),
+      total: totalByAdmin.get(a.id) ?? 0,
+      revenueChf: revenueByAdmin.get(a.id) ?? 0,
+      byService: serviceByAdmin.get(a.id) ?? emptyByService(),
+    };
+  });
 }

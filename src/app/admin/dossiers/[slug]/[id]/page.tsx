@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/guards";
-import { getT, getLocale } from "@/lib/i18n";
-import { getAccessibleDossier } from "@/lib/dossiers";
+import { getT } from "@/lib/i18n";
+import {
+  getAccessibleDossier,
+  getDossierPayment,
+  listDossiersForClient,
+} from "@/lib/dossiers";
 import { listDocumentsForDossier } from "@/lib/documents";
+import { listComments } from "@/lib/comments";
 import { getClientById } from "@/lib/adminUsers";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { CLOSURE_CATEGORIES } from "@/lib/documentCategories";
 import {
   DOCUMENT_CATALOGUE,
   computePrice,
@@ -15,6 +20,10 @@ import {
 } from "@/lib/declaration";
 import { SLUG_TO_SERVICE, serviceLabel } from "@/lib/serviceTypes";
 import { DocumentLink } from "./DocumentLink";
+import DossierAdminActions from "./DossierAdminActions";
+import InternalComments from "./InternalComments";
+import ClosureDocuments from "./ClosureDocuments";
+import NotifyClient from "../NotifyClient";
 
 /**
  * What the firm receives when a client submits.
@@ -29,11 +38,10 @@ export default async function AdminDossierDetailPage({
 }: {
   params: Promise<{ slug: string; id: string }>;
 }) {
-  const [{ slug, id }, user, { t }, locale] = await Promise.all([
+  const [{ slug, id }, user, { t }] = await Promise.all([
     params,
     getCurrentUser(),
     getT(),
-    getLocale(),
   ]);
 
   const serviceType = SLUG_TO_SERVICE[slug];
@@ -42,10 +50,29 @@ export default async function AdminDossierDetailPage({
   const access = await getAccessibleDossier(id, { id: user.id, role: user.role });
   if (!access.ok) notFound();
 
-  const [documents, client] = await Promise.all([
-    listDocumentsForDossier(id),
-    getClientById(access.dossier.clientId),
-  ]);
+  const [documents, client, siblings, payment, comments, reserver] =
+    await Promise.all([
+      listDocumentsForDossier(id),
+      getClientById(access.dossier.clientId),
+      listDossiersForClient(access.dossier.clientId, serviceType),
+      getDossierPayment(id),
+      listComments(id),
+      access.dossier.reservedBy
+        ? getClientById(access.dossier.reservedBy)
+        : Promise.resolve(undefined),
+    ]);
+
+  const isClosure = (cat: string): boolean =>
+    (CLOSURE_CATEGORIES as readonly string[]).includes(cat);
+  const closureDocs = documents.filter((doc) => isClosure(doc.category));
+
+  const periodOptions = siblings.map((row) => ({
+    year: row.taxYear,
+    id: row.id,
+  }));
+  const reservedByName = reserver
+    ? `${reserver.firstName} ${reserver.lastName}`.trim()
+    : null;
 
   const s = t.declaration.summary;
   const d = t.declaration;
@@ -56,6 +83,15 @@ export default async function AdminDossierDetailPage({
   const uploaded = new Map<string, (typeof documents)[number]>(
     documents.map((doc) => [doc.category, doc]),
   );
+
+  // "Documents reçus N / N" — for a declaration, how many required pieces have
+  // arrived; for other prestations, how many (non-closure) files were uploaded.
+  const clientDocs = documents.filter((doc) => !isClosure(doc.category));
+  const docsTotal = serviceType === "declaration" ? required.length : clientDocs.length;
+  const docsReceived =
+    serviceType === "declaration"
+      ? required.filter((k) => uploaded.has(k)).length
+      : clientDocs.length;
 
   const sections = summariseAnswers(answers, {
     yes: d.yes,
@@ -87,12 +123,6 @@ export default async function AdminDossierDetailPage({
     },
   });
 
-  const dateFmt = new Intl.DateTimeFormat(locale === "fr" ? "fr-CH" : "en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
   const isDeclaration = serviceType === "declaration";
 
   return (
@@ -107,19 +137,34 @@ export default async function AdminDossierDetailPage({
       <div className="mt-2.5 flex flex-wrap items-start justify-between gap-5">
         <div>
           <h1 className="disp text-[clamp(26px,3.2vw,32px)] font-extrabold leading-[1.05]">
-            {isDeclaration ? s.title : serviceLabel(t, serviceType)}
+            {client
+              ? `${client.firstName} ${client.lastName}`
+              : isDeclaration
+                ? s.title
+                : serviceLabel(t, serviceType)}
           </h1>
-          <p className="mt-1.5 text-[15px] text-muted">{s.sub}</p>
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] text-muted">
+            {client?.email ? <span>{client.email}</span> : null}
+            {client?.phone ? (
+              <>
+                <span className="text-line-strong">·</span>
+                <span>{client.phone}</span>
+              </>
+            ) : null}
+          </p>
         </div>
 
-        <StatusBadge status={access.dossier.status} />
-      </div>
-
-      {/* Who and when */}
-      <div className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
-        <Fact label={s.client} value={client ? `${client.firstName} ${client.lastName}` : s.none} sub={client?.email} />
-        <Fact label={s.period} value={String(access.dossier.taxYear)} />
-        <Fact label={s.submittedOn} value={dateFmt.format(access.dossier.updatedAt)} />
+        <DossierAdminActions
+          dossierId={id}
+          slug={slug}
+          status={access.dossier.status}
+          reservedBy={access.dossier.reservedBy}
+          reservedByName={reservedByName}
+          currentAdminId={user.id}
+          isSuperAdmin={user.role === "super_admin"}
+          periodOptions={periodOptions}
+          currentYear={access.dossier.taxYear}
+        />
       </div>
 
       {access.dossier.status === "not_started" ? (
@@ -128,7 +173,25 @@ export default async function AdminDossierDetailPage({
         </p>
       ) : null}
 
-      <div className="mt-6 flex flex-wrap items-start gap-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-md)] border border-line bg-card px-5 py-4 shadow-[var(--shadow-xs)]">
+        <div className="flex items-baseline gap-2.5">
+          <h2 className="text-[16px] font-bold text-strong">
+            {t.admin.detail.docsReceived}
+          </h2>
+          <span className="fx-figure text-[14px] text-muted">
+            {docsReceived} / {docsTotal}
+          </span>
+        </div>
+
+        <NotifyClient
+          dossierId={id}
+          clientName={
+            client ? `${client.firstName} ${client.lastName}` : ""
+          }
+        />
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-start gap-4">
         {/* Answers */}
         {isDeclaration ? (
           <section className="min-w-[320px] flex-[1.5]">
@@ -215,13 +278,53 @@ export default async function AdminDossierDetailPage({
             </section>
           ) : null}
 
+          {payment ? (
+            <section className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
+              <div className="flex items-center justify-between gap-3">
+                <span className="fx-eyebrow text-[var(--text-muted)]">
+                  {t.admin.detail.paymentTitle}
+                </span>
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-bold ${
+                    payment.status === "paid"
+                      ? "bg-[#E6F6EE] text-[#1F8A5B]"
+                      : "bg-[#FBF0DD] text-[#B26A00]"
+                  }`}
+                >
+                  {payment.status === "paid"
+                    ? t.admin.detail.paid
+                    : t.admin.detail.pending}
+                </span>
+              </div>
+
+              <div className="mt-3 flex items-baseline justify-between gap-3">
+                <span className="text-[13px] text-muted">
+                  {payment.invoiceNumber ?? ""}
+                </span>
+                <span
+                  className="fx-figure text-[18px] font-extrabold"
+                  style={{ color: "var(--brand)" }}
+                >
+                  CHF {payment.amountChf}
+                </span>
+              </div>
+
+              <Link
+                href="/admin/paiements"
+                className="mt-3 block w-full rounded-[11px] border border-[#BFD8DC] bg-card px-4 py-2.5 text-center text-[13.5px] font-semibold text-[#145863] transition hover:bg-sunken"
+              >
+                {t.admin.detail.extraPayment}
+              </Link>
+            </section>
+          ) : null}
+
           <section className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
             <span className="fx-eyebrow text-[var(--text-muted)]">
               {s.docsTitle}
             </span>
 
             <div className="mt-3 flex flex-col gap-2.5">
-              {(isDeclaration ? required : documents.map((doc) => doc.category)).map(
+              {(isDeclaration ? required : clientDocs.map((doc) => doc.category)).map(
                 (key) => {
                   const doc = uploaded.get(key);
                   const meta = DOCUMENT_CATALOGUE[key];
@@ -256,31 +359,34 @@ export default async function AdminDossierDetailPage({
                 },
               )}
 
-              {(isDeclaration ? required : documents).length === 0 ? (
+              {(isDeclaration ? required : clientDocs).length === 0 ? (
                 <p className="text-[13.5px] text-muted">{s.none}</p>
               ) : null}
             </div>
           </section>
         </div>
       </div>
-    </div>
-  );
-}
 
-function Fact({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-}) {
-  return (
-    <div className="rounded-[var(--radius-md)] border border-line bg-card p-4 shadow-[var(--shadow-xs)]">
-      <span className="fx-eyebrow text-[var(--text-muted)]">{label}</span>
-      <div className="disp mt-1 text-[17px] font-bold">{value}</div>
-      {sub ? <p className="mt-0.5 text-[12.5px] text-muted">{sub}</p> : null}
+      <div className="mt-4">
+        <ClosureDocuments
+          dossierId={id}
+          documents={closureDocs.map((doc) => ({
+            id: doc.id,
+            category: doc.category,
+            filename: doc.filename,
+          }))}
+        />
+      </div>
+
+      <InternalComments
+        dossierId={id}
+        comments={comments.map((c) => ({
+          id: c.id,
+          body: c.body,
+          createdAt: c.createdAt.toISOString(),
+          authorName: c.authorName,
+        }))}
+      />
     </div>
   );
 }

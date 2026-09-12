@@ -48,4 +48,19 @@ export const DOCUMENT_CATEGORIES = [
   "ficheTransmission",
   "copiePrecedente",
   "divers",
+  // Closure documents — uploaded by the firm and shown to the client once the
+  // dossier is closed (the mockup's "Documents de clôture").
+  "closureCopieDecl",
+  "closureQuittancement",
+  "closureDossierSuivant",
+] as const;
+
+/**
+ * The three closure documents an administrator uploads at the end, visible to
+ * the client only once the dossier is completed. Order matches the mockup.
+ */
+export const CLOSURE_CATEGORIES = [
+  "closureCopieDecl",
+  "closureQuittancement",
+  "closureDossierSuivant",
 ] as const;

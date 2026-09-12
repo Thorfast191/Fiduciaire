@@ -173,6 +173,38 @@ export async function listAllDossiersWithClient({
     .limit(limit);
 }
 
+export interface DossierPaymentInfo {
+  status: "paid" | "pending";
+  amountChf: number;
+  invoiceNumber: string | null;
+}
+
+/**
+ * The settled/last payment tied to a dossier, for the admin detail screen's
+ * "Statut de paiement". Prefers a paid row; returns null when nothing is
+ * recorded against the dossier yet.
+ */
+export async function getDossierPayment(
+  dossierId: string,
+): Promise<DossierPaymentInfo | null> {
+  const rows = await db
+    .select({
+      status: payments.status,
+      amountChf: payments.amountChf,
+      invoiceNumber: payments.invoiceNumber,
+    })
+    .from(payments)
+    .where(eq(payments.dossierId, dossierId))
+    .orderBy(desc(payments.paidAt));
+  if (rows.length === 0) return null;
+  const paid = rows.find((r) => r.status === "paid") ?? rows[0];
+  return {
+    status: paid.status,
+    amountChf: paid.amountChf,
+    invoiceNumber: paid.invoiceNumber,
+  };
+}
+
 /** Distinct tax years that have at least one dossier, newest first. */
 export async function listTaxYears(): Promise<number[]> {
   const rows = await db

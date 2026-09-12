@@ -7,6 +7,7 @@ export interface AccountRow {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string | null;
   role: Role;
   createdAt: Date;
 }
@@ -16,6 +17,7 @@ const COLUMNS = {
   firstName: users.firstName,
   lastName: users.lastName,
   email: users.email,
+  phone: users.phone,
   role: users.role,
   createdAt: users.createdAt,
 };

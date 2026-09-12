@@ -312,6 +312,34 @@ export type DossierNotification = typeof dossierNotifications.$inferSelect;
 export type NotificationKind = DossierNotification["kind"];
 
 /**
+ * Internal notes the team leaves on a dossier — the mockup's "Commentaires
+ * internes (équipe)". Visible only in the admin space; the client never sees
+ * them, which is why they are a separate table from `dossier_notifications`
+ * (those are messages sent to the client).
+ */
+export const dossierComments = pgTable(
+  "dossier_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    dossierId: uuid("dossier_id")
+      .notNull()
+      .references(() => dossiers.id),
+    authorId: uuid("author_id")
+      .notNull()
+      .references(() => users.id),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [
+    index("dossier_comments_dossier_idx").on(t.dossierId, t.createdAt),
+  ],
+);
+
+export type DossierComment = typeof dossierComments.$inferSelect;
+
+/**
  * A client's Fiduvia Assistance subscription for one tax period.
  *
  * One row per client per year: subscribing again for the same period replaces

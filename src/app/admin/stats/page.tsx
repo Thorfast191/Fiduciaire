@@ -1,4 +1,4 @@
-import { getAdminDashboardStats } from "@/lib/adminStats";
+import { getAdminDashboardStats, getPerAdminStats } from "@/lib/adminStats";
 import { countDossiersByService, listTaxYears } from "@/lib/dossiers";
 import { StatCard } from "@/components/ui/StatCard";
 import { STATUS_ORDER } from "@/lib/dossierStatus";
@@ -6,8 +6,13 @@ import { PeriodPicker } from "@/components/shell/PeriodPicker";
 import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
-import { serviceLabel, type ServiceType } from "@/lib/serviceTypes";
+import {
+  SERVICE_TYPES,
+  serviceLabel,
+  type ServiceType,
+} from "@/lib/serviceTypes";
 import type { DossierStatus } from "@/db/schema";
+import AdminStatCards from "./AdminStatCards";
 
 const STATUS_BAR: Record<DossierStatus, string> = {
   not_started: "bg-status-not-started",
@@ -50,10 +55,15 @@ export default async function AdminStatsPage({
   const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
 
-  const [stats, counts] = await Promise.all([
+  const [stats, counts, perAdmin] = await Promise.all([
     getAdminDashboardStats(selected),
     countDossiersByService(selected),
+    getPerAdminStats(selected),
   ]);
+
+  const serviceLabels = Object.fromEntries(
+    SERVICE_TYPES.map((svc) => [svc, serviceLabel(t, svc)]),
+  );
   const statusTotal = STATUS_ORDER.reduce((a, s) => a + stats.byStatus[s], 0);
 
   const money = new Intl.NumberFormat(locale === "fr" ? "fr-CH" : "en-CH", {
@@ -163,6 +173,8 @@ export default async function AdminStatsPage({
           ))}
         </div>
       </section>
+
+      <AdminStatCards admins={perAdmin} labels={serviceLabels} />
     </div>
   );
 }
