@@ -437,6 +437,10 @@ export const en: Messages = {
       submit: "Verify code",
       loading: "Verifying...",
       notReceived: "Didn't receive the code?",
+      resend: "Send a new code",
+      resending: "Sending the code…",
+      resentNotice:
+        "A new code has just been sent. The previous one no longer works.",
       notReceivedBody: "Check your spam folder, or go back and start again.",
       warning: "Never share your verification code with anyone.",
       fallback: "Loading...",

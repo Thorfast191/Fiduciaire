@@ -21,10 +21,19 @@ function hashCode(code: string): string {
   return crypto.createHash("sha256").update(code).digest("hex");
 }
 
-export async function createOtp(
+/**
+ * Issue a code, returning the row id alongside it.
+ *
+ * The id is what lets the verify page ask for a fresh code without sending an
+ * email address back: the login response drops it in a short-lived cookie, and
+ * "renvoyer le code" proves entitlement by presenting it. Issuing always
+ * retires the caller's previous unconsumed code for the same purpose, so a
+ * resent code replaces the old one rather than leaving two valid.
+ */
+export async function issueOtp(
   userId: string,
   purpose: OtpPurpose,
-): Promise<string> {
+): Promise<{ code: string; id: string }> {
   await db
     .update(otpCodes)
     .set({ consumedAt: new Date() })
@@ -37,13 +46,24 @@ export async function createOtp(
     );
 
   const code = generateCode();
-  await db.insert(otpCodes).values({
-    userId,
-    purpose,
-    codeHash: hashCode(code),
-    expiresAt: new Date(Date.now() + OTP_TTL_MS),
-  });
-  return code;
+  const [row] = await db
+    .insert(otpCodes)
+    .values({
+      userId,
+      purpose,
+      codeHash: hashCode(code),
+      expiresAt: new Date(Date.now() + OTP_TTL_MS),
+    })
+    .returning({ id: otpCodes.id });
+  return { code, id: row.id };
+}
+
+/** Issue a code. Most callers only need the code itself. */
+export async function createOtp(
+  userId: string,
+  purpose: OtpPurpose,
+): Promise<string> {
+  return (await issueOtp(userId, purpose)).code;
 }
 
 export async function consumeOtp(

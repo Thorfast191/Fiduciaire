@@ -4,9 +4,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { users } from "@/db/schema";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
-import { createOtp } from "@/lib/auth/otp";
+import { issueOtp } from "@/lib/auth/otp";
 import { sendEmail } from "@/lib/email/send";
 import { otpEmailTemplate } from "@/lib/email/templates/otpEmail";
+import { setPendingOtp } from "@/lib/auth/pendingOtp";
 import {
   isLoginRateLimited,
   recordLoginFailure,
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const code = await createOtp(user.id, "login");
+  const { code, id: otpId } = await issueOtp(user.id, "login");
   await recordOtpIssuance(user.id, "login");
   const emailBody = otpEmailTemplate({
     code,
@@ -83,5 +84,9 @@ export async function POST(request: NextRequest) {
   });
   await sendEmail({ to: user.email, ...emailBody });
 
-  return NextResponse.json({ ok: true });
+  // Lets the verify page ask for a fresh code without the password again, and
+  // without putting an email address in a request body anyone could forge.
+  const response = NextResponse.json({ ok: true });
+  setPendingOtp(response, otpId);
+  return response;
 }

@@ -19,6 +19,10 @@ const ERRORS = {
     tooManyRequests:
       "Trop de messages envoyés. Réessayez dans un moment ou écrivez-nous directement.",
     badCode: "Code incorrect ou expiré.",
+    sessionExpired:
+      "Votre session de vérification a expiré. Reconnectez-vous pour recevoir un nouveau code.",
+    resendFailed:
+      "Le code n'a pas pu être renvoyé. Réessayez dans un instant.",
     tooManyCodes: "Trop de tentatives. Demandez un nouveau code.",
     checkInput: "Merci de vérifier les informations saisies.",
     weakPassword:
@@ -45,6 +49,9 @@ const ERRORS = {
     tooManyRequests:
       "Too many messages sent. Please try again later or email us directly.",
     badCode: "Incorrect or expired code.",
+    sessionExpired:
+      "Your verification session has expired. Sign in again to get a new code.",
+    resendFailed: "The code could not be resent. Please try again shortly.",
     tooManyCodes: "Too many attempts. Please request a new code.",
     checkInput: "Please check the information you entered.",
     weakPassword:

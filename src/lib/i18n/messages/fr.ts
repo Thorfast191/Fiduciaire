@@ -434,6 +434,10 @@ export const fr = {
       submit: "Vérifier le code",
       loading: "Vérification...",
       notReceived: "Vous n'avez pas reçu le code ?",
+      resend: "Renvoyer un nouveau code",
+      resending: "Envoi du code…",
+      resentNotice:
+        "Un nouveau code vient de vous être envoyé. Le code précédent n'est plus valable.",
       notReceivedBody:
         "Vérifiez votre dossier courrier indésirable ou revenez en arrière pour recommencer.",
       warning:

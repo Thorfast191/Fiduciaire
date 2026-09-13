@@ -36,9 +36,14 @@ async function signIn(role: Role) {
   return { user, token };
 }
 
-/** A synthetic year no real period uses, fresh on every run. */
+/**
+ * A year in a band nothing else uses. Not the 2090s — seeded periods live
+ * there and a collision made the test read a 409 as the guard failing — and
+ * not past 2100, which the route itself rejects. The caller also deletes the
+ * year first, so this only has to avoid real data, not guarantee freshness.
+ */
 function freeYear(): number {
-  return 2090 + Math.floor(Math.random() * 10);
+  return 2060 + Math.floor(Math.random() * 25);
 }
 
 function post(url: string, body: unknown, token: string) {
@@ -69,6 +74,8 @@ describe("firm-wide routes are the super admin's alone", () => {
   it("lets a super admin create one", async () => {
     const { token } = await signIn("super_admin");
     const year = freeYear();
+    // Deterministic rather than hoping the random year is free.
+    await db.delete(taxPeriods).where(eq(taxPeriods.year, year));
     try {
       const res = await createPeriod(
         post("http://localhost/api/tax-periods", { year }, token),

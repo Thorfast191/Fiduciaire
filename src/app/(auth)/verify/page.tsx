@@ -17,6 +17,30 @@ function VerifyContent() {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+
+  async function resend() {
+    setResending(true);
+    setError("");
+    setResent(false);
+    try {
+      const res = await fetch("/api/auth/resend-otp", { method: "POST" });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError(body?.error ?? t.common.genericError);
+        return;
+      }
+      // The previous code stopped working the moment this one was issued, so
+      // say so rather than leaving them typing the one already in their inbox.
+      setResent(true);
+      setCode("");
+    } catch {
+      setError(t.common.genericError);
+    } finally {
+      setResending(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -163,7 +187,27 @@ function VerifyContent() {
               {t.auth.verify.notReceived}
             </p>
 
-            <p className="mt-1 text-center text-[12px] leading-5 text-subtle">
+            <div className="mt-2 text-center">
+              <button
+                type="button"
+                onClick={resend}
+                disabled={resending || loading}
+                className="text-[12.5px] font-semibold text-brand underline underline-offset-2 transition hover:text-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {resending ? t.auth.verify.resending : t.auth.verify.resend}
+              </button>
+            </div>
+
+            {resent ? (
+              <p
+                role="status"
+                className="mt-2 text-center text-[12px] leading-5 text-green-600"
+              >
+                {t.auth.verify.resentNotice}
+              </p>
+            ) : null}
+
+            <p className="mt-2 text-center text-[12px] leading-5 text-subtle">
               {t.auth.verify.notReceivedBody}
             </p>
           </div>
