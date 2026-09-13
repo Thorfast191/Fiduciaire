@@ -8,7 +8,6 @@ import { getT } from "@/lib/i18n";
 import { resolvePeriod } from "@/lib/adminPeriod";
 import { listPeriodOptions } from "@/lib/taxPeriods";
 import DossiersTable from "./DossiersTable";
-import DossierAdminForms from "../DossierAdminForms";
 import { SLUG_TO_SERVICE, serviceDescription } from "@/lib/serviceTypes";
 
 /**
@@ -113,8 +112,6 @@ export default async function AdminPrestationPage({
           situation: r.situation,
         }))}
       />
-
-      {serviceType === "declaration" ? <DossierAdminForms /> : null}
     </div>
   );
 }
