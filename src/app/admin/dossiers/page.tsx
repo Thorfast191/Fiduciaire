@@ -117,16 +117,6 @@ export default async function AdminDossiersHubPage({
 
   const options = await listPeriodOptions(years);
   const selected = resolvePeriod(options, periode);
-  // These four have no period picker on their own list — the reference gives
-  // them none — so the hub must count them the same way, across every year,
-  // or the card contradicts the page it links to.
-  const HUB_UNSCOPED = [
-    "simulation",
-    "acompte",
-    "relecture",
-    "capital",
-  ] as const;
-
   // An ordinary admin only sees the dossiers assigned to them; the super admin
   // sees the whole firm.
   const scope = user?.role === "super_admin" ? undefined : user?.id;
@@ -137,7 +127,7 @@ export default async function AdminDossiersHubPage({
   // Only the wizard needs the roster and the free pool; the one-click split
   // asks the server to work both out.
   const [counts, adminRows, free] = await Promise.all([
-    countDossiersByService(selected, scope, HUB_UNSCOPED),
+    countDossiersByService(selected, scope),
     isSuperAdmin ? listAdminAccounts() : Promise.resolve([]),
     isSuperAdmin
       ? countFreeDossiersByService(selected)

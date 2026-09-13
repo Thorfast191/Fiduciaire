@@ -38,17 +38,8 @@ export default async function AdminPrestationPage({
 
   const isSuper = user?.role === "super_admin";
 
-  // The reference gives the four "module" prestations no period selector: they
-  // list every year at once, filtered only by who reserved them. The
-  // declaration, departure and décès lists stay scoped to one period.
-  const isModule =
-    serviceType === "simulation" ||
-    serviceType === "acompte" ||
-    serviceType === "relecture" ||
-    serviceType === "capital";
-
   const rows = await listAllDossiersWithClient({
-    taxYear: isModule ? undefined : selected,
+    taxYear: selected,
     serviceType,
     // Ordinary admins only see dossiers assigned to them.
     reservedBy: isSuper ? undefined : user?.id,
@@ -78,16 +69,14 @@ export default async function AdminPrestationPage({
             {t.admin.dossiers.listTitles[serviceType]}
           </h1>
 
-          {!isModule ? (
-            <p className="mt-1.5 max-w-[560px] text-[15px] text-muted">
-              {serviceType === "declaration"
-                ? t.admin.dossiers.sub
-                : serviceDescription(t, serviceType)}
-            </p>
-          ) : null}
+          <p className="mt-1.5 max-w-[560px] text-[15px] text-muted">
+            {serviceType === "declaration"
+              ? t.admin.dossiers.sub
+              : serviceDescription(t, serviceType)}
+          </p>
         </div>
 
-        {!isModule ? <PeriodPicker years={options} current={selected} /> : null}
+        <PeriodPicker years={options} current={selected} />
       </div>
 
       <DossiersTable

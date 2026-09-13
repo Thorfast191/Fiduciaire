@@ -45,76 +45,21 @@ function firstNameOf(fullName: string | null): string {
  * amounts to.
  */
 /**
- * Which columns each prestation shows, in the reference's order and at its
- * widths (`Fiduvia.dc.html`, one list template per prestation).
+ * The columns every prestation list shows.
  *
- * Two shapes exist. The declaration, the departure and the décès lists lead
- * with the status control and filter from their column headers. The "module"
- * prestations — simulation, acomptes, relecture, capital — lead with the
- * reception date, show the status as a read-only pill (it is changed on the
- * dossier itself) and filter only by "Réservé par". Capital is a third shape
- * again and does not use this table at all; see `CapitalRows`.
+ * The reference gives each prestation its own template — three different
+ * shapes, capital not even a table. The firm reviewed that and asked for one
+ * layout everywhere: the declaration's, which they were happy with. So all
+ * seven share these columns, these widths and the header filter menus, in the
+ * admin and super-admin views alike. Their word over the mockup's.
  */
-type ColumnKey =
-  | "status"
-  | "statusPill"
-  | "reservedBy"
-  | "received"
-  | "canton"
-  | "year"
-  | "situation";
+type ColumnKey = "status" | "reservedBy" | "received" | "canton";
 
-const COLUMNS: Record<ServiceType, { key: ColumnKey; width: string }[]> = {
-  declaration: [
-    { key: "status", width: "w-[220px]" },
-    { key: "reservedBy", width: "w-[170px]" },
-    { key: "received", width: "w-[150px]" },
-    { key: "canton", width: "w-[100px]" },
-  ],
-  departure: [
-    { key: "status", width: "w-[220px]" },
-    { key: "reservedBy", width: "w-[170px]" },
-    { key: "received", width: "w-[150px]" },
-    { key: "canton", width: "w-[100px]" },
-  ],
-  deces: [
-    { key: "status", width: "w-[220px]" },
-    { key: "reservedBy", width: "w-[170px]" },
-    { key: "received", width: "w-[150px]" },
-    { key: "canton", width: "w-[100px]" },
-  ],
-  simulation: [
-    { key: "received", width: "w-[150px]" },
-    { key: "canton", width: "w-[100px]" },
-    { key: "statusPill", width: "w-[150px]" },
-    { key: "reservedBy", width: "w-[150px]" },
-  ],
-  acompte: [
-    { key: "received", width: "w-[150px]" },
-    { key: "canton", width: "w-[100px]" },
-    { key: "statusPill", width: "w-[150px]" },
-    { key: "reservedBy", width: "w-[150px]" },
-  ],
-  relecture: [
-    { key: "received", width: "w-[150px]" },
-    { key: "year", width: "w-[120px]" },
-    { key: "situation", width: "w-[140px]" },
-    { key: "statusPill", width: "w-[150px]" },
-    { key: "reservedBy", width: "w-[150px]" },
-  ],
-  // Not used: the capital list renders its own icon-led rows.
-  capital: [],
-};
-
-/**
- * The prestations whose list has no column-header menus and no search box —
- * the reference gives them a single "Réservé par :" select instead.
- */
-const MODULE_SERVICES: ServiceType[] = [
-  "simulation",
-  "acompte",
-  "relecture",
-  "capital",
+const COLUMNS: { key: ColumnKey; width: string }[] = [
+  { key: "status", width: "w-[220px]" },
+  { key: "reservedBy", width: "w-[170px]" },
+  { key: "received", width: "w-[150px]" },
+  { key: "canton", width: "w-[100px]" },
 ];
 
 const SITUATION_KEYS = [
@@ -153,17 +98,13 @@ export default function DossiersTable({
     [rows],
   );
 
-  const columns = COLUMNS[serviceType] ?? COLUMNS.declaration;
+  const columns = COLUMNS;
   const isDeclaration = serviceType === "declaration";
-  const isCapital = serviceType === "capital";
-  // A module list filters only by "Réservé par" and shows a read-only status.
-  const isModule = MODULE_SERVICES.includes(serviceType);
 
   const columnLabel = (key: ColumnKey) => {
     const d = t.admin.dossiers;
     switch (key) {
       case "status":
-      case "statusPill":
         return d.thStatus;
       case "reservedBy":
         return d.thReservedBy;
@@ -171,10 +112,6 @@ export default function DossiersTable({
         return d.thReceived;
       case "canton":
         return d.thCanton;
-      case "situation":
-        return d.thSituation;
-      case "year":
-        return serviceType === "capital" ? d.thWithdrawalYear : d.thDeclaredYear;
     }
   };
 
@@ -363,16 +300,6 @@ export default function DossiersTable({
                     </svg>
           </>
         );
-      case "statusPill":
-        // The module lists show the status, they do not set it — the reference
-        // moves that control onto the dossier itself.
-        return (
-          <span
-            className={`inline-flex max-w-full items-center truncate rounded-full px-2 py-[3px] text-[11px] font-bold ${STATUS_CLASS[r.status]}`}
-          >
-            {t.status[r.status]}
-          </span>
-        );
       case "reservedBy":
         return (
           <>
@@ -455,14 +382,6 @@ export default function DossiersTable({
         );
       case "canton":
         return <span className="text-[13px] font-medium text-body">{r.canton || "—"}</span>;
-      case "year":
-        return <span className="fx-figure text-[13.5px] font-bold text-strong">{r.taxYear}</span>;
-      case "situation":
-        return (
-          <span className="text-[13px] font-medium text-body">
-            {situationLabel(r.situation)}
-          </span>
-        );
     }
   }
 
@@ -534,9 +453,6 @@ export default function DossiersTable({
 
   function headerControl(key: ColumnKey) {
     const d = t.admin.dossiers;
-
-    // Only the declaration, departure and décès lists carry column menus.
-    if (isModule) return null;
 
     if (key === "status") {
       return headerMenu(
@@ -610,20 +526,8 @@ export default function DossiersTable({
     return null;
   }
 
-  /** A list row opens its dossier, as the reference's rows do. */
-  function openRow(id: string) {
-    router.push(`/admin/dossiers/${slug}/${id}`);
-  }
 
-  /** True when the click landed on a control inside the row, not the row. */
-  function hitControl(target: EventTarget | null) {
-    return !!(target as HTMLElement | null)?.closest(
-      "select, button, a, input, label",
-    );
-  }
 
-  const selectCls =
-    "h-[46px] rounded-xl border border-line-default bg-card px-4 text-[14px] text-strong outline-none transition-colors hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10";
 
   return (
     <>
@@ -632,39 +536,14 @@ export default function DossiersTable({
           prestations have no header menus and no search — the reference gives
           them a single "Réservé par :" select. */}
       <div className="mt-[18px] flex flex-wrap items-center gap-3">
-        {!isModule ? (
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t.admin.dossiers.searchPlaceholder}
-            aria-label={t.admin.dossiers.searchPlaceholder}
-            className="h-[46px] min-w-[220px] flex-1 rounded-xl border border-line-default bg-card px-4 text-[14.5px] text-strong outline-none transition-colors placeholder:text-subtle hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10"
-          />
-        ) : (
-          <>
-            <span className="text-[13.5px] font-semibold text-body">
-              {t.admin.dossiers.reservedFilterLabel}
-            </span>
-
-            <select
-              value={reservedFilter}
-              onChange={(e) => setReservedFilter(e.target.value)}
-              aria-label={t.admin.dossiers.reservedFilterLabel}
-              className={selectCls}
-            >
-              <option value="">{t.admin.dossiers.filterAllReservers}</option>
-              {reservers.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-              <option value="__none__">
-                {t.admin.dossiers.filterUnreserved}
-              </option>
-            </select>
-          </>
-        )}
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t.admin.dossiers.searchPlaceholder}
+          aria-label={t.admin.dossiers.searchPlaceholder}
+          className="h-[46px] min-w-[220px] flex-1 rounded-xl border border-line-default bg-card px-4 text-[14.5px] text-strong outline-none transition-colors placeholder:text-subtle hover:border-line-strong focus:border-brand focus:ring-4 focus:ring-brand/10"
+        />
       </div>
 
       {failed ? (
@@ -676,97 +555,6 @@ export default function DossiersTable({
         </p>
       ) : null}
 
-      {/* The capital list is the one prestation the reference does not lay out
-          as a table: each row is icon-led and carries its own column labels,
-          so there is no header strip. */}
-      {isCapital ? (
-        <div className="mt-[22px] overflow-hidden rounded-[18px] border border-line bg-card">
-          {visible.length === 0 ? (
-            <p className="px-5 py-10 text-center text-[14.5px] text-muted">
-              {rows.length === 0
-                ? t.admin.dossiers.emptyCapital
-                : t.admin.dossiers.noMatch}
-            </p>
-          ) : (
-            visible.map((r) => (
-              <div
-                key={r.id}
-                role="link"
-                tabIndex={0}
-                onClick={(e) => {
-                  if (hitControl(e.target)) return;
-                  openRow(r.id);
-                }}
-                onKeyDown={(e) => {
-                  if (e.target !== e.currentTarget) return;
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    openRow(r.id);
-                  }
-                }}
-                className="flex cursor-pointer items-center gap-3.5 border-b border-line px-5 py-4 last:border-b-0 hover:bg-sunken/50 focus:bg-sunken/50 focus:outline-none"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#FBEFE3] text-[#B26A00]">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                    className="h-[22px] w-[22px]"
-                  >
-                    <rect x="2" y="7" width="20" height="14" rx="2" />
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                  </svg>
-                </span>
-
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px] font-semibold text-strong">
-                    {r.firstName} {r.lastName}
-                  </span>
-                  <span className="mt-0.5 block truncate text-[13.5px] text-muted">
-                    {r.email}
-                  </span>
-                </span>
-
-                <span
-                  className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-bold ${STATUS_CLASS[r.status]}`}
-                >
-                  {t.status[r.status]}
-                </span>
-
-                <span className="w-[110px] shrink-0 text-right">
-                  <span className="block text-[12.5px] font-semibold text-muted">
-                    {t.admin.dossiers.thWithdrawalYear}
-                  </span>
-                  <span className="fx-figure block text-[14.5px] font-bold text-strong">
-                    {r.taxYear}
-                  </span>
-                </span>
-
-                <span className="w-[70px] shrink-0 text-right">
-                  <span className="block text-[12.5px] font-semibold text-muted">
-                    {t.admin.dossiers.thCanton}
-                  </span>
-                  <span className="block text-[14.5px] font-bold text-strong">
-                    {r.canton || "—"}
-                  </span>
-                </span>
-
-                <span className="flex w-[150px] shrink-0 justify-start">
-                  {renderCell("reservedBy", r)}
-                </span>
-
-                <span aria-hidden className="shrink-0 text-[18px] text-subtle">
-                  →
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      ) : (
       <div className="mt-4 overflow-x-auto">
         <div className="min-w-[900px] rounded-2xl border border-line bg-card">
           <div className="flex items-center gap-3.5 border-b border-line px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.05em] text-muted">
@@ -860,7 +648,6 @@ export default function DossiersTable({
           )}
         </div>
       </div>
-      )}
     </>
   );
 }
