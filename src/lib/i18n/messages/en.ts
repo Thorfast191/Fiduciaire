@@ -1223,9 +1223,16 @@ export const en: Messages = {
       },
       pendingPayment: "Awaiting payment",
       clientCommentsTitle: "Client's comments",
+      requestedPieces: {
+        title: "Requested documents",
+        awaiting: "Waiting on the client",
+        download: "Download",
+        pending: "Pending",
+      },
       capitalFeeLabel: "Capital benefit flat fee",
       capitalDocTitle: "Statement provided by the client",
       capitalDownloadDoc: "Download the document",
+      openReclamation: "Open an appeal",
       closed: "Dossier closed",
       moduleStatus: {
         todo: "To handle",

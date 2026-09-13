@@ -1235,9 +1235,16 @@ export const fr = {
       },
       pendingPayment: "En attente de paiement",
       clientCommentsTitle: "Commentaires du client",
+      requestedPieces: {
+        title: "Demande de pièce",
+        awaiting: "En attente du client",
+        download: "Télécharger",
+        pending: "En attente",
+      },
       capitalFeeLabel: "Forfait prestation en capital",
       capitalDocTitle: "Attestation transmise par le client",
       capitalDownloadDoc: "Télécharger le document",
+      openReclamation: "Ouvrir en réclamation",
       closed: "Dossier clôturé",
       moduleStatus: {
         todo: "À traiter",

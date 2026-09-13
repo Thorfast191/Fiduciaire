@@ -28,14 +28,14 @@ export default function CloseDossierButton({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  async function close() {
+  async function setStatus(next: "completed" | "reclamation") {
     setBusy(true);
     setError("");
     try {
       const res = await fetch(`/api/dossiers/${dossierId}/status`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ status: "completed" }),
+        body: JSON.stringify({ status: next }),
       });
       if (!res.ok) {
         setError(t.admin.detail.errAction);
@@ -52,17 +52,26 @@ export default function CloseDossierButton({
 
   return (
     <>
+      {/* A closed dossier is not a dead end: the reference turns the button
+          red and offers to reopen it as a réclamation, which is the one move
+          left to make on a file the administration may still contest. */}
       <button
         type="button"
-        disabled={closed || busy}
-        onClick={() => setConfirming(true)}
-        className={`bg-brand font-semibold text-white transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-[#EDF1F6] disabled:text-[#AEB7C4] ${
+        disabled={busy}
+        onClick={() =>
+          closed ? setStatus("reclamation") : setConfirming(true)
+        }
+        className={`font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+          closed
+            ? "bg-[#C0453B] hover:brightness-110"
+            : "bg-brand hover:bg-brand-hover"
+        } ${
           compact
             ? "rounded-[10px] px-[15px] py-[9px] text-[13.5px]"
             : "rounded-[11px] px-[18px] py-[11px] text-[14.5px]"
         }`}
       >
-        {closed ? t.admin.detail.closed : t.admin.detail.close}
+        {closed ? t.admin.detail.openReclamation : t.admin.detail.close}
       </button>
 
       {error ? (
@@ -112,7 +121,7 @@ export default function CloseDossierButton({
               <button
                 type="button"
                 disabled={busy}
-                onClick={close}
+                onClick={() => setStatus("completed")}
                 className="flex-1 rounded-[11px] bg-brand px-3 py-3 text-[15px] font-semibold text-white transition hover:bg-brand-hover disabled:opacity-60"
               >
                 {busy ? t.admin.detail.closing : t.admin.detail.closeYes}

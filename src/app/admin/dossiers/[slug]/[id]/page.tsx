@@ -26,6 +26,9 @@ import DossierHeaderCard from "./DossierHeaderCard";
 import CapitalDetail from "./CapitalDetail";
 import SimulationDetail from "./SimulationDetail";
 import DownloadButtons from "./DownloadButtons";
+import RequestedPieces, { type RequestedPiece } from "./RequestedPieces";
+import { documentTitle } from "@/lib/documentTitle";
+import { listNotificationsForDossier } from "@/lib/notifications";
 
 /**
  * What the firm receives when a client submits.
@@ -58,7 +61,7 @@ export default async function AdminDossierDetailPage({
     notFound();
   }
 
-  const [documents, client, siblings, payment, comments, reserver] =
+  const [documents, client, siblings, payment, comments, reserver, notifications] =
     await Promise.all([
       listDocumentsForDossier(id),
       getClientById(access.dossier.clientId),
@@ -68,6 +71,7 @@ export default async function AdminDossierDetailPage({
       access.dossier.reservedBy
         ? getClientById(access.dossier.reservedBy)
         : Promise.resolve(undefined),
+      listNotificationsForDossier(id),
     ]);
 
   const isClosure = (cat: string): boolean =>
@@ -219,6 +223,38 @@ export default async function AdminDossierDetailPage({
     },
   });
 
+  // Every piece the firm has asked this client for, with whatever they have
+  // deposited against it. Asking twice for the same category is one row.
+  const byCategory = new Map<string, { id: string; filename: string }>(
+    documents.map((doc) => [
+      doc.category,
+      { id: doc.id, filename: doc.filename },
+    ]),
+  );
+
+  const requestedPieces: RequestedPiece[] = [];
+  const seenPiece = new Set<string>();
+  for (const n of notifications) {
+    const req = n.requestedDocuments;
+    if (!req) continue;
+    for (const category of req.categories) {
+      if (seenPiece.has(category)) continue;
+      seenPiece.add(category);
+      requestedPieces.push({
+        title: documentTitle(t, category),
+        doc: byCategory.get(category) ?? null,
+      });
+    }
+    for (const label of req.custom) {
+      if (seenPiece.has(`custom:${label}`)) continue;
+      seenPiece.add(`custom:${label}`);
+      requestedPieces.push({
+        title: label,
+        doc: byCategory.get("divers") ?? null,
+      });
+    }
+  }
+
   const isDeclaration = serviceType === "declaration";
 
   // The reference does not print the questionnaire on this page — the answers
@@ -294,6 +330,8 @@ export default async function AdminDossierDetailPage({
           />
         </div>
       </div>
+
+      <RequestedPieces t={t} pieces={requestedPieces} />
 
       <div className="mt-4 flex flex-wrap items-start gap-4">
         {isDeclaration ? (
