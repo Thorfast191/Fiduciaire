@@ -308,6 +308,16 @@ export const dossierNotifications = pgTable(
     }).notNull(),
     /** Optional free text from the admin, shown to the client verbatim. */
     message: text("message"),
+    /**
+     * Which pieces were asked for, as document-category keys, plus any the
+     * administrator typed that the catalogue does not name.
+     *
+     * The e-mail has always listed them in prose, but prose is not something
+     * the client's space can turn into upload slots — so the request is stored
+     * structurally as well and the portal renders one slot per entry.
+     */
+    requestedDocuments: jsonb("requested_documents")
+      .$type<{ categories: string[]; custom: string[] }>(),
     acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

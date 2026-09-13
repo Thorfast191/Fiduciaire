@@ -1,0 +1,1 @@
+ALTER TABLE "dossier_notifications" ADD COLUMN "requested_documents" jsonb;

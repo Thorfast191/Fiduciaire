@@ -8,6 +8,10 @@ import {
   RelectureForm,
 } from "./PrestationForms";
 import NotificationBanner from "./NotificationBanner";
+import RequestedDocuments, {
+  type RequestedItem,
+} from "./RequestedDocuments";
+import { documentTitle } from "@/lib/documentTitle";
 import { listNotificationsForDossier } from "@/lib/notifications";
 import { getAccessibleDossier } from "@/lib/dossiers";
 import { getCurrentUser } from "@/lib/auth/guards";
@@ -48,6 +52,45 @@ export default async function DossierDetailPage({
     ? (await listNotificationsForDossier(id)).filter((n) => !n.acknowledgedAt)
     : [];
 
+  // Every piece still being asked for, newest request first, with whatever the
+  // client has already deposited against it. Older requests for the same
+  // category collapse into one row: asking twice does not mean two files.
+  const allDocuments = access.ok ? await listDocumentsForDossier(id) : [];
+  const deposited = new Map<string, { id: string; filename: string }>(
+    allDocuments.map((doc) => [
+      doc.category,
+      { id: doc.id, filename: doc.filename },
+    ]),
+  );
+
+  const requestedItems: RequestedItem[] = [];
+  const seen = new Set<string>();
+  for (const n of notifications) {
+    const req = n.requestedDocuments;
+    if (!req) continue;
+    for (const category of req.categories) {
+      if (seen.has(category)) continue;
+      seen.add(category);
+      requestedItems.push({
+        category,
+        title: documentTitle(t, category),
+        doc: deposited.get(category) ?? null,
+        freeText: false,
+      });
+    }
+    for (const label of req.custom) {
+      if (seen.has(`custom:${label}`)) continue;
+      seen.add(`custom:${label}`);
+      // Nothing in the catalogue matches, so it is filed under "Divers".
+      requestedItems.push({
+        category: "divers",
+        title: label,
+        doc: deposited.get("divers") ?? null,
+        freeText: true,
+      });
+    }
+  }
+
   // Name the prestation this dossier belongs to, and send "back" to the list it
   // was opened from rather than always to the declarations home.
   const serviceType = access.ok ? access.dossier.serviceType : "declaration";
@@ -77,6 +120,20 @@ export default async function DossierDetailPage({
 
     return (
       <>
+        {/* The declaration branch returned before the banner, so a client with
+            a questionnaire open never saw what had been asked of them. */}
+        <NotificationBanner
+          dossierId={id}
+          notifications={notifications.map((n) => ({
+            id: n.id,
+            kind: n.kind,
+            message: n.message,
+            createdAt: n.createdAt.toISOString(),
+          }))}
+        />
+
+        <RequestedDocuments dossierId={id} items={requestedItems} />
+
         {showSituation ? (
           <SituationPicker
             t={t}
@@ -149,6 +206,8 @@ export default async function DossierDetailPage({
           createdAt: n.createdAt.toISOString(),
         }))}
       />
+
+      <RequestedDocuments dossierId={id} items={requestedItems} />
 
       <div className="mt-6">
         {access.ok && serviceType === "capital" ? (

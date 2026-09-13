@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { DOCUMENT_CATEGORIES } from "@/lib/documentCategories";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import {
   acknowledgeNotification,
@@ -12,6 +13,14 @@ import { apiErrors } from "@/lib/i18n/apiErrors";
 const sendSchema = z.object({
   kind: z.enum(["documents_requested", "action_required"]),
   message: z.string().trim().max(2000).optional(),
+  // Kept structurally so the client's space can offer an upload slot per
+  // piece rather than a paragraph they have to read and interpret.
+  requestedDocuments: z
+    .object({
+      categories: z.array(z.enum(DOCUMENT_CATEGORIES)).max(60),
+      custom: z.array(z.string().trim().min(1).max(120)).max(20),
+    })
+    .optional(),
 });
 
 const ackSchema = z.object({ notificationId: z.string().uuid() });
@@ -59,6 +68,7 @@ export async function POST(
     sentBy: user.id,
     kind: parsed.data.kind,
     message: parsed.data.message,
+    requestedDocuments: parsed.data.requestedDocuments,
   });
 
   if (!result.ok) {

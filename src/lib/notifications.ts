@@ -29,6 +29,11 @@ export async function sendDossierNotification(params: {
   sentBy: string;
   kind: NotificationKind;
   message?: string | null;
+  /**
+   * The pieces being asked for. The e-mail lists them in prose; this is the
+   * same list in a shape the client's space can turn into upload slots.
+   */
+  requestedDocuments?: { categories: string[]; custom: string[] } | null;
 }): Promise<SendNotificationResult> {
   const [row] = await db
     .select({
@@ -78,6 +83,7 @@ export async function sendDossierNotification(params: {
       sentBy: params.sentBy,
       kind: params.kind,
       message,
+      requestedDocuments: params.requestedDocuments ?? null,
     })
     .returning();
 

@@ -568,6 +568,17 @@ export const fr = {
     contactsHoursDays: "Lundi - Vendredi",
     contactsHoursTime: "08h30 - 12h00 · 13h30 - 17h30",
     contactsErrEmpty: "Merci de renseigner un sujet et un message.",
+    requested: {
+      title: "Demande de pièce",
+      sub: "Votre fiduciaire a besoin des documents ci-dessous. Déposez-les ici, chacun à sa place.",
+      awaiting: "En attente de votre document",
+      received: "Reçu",
+      send: "Déposer",
+      replace: "Remplacer",
+      sending: "Envoi…",
+      remaining: "{count} document(s) en attente",
+      allDone: "Tout est reçu, merci",
+    },
     noticeDocumentsTitle: "Pièces complémentaires demandées",
     noticeDocumentsBody:
       "Votre fiduciaire vous demande de transmettre des pièces complémentaires pour ce dossier.",

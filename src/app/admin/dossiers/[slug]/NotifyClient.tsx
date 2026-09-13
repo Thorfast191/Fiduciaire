@@ -109,7 +109,13 @@ export default function NotifyClient({
       const res = await fetch(`/api/dossiers/${dossierId}/notifications`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ kind: "documents_requested", message }),
+        body: JSON.stringify({
+          kind: "documents_requested",
+          message,
+          // The prose above is for the e-mail; this is what turns into upload
+          // slots in the client's space.
+          requestedDocuments: { categories: picked, custom: extras },
+        }),
       });
 
       if (!res.ok) {

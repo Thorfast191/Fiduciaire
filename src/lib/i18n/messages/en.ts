@@ -567,6 +567,17 @@ export const en: Messages = {
     contactsHoursDays: "Monday - Friday",
     contactsHoursTime: "08:30 - 12:00 · 13:30 - 17:30",
     contactsErrEmpty: "Please provide a subject and a message.",
+    requested: {
+      title: "Documents requested",
+      sub: "Your accountant needs the documents below. Upload each one in its place.",
+      awaiting: "Waiting for your document",
+      received: "Received",
+      send: "Upload",
+      replace: "Replace",
+      sending: "Sending…",
+      remaining: "{count} document(s) outstanding",
+      allDone: "All received, thank you",
+    },
     noticeDocumentsTitle: "Additional documents requested",
     noticeDocumentsBody:
       "Your accountant is asking you to send additional documents for this file.",

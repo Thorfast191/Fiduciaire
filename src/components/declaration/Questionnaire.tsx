@@ -23,6 +23,7 @@ import {
   type TransportPeriod,
   type SuccessionEntry,
 } from "@/lib/declaration";
+import { MAX_UPLOAD_BYTES } from "@/lib/documentCategories";
 import { Question, RadioRow, CheckRow, TextField, SelectField } from "./Field";
 
 export interface QuestionnaireProps {
@@ -1379,7 +1380,7 @@ function emptyTransportPeriod(): TransportPeriod {
   return { from: "01.01", to: "31.12", rate: "100", homePlace: "", workPlace: "" };
 }
 
-const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+
 
 /**
  * Uploads one file against a document requirement.

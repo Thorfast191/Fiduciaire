@@ -15,9 +15,10 @@ export const ALLOWED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
 ] as const;
-export const MAX_SIZE_BYTES = 20 * 1024 * 1024;
+/** Re-exported under its long-standing name for the server-side callers. */
+export const MAX_SIZE_BYTES = MAX_UPLOAD_BYTES;
 export { DOCUMENT_CATEGORIES } from "@/lib/documentCategories";
-import { DOCUMENT_CATEGORIES } from "@/lib/documentCategories";
+import { DOCUMENT_CATEGORIES, MAX_UPLOAD_BYTES } from "@/lib/documentCategories";
 
 
 function sanitizeFilename(filename: string): string {

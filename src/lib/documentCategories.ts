@@ -13,6 +13,17 @@
  * a specific piece per answer, and the transmission step matches an upload to
  * its requirement by this key.
  */
+/**
+ * Largest upload we accept, in bytes.
+ *
+ * It lives here rather than in `documents.ts` because the client components
+ * that check a file before sending it must not import that module: it reaches
+ * the database, and pulling it into a browser bundle fails the build with
+ * "Can't resolve 'dns'". Two of them had already worked around that by
+ * hardcoding their own copy.
+ */
+export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+
 export const DOCUMENT_CATEGORIES = [
   "salaire",
   "releves_bancaires",

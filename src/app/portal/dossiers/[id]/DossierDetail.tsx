@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { DossierStatus } from "@/db/schema";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useT } from "@/lib/i18n/I18nProvider";
+import { MAX_UPLOAD_BYTES } from "@/lib/documentCategories";
 import { serviceLabel, type ServiceType } from "@/lib/serviceTypes";
 import { FormAlert } from "@/components/ui/Field";
 
@@ -33,7 +34,7 @@ const CATEGORY_KEYS = [
 ] as const;
 
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
-const MAX_SIZE_BYTES = 20 * 1024 * 1024;
+
 
 export default function DossierDetail({ dossierId }: { dossierId: string }) {
   const t = useT();
@@ -71,7 +72,7 @@ export default function DossierDetail({ dossierId }: { dossierId: string }) {
       setError(t.documents.errType);
       return;
     }
-    if (file.size > MAX_SIZE_BYTES) {
+    if (file.size > MAX_UPLOAD_BYTES) {
       setError(t.documents.errTooLarge);
       return;
     }
