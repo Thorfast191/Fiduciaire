@@ -30,6 +30,13 @@ interface AppShellProps {
    * but the section's own name everywhere else.
    */
   titleFallbackFor?: string;
+  /**
+   * Which nav entry a `/portal/dossiers/<id>` route belongs to, keyed by
+   * dossier id. Those URLs carry no service type, and every one of them
+   * prefixes `/portal`, so longest-prefix matching would light up
+   * "Déclarations d'impôts" for a capital or simulation dossier.
+   */
+  dossierNav?: Record<string, string>;
   account: ShellAccount;
   children: ReactNode;
 }
@@ -74,7 +81,16 @@ function CantonFlagPill({ canton }: { canton: string }) {
  * Longest-prefix match, so `/admin/dossiers` activates "Dossiers" rather than
  * also activating "Accueil" (`/admin`), which every `/admin/*` path prefixes.
  */
-function activeHref(nav: NavEntry[], pathname: string): string | undefined {
+function activeHref(
+  nav: NavEntry[],
+  pathname: string,
+  dossierNav?: Record<string, string>,
+): string | undefined {
+  // A dossier route names its own section; prefix matching cannot tell a
+  // capital dossier from a declaration one.
+  const dossierId = pathname.match(/^\/portal\/dossiers\/([^/]+)/)?.[1];
+  if (dossierId) return dossierNav?.[dossierId];
+
   return nav
     .filter((e) => e.kind === "link")
     .map((e) => e.href)
@@ -88,6 +104,7 @@ export function AppShell({
   title,
   meta,
   titleFallbackFor,
+  dossierNav,
   account,
   children,
 }: AppShellProps) {
@@ -110,7 +127,7 @@ export function AppShell({
   // `clientPageTitle`), except on the route named by `titleFallbackFor`, which
   // keeps the area's title. Deriving it from the nav avoids threading a title
   // down from every page.
-  const current = activeHref(nav, pathname);
+  const current = activeHref(nav, pathname, dossierNav);
 
   const activeLabel =
     current && current !== titleFallbackFor
