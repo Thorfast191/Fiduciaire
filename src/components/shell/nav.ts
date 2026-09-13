@@ -31,6 +31,7 @@ export function clientNav(t: Messages): NavEntry[] {
     { kind: "link", label: n.review, href: prestation("relecture") },
     { kind: "head", label: n.otherHead },
     { kind: "link", label: n.assistance, href: "/portal/assistance" },
+    { kind: "link", label: n.requests, href: "/portal/demandes" },
     { kind: "link", label: n.payments, href: "/portal/paiements" },
     { kind: "link", label: n.contacts, href: "/portal/contacts" },
   ];

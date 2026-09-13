@@ -568,6 +568,15 @@ export const fr = {
     contactsHoursDays: "Lundi - Vendredi",
     contactsHoursTime: "08h30 - 12h00 · 13h30 - 17h30",
     contactsErrEmpty: "Merci de renseigner un sujet et un message.",
+    requestsTitle: "Demande de pièces",
+    requestsSub:
+      "Votre fiduciaire attend {count} document(s). Déposez-les ici, chacun à sa place.",
+    requestsNoneSub:
+      "Tous les documents demandés ont été transmis. Merci !",
+    requestsEmptyTitle: "Aucune demande en cours",
+    requestsEmptyBody:
+      "Lorsque votre fiduciaire aura besoin d'une pièce, elle apparaîtra ici et vous recevrez un e-mail.",
+    requestsOpenDossier: "Ouvrir le dossier",
     requested: {
       title: "Demande de pièce",
       sub: "Votre fiduciaire a besoin des documents ci-dessous. Déposez-les ici, chacun à sa place.",
@@ -603,6 +612,7 @@ export const fr = {
       deces: "Décès en cours d'année",
       otherHead: "Divers",
       assistance: "Fiduvia Assistance",
+      requests: "Demande de pièces",
       payments: "Paiements",
       contacts: "Contacts",
     },

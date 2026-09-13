@@ -100,10 +100,7 @@ describe("PATCH /api/dossiers/:id/status", () => {
     expect(res.status).toBe(404);
   });
 
-  // Walking every status now includes `completed` and `reclamation`, which
-  // each send the client an e-mail over real SMTP. That is the behaviour under
-  // test elsewhere; here it just makes the loop slower than the 5s default.
-  it("lets an admin move a dossier through every status and writes an audit log entry each time", { timeout: 20_000 }, async () => {
+  it("lets an admin move a dossier through every status and writes an audit log entry each time", async () => {
     const owner = await makeUser();
     const admin = await makeUser("admin");
     const dossier = await createDossier({ clientId: owner.id, taxYear: 2025 });

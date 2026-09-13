@@ -567,6 +567,14 @@ export const en: Messages = {
     contactsHoursDays: "Monday - Friday",
     contactsHoursTime: "08:30 - 12:00 · 13:30 - 17:30",
     contactsErrEmpty: "Please provide a subject and a message.",
+    requestsTitle: "Requested documents",
+    requestsSub:
+      "Your accountant is waiting for {count} document(s). Upload each one in its place.",
+    requestsNoneSub: "Every requested document has been sent. Thank you!",
+    requestsEmptyTitle: "No open request",
+    requestsEmptyBody:
+      "When your accountant needs a document it will appear here, and you will get an e-mail.",
+    requestsOpenDossier: "Open the dossier",
     requested: {
       title: "Documents requested",
       sub: "Your accountant needs the documents below. Upload each one in its place.",
@@ -602,6 +610,7 @@ export const en: Messages = {
       deces: "Death during the year",
       otherHead: "Other",
       assistance: "Fiduvia Assistance",
+      requests: "Requested documents",
       payments: "Payments",
       contacts: "Contacts",
     },
