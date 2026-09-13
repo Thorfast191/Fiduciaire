@@ -132,6 +132,10 @@ export interface Property {
   hasDebt: "oui" | "non" | "";
   /** Amount of the debt tied to the property, when there is one. */
   detteMontant: string;
+  /** Living area in m², asked only for a property the owner occupies. */
+  surface: string;
+  /** Year of construction or of the last renovation, same condition. */
+  dateConstruction: string;
 }
 
 export interface Answers {

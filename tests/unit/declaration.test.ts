@@ -59,6 +59,8 @@ describe("requiredDocuments", () => {
             loueMeuble: false,
             hasDebt: "oui",
             detteMontant: "",
+            surface: "",
+            dateConstruction: "",
           },
         ],
       }),
@@ -131,6 +133,8 @@ describe("requiredDocuments", () => {
             loueMeuble: false,
             hasDebt: "",
             detteMontant: "",
+            surface: "",
+            dateConstruction: "",
           },
         ],
       }),
@@ -227,6 +231,8 @@ describe("computePrice", () => {
       loueMeuble: false,
       hasDebt: "" as const,
       detteMontant: "",
+      surface: "",
+      dateConstruction: "",
     };
     const two = computePrice(
       answers({

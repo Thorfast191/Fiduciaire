@@ -1042,6 +1042,27 @@ export function Questionnaire({
                           </div>
                         ) : null}
 
+                        {/* The reference asks these two only for a property
+                            the owner occupies: a let one is valued from its
+                            rent, not its surface. */}
+                        {im.rented === "non" ? (
+                          <div className="mt-3 grid grid-cols-1 gap-x-[18px] gap-y-3.5 sm:grid-cols-2">
+                            <TextField
+                              label={d.immeubles.surface}
+                              placeholder="m²"
+                              value={im.surface}
+                              onChange={(v) => patchProperty(i, { surface: v })}
+                            />
+                            <TextField
+                              label={d.immeubles.dateConstruction}
+                              value={im.dateConstruction}
+                              onChange={(v) =>
+                                patchProperty(i, { dateConstruction: v })
+                              }
+                            />
+                          </div>
+                        ) : null}
+
                         <p className="mt-4 text-[13.5px] text-body">
                           {d.immeubles.hasDebt}
                         </p>
@@ -1349,6 +1370,8 @@ function emptyProperty(): Property {
     loueMeuble: false,
     hasDebt: "",
     detteMontant: "",
+    surface: "",
+    dateConstruction: "",
   };
 }
 

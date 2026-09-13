@@ -81,7 +81,7 @@ export default async function PortalHomePage({
           </p>
         </div>
 
-        <PeriodPicker years={options} current={selected} />
+        <PeriodPicker years={options} current={selected} hideWhenSingle />
       </div>
 
       {/* Active declaration */}

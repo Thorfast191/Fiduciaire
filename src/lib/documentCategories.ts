@@ -48,12 +48,16 @@ export const DOCUMENT_CATEGORIES = [
   "ficheTransmission",
   "copiePrecedente",
   "divers",
-  // The capital prestation's single piece: the insurer's or bank's statement
-  // of the payout. `CapitalForm` has always uploaded under this key, but it
-  // was never listed here, so every such upload was rejected as an invalid
-  // category. The column is plain text with a TypeScript-level enum, so
-  // adding it needs no migration.
-  "attestationCapital",
+  // One piece per module prestation, each named by the form that uploads it.
+  // All three were missing here while the forms happily posted them, so every
+  // such upload came back "An error has occurred": `createPendingUpload`
+  // rejects an unknown category. The column is plain text with a
+  // TypeScript-level enum, so adding them needs no migration.
+  // `tests/unit/documentCategories.test.ts` now fails if a form gains a
+  // category that is not listed here.
+  "attestationCapital",   // CapitalForm — insurer's or bank's statement
+  "formulaireAcomptes",   // AcomptesForm — the advance-payment form
+  "copieDeclaration",     // RelectureForm — the return to proofread
   // Closure documents — uploaded by the firm and shown to the client once the
   // dossier is closed (the mockup's "Documents de clôture").
   "closureCopieDecl",

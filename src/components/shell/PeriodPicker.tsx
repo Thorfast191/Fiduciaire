@@ -13,9 +13,12 @@ import { useT } from "@/lib/i18n/I18nProvider";
 export function PeriodPicker({
   years,
   current,
+  hideWhenSingle = false,
 }: {
   years: number[];
   current: number;
+  /** Render nothing when the firm has opened only one period. */
+  hideWhenSingle?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
@@ -43,9 +46,13 @@ export function PeriodPicker({
     router.push(`${pathname}?${next.toString()}`);
   }
 
-  // With a single period there is nothing to choose between, so the pill stays
-  // static rather than offering a menu of one.
+  // With a single period there is nothing to choose between. On the client's
+  // home that pill read as a broken control — it looks like the rest of the
+  // picker but never changes — so `hideWhenSingle` drops it entirely there.
+  // The admin screens keep it: knowing which period a table is scoped to is
+  // worth a static label.
   if (years.length < 2) {
+    if (hideWhenSingle) return null;
     return (
       <span className="inline-flex items-center gap-2 rounded-full border border-line-default bg-card px-4 py-2.5 text-[14px] font-semibold text-strong">
         {t.admin.period} {current}

@@ -186,6 +186,10 @@ interface SimImmeuble {
   loue: "oui" | "non" | "";
   loyer: string;
   dette: "oui" | "non" | "";
+  /** Living area in m², asked only for a property the owner occupies. */
+  surface: string;
+  /** Year of construction or of the last renovation, same condition. */
+  dateConstruction: string;
 }
 const emptySimImmeuble = (): SimImmeuble => ({
   lieu: "",
@@ -194,6 +198,8 @@ const emptySimImmeuble = (): SimImmeuble => ({
   loue: "",
   loyer: "",
   dette: "",
+  surface: "",
+  dateConstruction: "",
 });
 
 export function SimulationForm({
@@ -435,6 +441,24 @@ export function SimulationForm({
                       />
                     </div>
                   ) : null}
+                  {/* The reference asks these two only for a property the
+                      owner occupies; a let one is valued from its rent. */}
+                  {im.loue === "non" ? (
+                    <>
+                      <TextField
+                        label={t.declaration.immeubles.surface}
+                        placeholder="m²"
+                        value={im.surface}
+                        onChange={(v) => patchImm(i, { surface: v })}
+                      />
+                      <TextField
+                        label={t.declaration.immeubles.dateConstruction}
+                        value={im.dateConstruction}
+                        onChange={(v) => patchImm(i, { dateConstruction: v })}
+                      />
+                    </>
+                  ) : null}
+
                   <div className="sm:col-span-2">
                     <p className="mb-2 text-[14px] font-semibold text-body">
                       {f.detteLabel}
