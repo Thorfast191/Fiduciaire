@@ -1,4 +1,4 @@
-import { and, asc, eq, desc, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, desc, inArray, isNull, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@/db/client";
 import {
@@ -243,10 +243,20 @@ export async function countAllDossiers(
  * How many dossiers exist per prestation, for the admin Dossiers hub cards.
  * One grouped query rather than one count per card.
  */
+/**
+ * How many dossiers each prestation has.
+ *
+ * `unscopedServices` names the prestations to count across every year rather
+ * than only `taxYear`. The hub needs that: its module lists — simulation,
+ * acomptes, relecture, capital — carry no period picker and show every year,
+ * so counting one period there produced a card reading 0 above a list holding
+ * two, which is what the firm reported.
+ */
 export async function countDossiersByService(
   taxYear?: number,
   /** Narrow to one admin's reserved dossiers — an ordinary admin's hub. */
   reservedBy?: string,
+  unscopedServices: readonly ServiceType[] = [],
 ): Promise<Record<string, number>> {
   const rows = await db
     .select({
@@ -256,7 +266,14 @@ export async function countDossiersByService(
     .from(dossiers)
     .where(
       and(
-        taxYear ? eq(dossiers.taxYear, taxYear) : undefined,
+        taxYear
+          ? or(
+              eq(dossiers.taxYear, taxYear),
+              unscopedServices.length
+                ? inArray(dossiers.serviceType, [...unscopedServices])
+                : undefined,
+            )
+          : undefined,
         reservedBy ? eq(dossiers.reservedBy, reservedBy) : undefined,
       ),
     )

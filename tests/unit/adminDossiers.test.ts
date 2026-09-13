@@ -1,8 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { randomUUID } from "node:crypto";
+import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { users, dossiers, documents } from "@/db/schema";
-import { listAllDossiersWithClient, listTaxYears } from "@/lib/dossiers";
+import {
+  countDossiersByService,
+  createDossier,
+  listAllDossiersWithClient,
+  listTaxYears,
+} from "@/lib/dossiers";
 
 async function makeClient(first: string, last: string): Promise<string> {
   const [u] = await db
@@ -155,5 +161,80 @@ describe("listTaxYears", () => {
     const [row] = await listAllDossiersWithClient({ clientId, limit: 1000 });
 
     expect(row.documentCount).toBe(0);
+  });
+});
+
+describe("countDossiersByService — the hub's card numbers", () => {
+  /**
+   * The module prestations have no period picker on their own list, so the
+   * hub has to count them across every year too. Counting one period there
+   * put a 0 on the card above a list holding two, which is what the firm
+   * reported.
+   *
+   * Both cases reserve their dossiers to an admin created for the test and
+   * count scoped to them: counting globally raced with whatever else the
+   * suite was inserting.
+   */
+  async function reservedTo(adminId: string, dossierId: string) {
+    await db
+      .update(dossiers)
+      .set({ reservedBy: adminId })
+      .where(eq(dossiers.id, dossierId));
+  }
+
+  async function makeAdmin(): Promise<string> {
+    const [admin] = await db
+      .insert(users)
+      .values({
+        email: `hub-${Date.now()}-${Math.random()}@example.test`,
+        passwordHash: "x",
+        firstName: "Hub",
+        lastName: "Admin",
+        role: "admin",
+      })
+      .returning({ id: users.id });
+    return admin.id;
+  }
+
+  it("counts an unscoped prestation across every year", async () => {
+    const clientId = await makeClient("Hub", "Unscoped");
+    const adminId = await makeAdmin();
+    const year = 2600 + Math.floor(Math.random() * 80);
+
+    for (const y of [year, year + 1]) {
+      const d = await createDossier({
+        clientId,
+        taxYear: y,
+        serviceType: "simulation",
+      });
+      await reservedTo(adminId, d.id);
+    }
+
+    const scoped = await countDossiersByService(year, adminId);
+    const unscoped = await countDossiersByService(year, adminId, [
+      "simulation",
+    ]);
+
+    expect(scoped.simulation).toBe(1);
+    expect(unscoped.simulation).toBe(2);
+  });
+
+  it("leaves the period-scoped prestations alone", async () => {
+    const clientId = await makeClient("Hub", "Scoped");
+    const adminId = await makeAdmin();
+    const year = 2700 + Math.floor(Math.random() * 80);
+
+    for (const y of [year, year + 1]) {
+      const d = await createDossier({
+        clientId,
+        taxYear: y,
+        serviceType: "declaration",
+      });
+      await reservedTo(adminId, d.id);
+    }
+
+    // "simulation" is unscoped here; the declaration must still obey the year.
+    const counts = await countDossiersByService(year, adminId, ["simulation"]);
+    expect(counts.declaration).toBe(1);
   });
 });
