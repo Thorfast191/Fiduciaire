@@ -48,23 +48,43 @@ export default function NotificationBanner({
   return (
     <div className="mt-6 flex flex-col gap-3">
       {notifications.map((n) => {
-        const isDocs = n.kind === "documents_requested";
+        // Each kind gets its own words and its own tone. Closing a dossier is
+        // good news, so it must not arrive in the amber "something is wrong"
+        // banner the other kinds use.
+        const copy = {
+          documents_requested: {
+            title: t.portal.noticeDocumentsTitle,
+            body: t.portal.noticeDocumentsBody,
+            tone: "border-amber-600/30 bg-amber-100",
+          },
+          action_required: {
+            title: t.portal.noticeActionTitle,
+            body: t.portal.noticeActionBody,
+            tone: "border-amber-600/30 bg-amber-100",
+          },
+          dossier_completed: {
+            title: t.portal.noticeClosedTitle,
+            body: t.portal.noticeClosedBody,
+            tone: "border-[#1F8A5B]/30 bg-[#E6F6EE]",
+          },
+          dossier_reclamation: {
+            title: t.portal.noticeReclamationTitle,
+            body: t.portal.noticeReclamationBody,
+            tone: "border-[#C0453B]/30 bg-[#FBE7E4]",
+          },
+        }[n.kind];
 
         return (
           <div
             key={n.id}
-            className="rounded-[var(--radius-md)] border border-amber-600/30 bg-amber-100 p-[18px]"
+            className={`rounded-[var(--radius-md)] border p-[18px] ${copy.tone}`}
           >
             <p className="disp text-[16px] font-bold text-strong">
-              {isDocs
-                ? t.portal.noticeDocumentsTitle
-                : t.portal.noticeActionTitle}
+              {copy.title}
             </p>
 
             <p className="mt-1 text-[13.5px] leading-[1.5] text-body">
-              {isDocs
-                ? t.portal.noticeDocumentsBody
-                : t.portal.noticeActionBody}
+              {copy.body}
             </p>
 
             {n.message ? (

@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUserByToken, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 import { getAccessibleDossier, setDossierStatus } from "@/lib/dossiers";
+import { sendDossierNotification } from "@/lib/notifications";
 import { writeAuditLog } from "@/lib/audit";
+import { logger } from "@/lib/logger";
 import { getClientIp, readJsonBody } from "@/lib/http";
 import { apiErrors } from "@/lib/i18n/apiErrors";
 
@@ -88,6 +90,38 @@ export async function PATCH(
       { ok: false, error: e.invalidTransition },
       { status: 400 },
     );
+  }
+
+  // Closing a dossier, or opening a réclamation on it, is news the client
+  // should not have to log in to discover — so each sends its own e-mail. Only
+  // on a real transition: re-selecting the status a dossier already has
+  // changes nothing and must not send again. `sendDossierNotification` also
+  // collapses an identical notification sent twice in quick succession, so a
+  // double-clicked control cannot mail the client twice either.
+  const AUTO_NOTIFY = {
+    completed: "dossier_completed",
+    reclamation: "dossier_reclamation",
+  } as const;
+  const autoKind =
+    AUTO_NOTIFY[parsed.data.status as keyof typeof AUTO_NOTIFY];
+
+  if (autoKind && result.previousStatus !== parsed.data.status) {
+    // The status change is already committed. `sendDossierNotification` does
+    // not swallow an SMTP failure, and letting it throw here would answer 500
+    // for a change that actually succeeded — the admin would retry a dossier
+    // that is already closed. So the mail is best-effort and logged.
+    try {
+      await sendDossierNotification({
+        dossierId: id,
+        sentBy: user.id,
+        kind: autoKind,
+      });
+    } catch (err) {
+      logger.error(
+        { err, dossierId: id, kind: autoKind },
+        "status change: could not notify the client",
+      );
+    }
   }
 
   await writeAuditLog({

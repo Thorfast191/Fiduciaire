@@ -567,6 +567,12 @@ export const fr = {
     noticeDocumentsTitle: "Pièces complémentaires demandées",
     noticeDocumentsBody:
       "Votre fiduciaire vous demande de transmettre des pièces complémentaires pour ce dossier.",
+    noticeClosedTitle: "Dossier clôturé",
+    noticeClosedBody:
+      "Votre déclaration a été traitée et votre dossier est clôturé. Les documents de clôture sont disponibles ci-dessous.",
+    noticeReclamationTitle: "Réclamation ouverte",
+    noticeReclamationBody:
+      "Une réclamation a été ouverte auprès de l'administration fiscale. Nous suivons la procédure et revenons vers vous dès que nous avons une réponse.",
     noticeActionTitle: "Action requise",
     noticeActionBody: "Votre dossier nécessite une action de votre part.",
     noticeAck: "J'ai compris",

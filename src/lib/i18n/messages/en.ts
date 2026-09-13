@@ -566,6 +566,12 @@ export const en: Messages = {
     noticeDocumentsTitle: "Additional documents requested",
     noticeDocumentsBody:
       "Your accountant is asking you to send additional documents for this file.",
+    noticeClosedTitle: "File closed",
+    noticeClosedBody:
+      "Your tax return has been processed and your file is closed. The closing documents are available below.",
+    noticeReclamationTitle: "Appeal opened",
+    noticeReclamationBody:
+      "An appeal has been opened with the tax authority. We are following the procedure and will come back to you as soon as we hear back.",
     noticeActionTitle: "Action required",
     noticeActionBody: "Your file needs action from you.",
     noticeAck: "Got it",

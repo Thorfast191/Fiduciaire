@@ -295,7 +295,16 @@ export const dossierNotifications = pgTable(
       .notNull()
       .references(() => users.id),
     kind: text("kind", {
-      enum: ["documents_requested", "action_required"],
+      // The first two an administrator sends by hand; the last two are sent
+      // automatically when a dossier is closed or reopened as a réclamation.
+      // Plain text with a TypeScript-level enum, so adding a kind needs no
+      // migration.
+      enum: [
+        "documents_requested",
+        "action_required",
+        "dossier_completed",
+        "dossier_reclamation",
+      ],
     }).notNull(),
     /** Optional free text from the admin, shown to the client verbatim. */
     message: text("message"),
