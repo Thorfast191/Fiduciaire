@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { and, eq } from "drizzle-orm";
+import { db } from "@/db/client";
+import { users } from "@/db/schema";
 import { z } from "zod";
 import { requireSuperAdminApi } from "@/lib/auth/apiGuards";
 import { recordPayment, setPaymentStatus } from "@/lib/assistance";
@@ -33,6 +36,22 @@ export async function POST(request: NextRequest) {
 
   const parsed = createSchema.safeParse(await readJsonBody(request));
   if (!parsed.success) {
+    return NextResponse.json(
+      { ok: false, error: e.checkInput },
+      { status: 400 },
+    );
+  }
+
+  // The form picks the client from a list, so a missing id means a hand-made
+  // request or a deleted account. Without this the insert trips a foreign-key
+  // violation and answers 500, which reads as "the app is broken" rather than
+  // "that client does not exist".
+  const [client] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(and(eq(users.id, parsed.data.clientId), eq(users.role, "client")));
+
+  if (!client) {
     return NextResponse.json(
       { ok: false, error: e.checkInput },
       { status: 400 },
