@@ -1308,7 +1308,7 @@ export const fr = {
       processedSub: "clôturés cette période",
       inProgress: "DOSSIERS EN COURS",
       inProgressSub: "pas encore traités",
-      revenue: "CHIFFRE D'AFFAIRES PERSONNEL",
+      revenue: "CHIFFRE D'AFFAIRES GLOBAL",
       revenueSub: "encaissé cette période",
       perAdminTitle: "Répartition par administrateur",
       perAdminFiles: "dossiers",

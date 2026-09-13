@@ -1296,7 +1296,7 @@ export const en: Messages = {
       processedSub: "closed this period",
       inProgress: "FILES IN PROGRESS",
       inProgressSub: "not yet processed",
-      revenue: "PERSONAL REVENUE",
+      revenue: "GLOBAL REVENUE",
       revenueSub: "collected this period",
       perAdminTitle: "Breakdown by administrator",
       perAdminFiles: "files",
