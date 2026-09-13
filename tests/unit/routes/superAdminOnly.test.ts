@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { NextRequest } from "next/server";
+import { eq } from "drizzle-orm";
 import { db } from "../../../src/db/client";
-import { users, type Role } from "../../../src/db/schema";
+import { taxPeriods, users, type Role } from "../../../src/db/schema";
 import { hashPassword } from "../../../src/lib/auth/password";
 import {
   createSession,
@@ -35,6 +36,11 @@ async function signIn(role: Role) {
   return { user, token };
 }
 
+/** A synthetic year no real period uses, fresh on every run. */
+function freeYear(): number {
+  return 2090 + Math.floor(Math.random() * 10);
+}
+
 function post(url: string, body: unknown, token: string) {
   const request = new NextRequest(url, {
     method: "POST",
@@ -55,17 +61,23 @@ describe("firm-wide routes are the super admin's alone", () => {
   it("refuses an ordinary admin a new tax period", async () => {
     const { token } = await signIn("admin");
     const res = await createPeriod(
-      post("http://localhost/api/tax-periods", { year: 2087 }, token),
+      post("http://localhost/api/tax-periods", { year: freeYear() }, token),
     );
     expect(res.status).toBe(403);
   });
 
   it("lets a super admin create one", async () => {
     const { token } = await signIn("super_admin");
-    const res = await createPeriod(
-      post("http://localhost/api/tax-periods", { year: 2088 }, token),
-    );
-    expect(res.status).toBe(200);
+    const year = freeYear();
+    try {
+      const res = await createPeriod(
+        post("http://localhost/api/tax-periods", { year }, token),
+      );
+      expect(res.status).toBe(200);
+    } finally {
+      // Leaving it behind makes the next run collide with its own period.
+      await db.delete(taxPeriods).where(eq(taxPeriods.year, year));
+    }
   });
 
   it("refuses an ordinary admin the payment register", async () => {
@@ -97,7 +109,7 @@ describe("firm-wide routes are the super admin's alone", () => {
   it("refuses a client outright", async () => {
     const { token } = await signIn("client");
     const res = await createPeriod(
-      post("http://localhost/api/tax-periods", { year: 2089 }, token),
+      post("http://localhost/api/tax-periods", { year: freeYear() }, token),
     );
     expect(res.status).toBe(403);
   });
