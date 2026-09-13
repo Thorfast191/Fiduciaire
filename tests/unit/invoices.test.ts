@@ -93,16 +93,25 @@ async function makePaidPayment(year: number): Promise<string> {
   return p.id;
 }
 
+/** The 4-digit sequence out of a "FID-YEAR-####" number. */
+function seqOf(number: string | null): number {
+  return Number(number!.slice(-4));
+}
+
 describe("assignInvoiceNumber", () => {
   it("issues sequential FID-YEAR-#### numbers and is idempotent", async () => {
-    // A private, high year keeps this test's counter isolated from other data.
+    // A private, high year keeps this test off real data. The counter for that
+    // year may already have been advanced by an earlier run against the same
+    // database, so the assertion is that the numbers are consecutive — not
+    // that they start at one.
     const year = 9100 + Math.floor(Math.random() * 800);
 
     const first = await assignInvoiceNumber(await makePaidPayment(year));
     const second = await assignInvoiceNumber(await makePaidPayment(year));
 
-    expect(first).toBe(`FID-${year}-0001`);
-    expect(second).toBe(`FID-${year}-0002`);
+    expect(first).toMatch(new RegExp(`^FID-${year}-\\d{4}$`));
+    expect(second).toMatch(new RegExp(`^FID-${year}-\\d{4}$`));
+    expect(seqOf(second)).toBe(seqOf(first) + 1);
   });
 
   it("returns the same number on a repeat call, never a new one", async () => {
@@ -110,7 +119,7 @@ describe("assignInvoiceNumber", () => {
     const id = await makePaidPayment(year);
     const a = await assignInvoiceNumber(id);
     const b = await assignInvoiceNumber(id);
-    expect(a).toBe(`FID-${year}-0001`);
+    expect(a).toMatch(new RegExp(`^FID-${year}-\\d{4}$`));
     expect(b).toBe(a);
   });
 

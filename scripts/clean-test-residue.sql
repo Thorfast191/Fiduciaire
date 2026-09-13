@@ -14,4 +14,8 @@ DELETE FROM audit_log WHERE actor_user_id IN (SELECT id FROM t);
 DELETE FROM otp_codes WHERE user_id IN (SELECT id FROM t);
 DELETE FROM sessions WHERE user_id IN (SELECT id FROM t);
 DELETE FROM users WHERE id IN (SELECT id FROM t);
+
+-- The invoice tests allocate against synthetic years far outside any real one.
+-- Left behind, those counters make the next run's random year start above 1.
+DELETE FROM invoice_counters WHERE year > 3000;
 COMMIT;

@@ -49,7 +49,7 @@ export default function MarkReceivedButton({ dossierId }: { dossierId: string })
         type="button"
         onClick={mark}
         disabled={busy}
-        className="inline-flex items-center gap-2 rounded-[10px] bg-[#DDF3F4] px-[15px] py-2.5 text-[14px] font-semibold text-[#0E7C86] transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-[10px] bg-[#DDF3F4] px-[15px] py-[9px] text-[14px] font-semibold text-[#0E7C86] transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {busy ? t.admin.detail.marking : t.admin.detail.markReceived}
       </button>

@@ -17,14 +17,12 @@ import {
   requiredDocuments,
   summariseAnswers,
 } from "@/lib/declaration";
-import { documentTitle } from "@/lib/documentTitle";
-import { SLUG_TO_SERVICE, serviceLabel } from "@/lib/serviceTypes";
-import { DocumentLink } from "./DocumentLink";
-import DossierAdminActions from "./DossierAdminActions";
+import { SLUG_TO_SERVICE } from "@/lib/serviceTypes";
 import InternalComments from "./InternalComments";
 import ClosureDocuments from "./ClosureDocuments";
 import NotifyClient from "../NotifyClient";
 import MarkReceivedButton from "./MarkReceivedButton";
+import DossierHeaderCard from "./DossierHeaderCard";
 import CapitalDetail from "./CapitalDetail";
 import SimulationDetail from "./SimulationDetail";
 import DownloadButtons from "./DownloadButtons";
@@ -223,63 +221,40 @@ export default async function AdminDossierDetailPage({
 
   const isDeclaration = serviceType === "declaration";
 
-  const clientAddress = [
-    client?.street,
-    [client?.postalCode, client?.city].filter(Boolean).join(" "),
-  ]
-    .filter(Boolean)
-    .join(", ");
+  // The reference does not print the questionnaire on this page — the answers
+  // live in "Télécharger le formulaire (PDF)". What it does surface is the
+  // client's free-text remark from each page, as "Commentaires du client".
+  const clientRemarks = sections
+    .filter((section) => section.remark)
+    .map((section) => ({
+      page: d.steps[section.step],
+      text: section.remark as string,
+    }));
 
   return (
     <div className="max-w-[1040px]">
       <Link
         href={`/admin/dossiers/${slug}?periode=${access.dossier.taxYear}`}
-        className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted transition-colors hover:text-strong"
+        className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-muted transition-colors hover:text-strong"
       >
         ← {s.backToList}
       </Link>
 
-      <div className="mt-2.5 flex flex-wrap items-start justify-between gap-5">
-        <div>
-          <h1 className="disp text-[clamp(26px,3.2vw,32px)] font-extrabold leading-[1.05]">
-            {client
-              ? `${client.firstName} ${client.lastName}`
-              : isDeclaration
-                ? s.title
-                : serviceLabel(t, serviceType)}
-          </h1>
-          <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] text-muted">
-            {client?.email ? <span>{client.email}</span> : null}
-            {client?.phone ? (
-              <>
-                <span className="text-line-strong">·</span>
-                <span>{client.phone}</span>
-              </>
-            ) : null}
-            {/* The postal address is collected at signup; accounts that predate
-                that carry none, so the whole row is dropped rather than shown
-                half-empty. */}
-            {clientAddress ? (
-              <>
-                <span className="text-line-strong">·</span>
-                <span>{clientAddress}</span>
-              </>
-            ) : null}
-          </p>
-        </div>
-
-        <DossierAdminActions
-          dossierId={id}
-          slug={slug}
-          status={access.dossier.status}
-          reservedBy={access.dossier.reservedBy}
-          reservedByName={reservedByName}
-          currentAdminId={user.id}
-          isSuperAdmin={user.role === "super_admin"}
-          periodOptions={periodOptions}
-          currentYear={access.dossier.taxYear}
-        />
-      </div>
+      <DossierHeaderCard
+        dossierId={id}
+        slug={slug}
+        clientName={clientName}
+        email={client?.email ?? ""}
+        phone={client?.phone ?? ""}
+        status={access.dossier.status}
+        reservedBy={access.dossier.reservedBy}
+        reservedByName={reservedByName}
+        currentAdminId={user.id}
+        isSuperAdmin={user.role === "super_admin"}
+        periodOptions={periodOptions}
+        currentYear={access.dossier.taxYear}
+        express={answers.express === true}
+      />
 
       {access.dossier.status === "not_started" ? (
         <p className="mt-4 rounded-[var(--radius-md)] border border-[var(--amber-600)]/30 bg-[#FBF0DD] px-5 py-4 text-[14px] text-[#B26A00]">
@@ -287,16 +262,16 @@ export default async function AdminDossierDetailPage({
         </p>
       ) : null}
 
-      {/* The reference stacks both downloads full-width above the document
-          count. The form PDF only exists for a declaration; every prestation
-          can have its uploaded pieces merged. */}
+      {/* The reference stacks both downloads full-width under the header. The
+          form PDF only exists for a declaration; every prestation can have its
+          uploaded pieces merged. */}
       <DownloadButtons
         dossierId={id}
-        clientName={client ? `${client.firstName} ${client.lastName}` : ""}
+        clientName={clientName}
         isDeclaration={isDeclaration}
       />
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-md)] border border-line bg-card px-5 py-4 shadow-[var(--shadow-xs)]">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-card px-6 py-[18px]">
         <div className="flex items-baseline gap-2.5">
           <h2 className="text-[16px] font-bold text-strong">
             {t.admin.detail.docsReceived}
@@ -314,198 +289,123 @@ export default async function AdminDossierDetailPage({
 
           <NotifyClient
             dossierId={id}
-            clientName={
-              client ? `${client.firstName} ${client.lastName}` : ""
-            }
+            clientName={clientName}
+            disabled={access.dossier.status === "completed"}
           />
         </div>
       </div>
 
       <div className="mt-4 flex flex-wrap items-start gap-4">
-        {/* Answers */}
         {isDeclaration ? (
-          <section className="min-w-[320px] flex-[1.5]">
-            <h2 className="disp text-[19px] font-bold">{s.answersTitle}</h2>
+          <section className="min-w-[240px] flex-1 rounded-2xl border border-line bg-card px-6 py-[22px]">
+            <div className="mb-3.5 flex items-center justify-between gap-2.5">
+              <h2 className="text-[16px] font-bold text-strong">
+                {t.admin.detail.priceTitle}
+              </h2>
+              <span
+                className={`inline-flex items-center rounded-full px-[11px] py-[5px] text-[12px] font-bold ${
+                  payment?.status === "paid"
+                    ? "bg-[#E6F6EE] text-[#1F8A5B]"
+                    : "bg-[#FBF0DD] text-[#B26A00]"
+                }`}
+              >
+                {payment?.status === "paid"
+                  ? t.admin.detail.paid
+                  : t.admin.detail.pendingPayment}
+              </span>
+            </div>
 
-            <div className="mt-3 flex flex-col gap-3">
-              {sections.map((section) => (
+            <div className="flex flex-col gap-[9px]">
+              {price.lines.map((line) => (
                 <div
-                  key={section.step}
-                  className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]"
+                  key={line.key + (line.count ?? "")}
+                  className="flex justify-between gap-3 text-[14px] text-body"
                 >
-                  <span className="fx-eyebrow text-[var(--text-muted)]">
-                    {d.steps[section.step]}
+                  <span>
+                    {d.price[line.key as keyof typeof d.price]}
+                    {line.count && line.count > 1 ? ` × ${line.count}` : ""}
                   </span>
-
-                  <dl className="mt-3 flex flex-col gap-2">
-                    {section.rows.map((row, i) => (
-                      <div
-                        key={`${row.key}-${i}`}
-                        className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-2 last:border-0 last:pb-0"
-                      >
-                        <dt className="text-[13.5px] text-muted">
-                          {s.labels[row.key as keyof typeof s.labels] ?? row.key}
-                        </dt>
-                        <dd className="m-0 max-w-[62%] text-right text-[14px] font-medium text-strong">
-                          {row.value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-
-                  {section.remark ? (
-                    <div className="mt-3 rounded-[var(--radius-sm)] bg-sunken px-3.5 py-3">
-                      <span className="fx-eyebrow text-[var(--text-muted)]">
-                        {s.remark}
-                      </span>
-                      <p className="mt-1 whitespace-pre-line text-[13.5px] leading-[1.5] text-body">
-                        {section.remark}
-                      </p>
-                    </div>
-                  ) : null}
+                  <span className="fx-figure whitespace-nowrap font-semibold">
+                    CHF {line.amount}
+                  </span>
                 </div>
               ))}
             </div>
+
+            <div className="my-3.5 h-px bg-line" />
+
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-bold text-strong">
+                {d.transmission.total}
+              </span>
+              <span
+                className="fx-figure text-[22px] font-extrabold leading-none"
+                style={{ color: "var(--brand)" }}
+              >
+                CHF {payment ? payment.amountChf : price.total}
+              </span>
+            </div>
+
+            <div className="mt-3.5 flex items-center justify-between gap-2.5 border-t border-line pt-3.5">
+              <span className="text-[13.5px] font-semibold text-muted">
+                {t.admin.detail.paymentStatusLabel}
+              </span>
+              <span
+                className={`inline-flex items-center rounded-full px-[11px] py-[5px] text-[12px] font-bold ${
+                  payment?.status === "paid"
+                    ? "bg-[#E6F6EE] text-[#1F8A5B]"
+                    : "bg-[#FBF0DD] text-[#B26A00]"
+                }`}
+              >
+                {payment?.status === "paid"
+                  ? t.admin.detail.paid
+                  : t.admin.detail.pendingPayment}
+              </span>
+            </div>
+
+            <Link
+              href="/admin/paiements"
+              className="mt-3 block w-full rounded-[11px] border border-[#BFD8DC] bg-card px-3.5 py-[11px] text-center text-[14px] font-semibold text-[#145863] transition hover:bg-sunken"
+            >
+              {t.admin.detail.extraPayment}
+            </Link>
           </section>
         ) : null}
 
-        {/* Price + documents */}
-        <div className="flex min-w-[300px] flex-1 flex-col gap-4">
-          {isDeclaration ? (
-            <section className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
-              <div className="flex items-center justify-between gap-3">
-                <span className="fx-eyebrow text-[var(--text-muted)]">
-                  {t.admin.detail.priceTitle}
-                </span>
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-bold ${
-                    payment?.status === "paid"
-                      ? "bg-[#E6F6EE] text-[#1F8A5B]"
-                      : "bg-[#FBF0DD] text-[#B26A00]"
-                  }`}
-                >
-                  {payment?.status === "paid"
-                    ? t.admin.detail.paid
-                    : t.admin.detail.pending}
-                </span>
-              </div>
-
-              <div className="mt-3 flex flex-col gap-2">
-                {price.lines.map((line) => (
-                  <div
-                    key={line.key + (line.count ?? "")}
-                    className="flex items-baseline justify-between gap-3 text-[14px] text-body"
-                  >
-                    <span>
-                      {d.price[line.key as keyof typeof d.price]}
-                      {line.count && line.count > 1 ? ` × ${line.count}` : ""}
-                    </span>
-                    <span className="fx-figure whitespace-nowrap font-semibold">
-                      CHF {line.amount}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-line pt-3">
-                <span className="text-[15px] font-semibold text-strong">
-                  {d.transmission.total}
-                </span>
-                <span
-                  className="fx-figure text-[24px] font-extrabold leading-none"
-                  style={{ color: "var(--brand)" }}
-                >
-                  CHF {payment ? payment.amountChf : price.total}
-                </span>
-              </div>
-
-              {/* Payment sits inside the tariff card and shows before a payment
-                  row exists, as the reference does — an unpaid dossier reads
-                  "En attente de paiement" rather than hiding the block. */}
-              <div className="mt-3.5 flex items-center justify-between gap-3 border-t border-line pt-3.5">
-                <span className="text-[13.5px] font-semibold text-muted">
-                  {t.admin.detail.paymentStatusLabel}
-                </span>
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-bold ${
-                    payment?.status === "paid"
-                      ? "bg-[#E6F6EE] text-[#1F8A5B]"
-                      : "bg-[#FBF0DD] text-[#B26A00]"
-                  }`}
-                >
-                  {payment?.status === "paid"
-                    ? t.admin.detail.paid
-                    : t.admin.detail.pending}
-                </span>
-              </div>
-
-              <Link
-                href="/admin/paiements"
-                className="mt-3 block w-full rounded-[11px] border border-[#BFD8DC] bg-card px-4 py-2.5 text-center text-[13.5px] font-semibold text-[#145863] transition hover:bg-sunken"
-              >
-                {t.admin.detail.extraPayment}
-              </Link>
-            </section>
-          ) : null}
-
-          <section className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
-            <span className="fx-eyebrow text-[var(--text-muted)]">
-              {s.docsTitle}
-            </span>
-
-            <div className="mt-3 flex flex-col gap-2.5">
-              {(isDeclaration ? required : clientDocs.map((doc) => doc.category)).map(
-                (key) => {
-                  const doc = uploaded.get(key);
-                  return (
-                    <div
-                      key={key}
-                      className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-2.5 last:border-0 last:pb-0"
-                    >
-                      <span className="min-w-[150px] flex-1">
-                        <span className="block text-[14px] font-medium text-strong">
-                          {documentTitle(t, key)}
-                        </span>
-                        {doc ? (
-                          <span className="mt-0.5 block text-[12px] text-muted">
-                            {doc.filename}
-                          </span>
-                        ) : null}
-                      </span>
-
-                      {doc ? (
-                        <DocumentLink
-                          documentId={doc.id}
-                          label={s.download}
-                        />
-                      ) : (
-                        <span className="rounded-full bg-sunken px-2.5 py-1 font-mono text-[9.5px] uppercase tracking-[0.08em] text-muted">
-                          {s.docsMissing}
-                        </span>
-                      )}
-                    </div>
-                  );
-                },
-              )}
-
-              {(isDeclaration ? required : clientDocs).length === 0 ? (
-                <p className="text-[13.5px] text-muted">{s.none}</p>
-              ) : null}
-            </div>
-          </section>
+        <div className="min-w-[260px] flex-1">
+          <ClosureDocuments
+            dossierId={id}
+            documents={closureDocs.map((doc) => ({
+              id: doc.id,
+              category: doc.category,
+              filename: doc.filename,
+            }))}
+          />
         </div>
       </div>
 
-      <div className="mt-4">
-        <ClosureDocuments
-          dossierId={id}
-          documents={closureDocs.map((doc) => ({
-            id: doc.id,
-            category: doc.category,
-            filename: doc.filename,
-          }))}
-        />
-      </div>
+      {clientRemarks.length > 0 ? (
+        <section className="mt-4 rounded-2xl border border-line bg-card px-6 py-[22px]">
+          <h2 className="mb-3 text-[16px] font-bold text-strong">
+            {t.admin.detail.clientCommentsTitle}
+          </h2>
+          <div className="flex flex-col gap-2.5">
+            {clientRemarks.map((remark) => (
+              <div
+                key={remark.page}
+                className="rounded-xl border border-line px-3.5 py-3"
+              >
+                <div className="text-[12px] font-bold uppercase tracking-[0.04em] text-subtle">
+                  {remark.page}
+                </div>
+                <p className="mt-1.5 whitespace-pre-line text-[14.5px] leading-[1.5] text-strong">
+                  {remark.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <InternalComments
         dossierId={id}

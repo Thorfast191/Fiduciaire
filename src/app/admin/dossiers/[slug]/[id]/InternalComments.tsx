@@ -83,8 +83,8 @@ export default function InternalComments({
   }
 
   return (
-    <section className="mt-4 rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
-      <h2 className="disp text-[16px] font-bold">
+    <section className="mt-4 rounded-2xl border border-line bg-card px-6 py-[22px]">
+      <h2 className="text-[16px] font-bold text-strong">
         {t.admin.detail.commentsTitle}
       </h2>
 

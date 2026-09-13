@@ -71,9 +71,9 @@ export default function ClosureDocuments({
   }
 
   return (
-    <section className="rounded-[var(--radius-md)] border border-line bg-card p-5 shadow-[var(--shadow-xs)]">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="disp text-[16px] font-bold">
+    <section className="rounded-2xl border border-line bg-card px-6 py-[22px]">
+      <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="whitespace-nowrap text-[16px] font-bold text-strong">
           {t.admin.detail.closureTitle}
         </h2>
         <span className="text-[12.5px] text-muted">
@@ -81,7 +81,7 @@ export default function ClosureDocuments({
         </span>
       </div>
 
-      <div className="mt-3.5 flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5">
         {SLOTS.map((slot) => {
           const doc = byCategory.get(slot.category);
           return (
