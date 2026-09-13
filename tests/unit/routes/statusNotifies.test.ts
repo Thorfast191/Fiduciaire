@@ -132,11 +132,25 @@ describe("the two e-mails read differently", () => {
     );
   });
 
-  it("does not ask a client whose file just closed to respond", () => {
-    // The shared call to action says "consulter le détail et y répondre",
-    // which is wrong when nothing is being asked of them.
-    expect(render("dossier_completed").text).not.toMatch(/y répondre/i);
-    expect(render("dossier_completed").text).toMatch(/télécharger/i);
+  it("sends the firm's own letter, not an assembled one", () => {
+    const text = render("dossier_completed").text;
+    // Their wording, their sign-off, and nothing bolted on underneath it.
+    expect(text).toMatch(/^Bonjour Sophie,/);
+    expect(text.trimEnd()).toMatch(/L'équipe Fiduvia$/);
+    expect(text).toMatch(/Administration cantonale des impôts/);
+    expect(text).not.toMatch(/y répondre/i);
+    expect(text).not.toMatch(/entièrement en ligne/);
+  });
+
+  it("puts the tax year in both letters", () => {
+    expect(render("dossier_completed").text).toContain("2025");
+    expect(render("dossier_reclamation").text).toContain("2025");
+  });
+
+  it("says the réclamation was filed, not merely opened", () => {
+    const appeal = render("dossier_reclamation");
+    expect(appeal.subject).toMatch(/déposée/i);
+    expect(appeal.text).toMatch(/Nous avons déposé la réclamation/);
   });
 
   it("renders in the client's own language", () => {

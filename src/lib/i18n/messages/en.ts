@@ -583,10 +583,10 @@ export const en: Messages = {
       "Your accountant is asking you to send additional documents for this file.",
     noticeClosedTitle: "File closed",
     noticeClosedBody:
-      "Your tax return has been processed and your file is closed. The closing documents are available below.",
-    noticeReclamationTitle: "Appeal opened",
+      "Your tax return has been finalised and filed with the cantonal tax administration. Your file is closed; the closing documents are available below.",
+    noticeReclamationTitle: "Appeal filed",
     noticeReclamationBody:
-      "An appeal has been opened with the tax authority. We are following the procedure and will come back to you as soon as we hear back.",
+      "The appeal has been filed with the cantonal tax administration. Your file is closed on our side; if the administration contacts you, forward us the letter.",
     noticeActionTitle: "Action required",
     noticeActionBody: "Your file needs action from you.",
     noticeAck: "Got it",

@@ -11,6 +11,15 @@ const COPY: Record<
     /** Overrides `cta` for the kinds that ask nothing of the client. */
     ctaByKind: Partial<Record<NotificationKind, string>>;
     signoff: string;
+    /**
+     * Kinds the firm wrote itself, word for word. These are whole letters —
+     * their own greeting, their own sign-off — so they replace the assembled
+     * greeting / intro / call-to-action / sign-off rather than slotting into
+     * it.
+     */
+    fullBody: Partial<
+      Record<NotificationKind, (firstName: string, taxYear: number) => string[]>
+    >;
   }
 > = {
   fr: {
@@ -18,7 +27,7 @@ const COPY: Record<
       documents_requested: "Pièces complémentaires demandées — Fiduvia",
       action_required: "Action requise sur votre dossier — Fiduvia",
       dossier_completed: "Votre dossier est clôturé — Fiduvia",
-      dossier_reclamation: "Réclamation ouverte sur votre dossier — Fiduvia",
+      dossier_reclamation: "Réclamation déposée pour votre dossier — Fiduvia",
     },
     greeting: (name) => `Bonjour ${name},`,
     intro: {
@@ -38,13 +47,31 @@ const COPY: Record<
         "Connectez-vous à votre espace client pour suivre l'avancement.",
     },
     signoff: "Fiduvia — votre fiduciaire, entièrement en ligne.",
+    fullBody: {
+      dossier_completed: (firstName, taxYear) => [
+        `Bonjour ${firstName},`,
+        `Bonne nouvelle : votre déclaration d'impôt ${taxYear} a été finalisée et transmise à l'Administration cantonale des impôts.`,
+        "Votre dossier est donc désormais clôturé de notre côté. Vous trouverez en pièce jointe (ou dans votre espace client) une copie de votre déclaration ainsi que les documents de clôture.",
+        "Si l'administration fiscale vous contacte pour une pièce complémentaire, nous restons à votre disposition pour vous accompagner.",
+        "Merci de votre confiance,",
+        "L'équipe Fiduvia",
+      ],
+      dossier_reclamation: (firstName, taxYear) => [
+        `Bonjour ${firstName},`,
+        `Nous avons déposé la réclamation concernant votre dossier fiscal ${taxYear} auprès de l'Administration cantonale des impôts. Elle a été transmise avec succès.`,
+        "Votre dossier est désormais clôturé de notre côté. Vous trouverez les documents de clôture dans votre espace client.",
+        "Si l'administration revient vers vous au sujet de cette réclamation, n'hésitez pas à nous transmettre le courrier, nous vous accompagnerons.",
+        "Merci de votre confiance,",
+        "L'équipe Fiduvia",
+      ],
+    },
   },
   en: {
     subjects: {
       documents_requested: "Additional documents requested — Fiduvia",
       action_required: "Action required on your file — Fiduvia",
       dossier_completed: "Your file is closed — Fiduvia",
-      dossier_reclamation: "An appeal was opened on your file — Fiduvia",
+      dossier_reclamation: "Appeal filed for your file — Fiduvia",
     },
     greeting: (name) => `Hello ${name},`,
     intro: {
@@ -64,6 +91,24 @@ const COPY: Record<
         "Log in to your client area to follow its progress.",
     },
     signoff: "Fiduvia — your accounting firm, entirely online.",
+    fullBody: {
+      dossier_completed: (firstName, taxYear) => [
+        `Hello ${firstName},`,
+        `Good news: your ${taxYear} tax return has been finalised and filed with the cantonal tax administration.`,
+        "Your file is therefore now closed on our side. A copy of your return and the closing documents are attached (or available in your client area).",
+        "If the tax administration contacts you for an additional document, we remain at your disposal to help.",
+        "Thank you for your trust,",
+        "The Fiduvia team",
+      ],
+      dossier_reclamation: (firstName, taxYear) => [
+        `Hello ${firstName},`,
+        `We have filed the appeal concerning your ${taxYear} tax file with the cantonal tax administration. It was submitted successfully.`,
+        "Your file is now closed on our side. The closing documents are available in your client area.",
+        "If the administration comes back to you about this appeal, please forward us the letter and we will help you.",
+        "Thank you for your trust,",
+        "The Fiduvia team",
+      ],
+    },
   },
 };
 
@@ -92,6 +137,20 @@ export function notificationEmailTemplate(params: {
   const copy = COPY[params.locale ?? DEFAULT_LOCALE];
   const subject = copy.subjects[params.kind];
   const cta = copy.ctaByKind[params.kind] ?? copy.cta;
+
+  // A letter the firm wrote is sent as written: no assembled greeting, no
+  // appended call to action, no second sign-off underneath their own.
+  const written = copy.fullBody[params.kind];
+  if (written) {
+    const paragraphs = written(params.firstName, params.taxYear);
+    return {
+      subject,
+      text: paragraphs.join("\n\n"),
+      html: paragraphs
+        .map((line) => `<p>${escapeHtml(line)}</p>`)
+        .join("\n"),
+    };
+  }
 
   const lines = [
     copy.greeting(params.firstName),

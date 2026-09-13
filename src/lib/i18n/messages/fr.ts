@@ -584,10 +584,10 @@ export const fr = {
       "Votre fiduciaire vous demande de transmettre des pièces complémentaires pour ce dossier.",
     noticeClosedTitle: "Dossier clôturé",
     noticeClosedBody:
-      "Votre déclaration a été traitée et votre dossier est clôturé. Les documents de clôture sont disponibles ci-dessous.",
-    noticeReclamationTitle: "Réclamation ouverte",
+      "Votre déclaration a été finalisée et transmise à l'Administration cantonale des impôts. Votre dossier est clôturé ; les documents de clôture sont disponibles ci-dessous.",
+    noticeReclamationTitle: "Réclamation déposée",
     noticeReclamationBody:
-      "Une réclamation a été ouverte auprès de l'administration fiscale. Nous suivons la procédure et revenons vers vous dès que nous avons une réponse.",
+      "La réclamation a été déposée auprès de l'Administration cantonale des impôts. Votre dossier est clôturé de notre côté ; si l'administration revient vers vous, transmettez-nous le courrier.",
     noticeActionTitle: "Action requise",
     noticeActionBody: "Votre dossier nécessite une action de votre part.",
     noticeAck: "J'ai compris",
