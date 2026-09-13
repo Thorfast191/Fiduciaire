@@ -17,6 +17,9 @@ DELETE FROM users WHERE id IN (SELECT id FROM t);
 
 -- The invoice tests allocate against synthetic years far outside any real one.
 -- Left behind, those counters make the next run's random year start above 1.
+-- The contact limiter counts these per IP over a rolling hour; the tests use
+-- the 30.x.x.x range, which is not a real client's address.
+DELETE FROM audit_log WHERE action = 'public_contact_sent' AND ip LIKE '30.%';
 DELETE FROM invoice_counters WHERE year > 3000;
 -- The band the super-admin guard test creates periods in.
 DELETE FROM tax_periods WHERE year BETWEEN 2060 AND 2089;

@@ -5,14 +5,18 @@ import { POST as publicContact } from "../../../src/app/api/contact/public/route
 /**
  * A fresh IP per run, for the same reason as `login.test.ts`: the limiter
  * counts `public_contact_sent` rows per IP over a rolling hour and `audit_log`
- * only grows, so fixed IPs would make unrelated assertions fail after a few
- * suite runs.
+ * only grows, so a reused IP makes the cap assertion fail.
+ *
+ * Two octets are randomised rather than one. With a single octet there were
+ * only 250 possible runs, so on a long-lived database two of them eventually
+ * shared a bucket and the test failed about one run in three.
  */
 let ipCounter = 0;
-const ipRun = Math.floor(Math.random() * 250) + 1;
+const runA = Math.floor(Math.random() * 250) + 1;
+const runB = Math.floor(Math.random() * 250) + 1;
 function uniqueIp(): string {
   ipCounter += 1;
-  return `30.${ipRun}.${Math.floor(ipCounter / 250)}.${(ipCounter % 250) + 1}`;
+  return `30.${runA}.${runB}.${(ipCounter % 250) + 1}`;
 }
 
 function req(body: unknown, ip: string) {
