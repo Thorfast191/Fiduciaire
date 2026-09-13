@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser, requireRole } from "@/lib/auth/guards";
+import { requireSuperAdmin } from "@/lib/auth/guards";
 import { listAdminAccounts, listClientAccounts } from "@/lib/adminUsers";
 import { getT } from "@/lib/i18n";
 import AdminAccounts from "./AdminAccounts";
@@ -8,20 +8,17 @@ import ClientAccounts from "./ClientAccounts";
 /**
  * User management, matching the mockup's admin "Gestion des utilisateurs"
  * artboard: administrator accounts with an add form, then the client accounts.
- * Only a super admin may change administrators, so an ordinary admin sees the
- * lists read-only.
+ * A super admin's screen only — an ordinary admin is a case worker and never
+ * reaches it.
  */
 export default async function AdminUsersPage() {
-  await requireRole(["admin", "super_admin"]);
+  await requireSuperAdmin();
 
-  const [user, admins, clients, { t }] = await Promise.all([
-    getCurrentUser(),
+  const [admins, clients, { t }] = await Promise.all([
     listAdminAccounts(),
     listClientAccounts(),
     getT(),
   ]);
-
-  const isSuperAdmin = user?.role === "super_admin";
 
   return (
     <div className="max-w-[1040px]">
@@ -40,31 +37,23 @@ export default async function AdminUsersPage() {
         <p className="mt-1.5 text-[15px] text-muted">{t.admin.users.sub}</p>
       </div>
 
-      {/* The administrator card is the super admin's alone. An ordinary admin
-          sees the client list only, as in the reference. */}
-      {isSuperAdmin ? (
-        <>
-          <AdminAccounts
-            admins={admins.map((a) => ({
-              id: a.id,
-              name: `${a.firstName} ${a.lastName}`.trim(),
-              email: a.email,
-              isSuper: a.role === "super_admin",
-            }))}
-            canManage
-          />
+      <AdminAccounts
+        admins={admins.map((a) => ({
+          id: a.id,
+          name: `${a.firstName} ${a.lastName}`.trim(),
+          email: a.email,
+          isSuper: a.role === "super_admin",
+        }))}
+        canManage
+      />
 
-          <h2 className="disp mt-8 text-[19px] font-bold">
-            {t.admin.users.clientsTitle}
-          </h2>
-        </>
-      ) : null}
+      <h2 className="disp mt-8 text-[19px] font-bold">
+        {t.admin.users.clientsTitle}
+      </h2>
 
-      {/* Both roles get "Supprimer" on a client row, as the reference shows;
-          "Passer administrateur" is the super admin's. */}
       <ClientAccounts
         canManage
-        canPromote={isSuperAdmin}
+        canPromote
         clients={clients.map((c) => ({
           id: c.id,
           firstName: c.firstName,

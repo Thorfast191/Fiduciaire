@@ -26,3 +26,21 @@ export async function requireAdmin(request: NextRequest): Promise<AdminAuth> {
   }
   return { user };
 }
+
+/**
+ * Requires a super administrator.
+ *
+ * The firm-wide routes — tax periods and the payment register — back screens an
+ * ordinary admin cannot open. Without this they were still reachable by hand,
+ * so the page guard and the route guard now say the same thing.
+ */
+export async function requireSuperAdminApi(
+  request: NextRequest,
+): Promise<AdminAuth> {
+  const auth = await requireAdmin(request);
+  if ("error" in auth) return auth;
+  if (auth.user.role !== "super_admin") {
+    return { error: "forbidden", status: 403 };
+  }
+  return auth;
+}

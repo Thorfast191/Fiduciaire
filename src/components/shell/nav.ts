@@ -42,18 +42,15 @@ export function adminNav(
 ): NavEntry[] {
   const n = t.admin.nav;
 
-  // An ordinary admin, exactly as the client's element dump shows it: five
-  // entries, and the shorter "Statistiques" / "Périodes" wording rather than
-  // the super admin's "Statistique globale" / "Périodes fiscales". What they
-  // may *do* on those screens is still narrower — no per-administrator
-  // breakdown, no administrator accounts, no promoting a client.
+  // An ordinary admin is a case worker, and the reference's `aNavDefs`
+  // (`Fiduvia.dc.html:7440`) gives them exactly two entries: their personal
+  // statistics — which is what `/admin` is — and their dossiers. Global
+  // statistics, tax periods, user management and payments belong to the super
+  // admin, and `requireSuperAdmin` turns them away from those routes.
   if (role === "admin") {
     return [
-      { kind: "link", label: n.home, href: "/admin" },
+      { kind: "link", label: n.personalStats, href: "/admin" },
       { kind: "link", label: n.dossiers, href: "/admin/dossiers" },
-      { kind: "link", label: n.statsShort, href: "/admin/stats" },
-      { kind: "link", label: n.periodsShort, href: "/admin/periodes" },
-      { kind: "link", label: n.users, href: "/admin/utilisateurs" },
     ];
   }
 

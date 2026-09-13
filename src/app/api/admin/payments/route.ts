@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/auth/apiGuards";
+import { requireSuperAdminApi } from "@/lib/auth/apiGuards";
 import { recordPayment, setPaymentStatus } from "@/lib/assistance";
 import { writeAuditLog } from "@/lib/audit";
 import { getClientIp, readJsonBody } from "@/lib/http";
@@ -23,7 +23,7 @@ const patchSchema = z.object({
 /** Records a payment the firm has received. */
 export async function POST(request: NextRequest) {
   const e = apiErrors(request);
-  const auth = await requireAdmin(request);
+  const auth = await requireSuperAdminApi(request);
   if ("error" in auth) {
     return NextResponse.json(
       { ok: false, error: auth.error },
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 /** Marks a payment settled or back to pending. */
 export async function PATCH(request: NextRequest) {
   const e = apiErrors(request);
-  const auth = await requireAdmin(request);
+  const auth = await requireSuperAdminApi(request);
   if ("error" in auth) {
     return NextResponse.json(
       { ok: false, error: auth.error },

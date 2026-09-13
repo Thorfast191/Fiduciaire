@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/auth/apiGuards";
+import { requireSuperAdminApi } from "@/lib/auth/apiGuards";
 import {
   createTaxPeriod,
   listTaxPeriods,
@@ -20,7 +20,7 @@ const patchSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
-  const auth = await requireAdmin(request);
+  const auth = await requireSuperAdminApi(request);
   if ("error" in auth) {
     return NextResponse.json(
       { ok: false, error: auth.error },
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const e = apiErrors(request);
-  const auth = await requireAdmin(request);
+  const auth = await requireSuperAdminApi(request);
   if ("error" in auth) {
     return NextResponse.json(
       { ok: false, error: auth.error },
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const auth = await requireAdmin(request);
+  const auth = await requireSuperAdminApi(request);
   if ("error" in auth) {
     return NextResponse.json(
       { ok: false, error: auth.error },
